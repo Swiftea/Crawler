@@ -1,0 +1,4 @@
+test/
+reset.py
+package/__pycache__/
+package/private_data.py
