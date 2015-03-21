@@ -8,6 +8,7 @@ from time import strftime
 
 from package.module import speak, leaving, start
 from package.data import *
+from package.private_data import *
 from package.web_connexion import WebConnexion
 from package.file_management import FileManagement
 from package.database_swiftea import DataBase_swiftea
