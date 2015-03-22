@@ -34,9 +34,9 @@ class DataBase_swiftea(DataBase):
 					speak('mise à jour de ' + infos[key]['url']) # update the document : url
 					result, rep = self.send_command(
 """UPDATE index_url
-SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, nb_words=%s, score=%s, nb_words=%s
+SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, nb_words=%s, score=%s, nb_words=%s, favicon=%s
 WHERE url = %s """, \
-(infos[key]['title'], infos[key]['description'], infos[key]['language'], popularity, infos[key]['nb_words'], infos[key]['score'], infos[key]['nb_words'], infos[key]['url']))
+(infos[key]['title'], infos[key]['description'], infos[key]['language'], popularity, infos[key]['nb_words'], infos[key]['score'], infos[key]['nb_words'], infos[key]['favicon'], infos[key]['url']))
 					if 'error' in rep:
 						speak('la mise à jour a échoué : ' + rep, 16) # update failed
 						return 'error'
@@ -47,9 +47,9 @@ WHERE url = %s """, \
 				# url not funded in data base, the url don't exist in the database, we add it :
 				speak('ajout : ' + infos[key]['url']) # adding : url
 				result, rep = self.send_command(
-"""INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, nb_words)
-VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
-(infos[key]['title'], infos[key]['description'], infos[key]['url'],	infos[key]['language'], infos[key]['score'], infos[key]['nb_words']))
+"""INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, nb_words, favicon)
+VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
+(infos[key]['title'], infos[key]['description'], infos[key]['url'],	infos[key]['language'], infos[key]['score'], infos[key]['nb_words'], infos[key]['favicon']))
 				if 'error' in rep:
 					speak("l'ajout a échoué : " + rep, 16) # the adding failed
 					return 'error'

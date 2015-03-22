@@ -32,14 +32,14 @@ class MyParser(HTMLParser):
 		self.objet = None
 		self.css, self.h1 = False, False # if there is a css file in the source code
 		self.first_title = '' # the first title (h1) of the web site
-		self.description, self.language, self.title  = '', '', ''
+		self.description, self.language, self.title, self.favicon  = '', '', '', ''
 
 	def handle_starttag(self, tag, attrs):
 		if tag =='html': # bigining of the source code : reset all variables
 			self.output_list = list()
 			self.first_title, self.keywords, self.keyword_add = '', '', ''
 			self.css, self.h1 = False, False
-			self.description, self.language, self.title = '', '', ''
+			self.description, self.language, self.title, self.favicon = '', '', '', ''
 			self.objet = None
 
 			if dict(attrs).get('lang') is not None:
@@ -68,6 +68,10 @@ class MyParser(HTMLParser):
 		elif tag == 'link': # LINK REL="STYLESHEET" TYPE="text/css"
 			if dict(attrs).get('rel') == 'stylesheet':
 				self.css = True
+				# LINK REL="ICON" HREF="FAVICON.ICO"
+			elif dict(attrs).get('rel') == 'icon':
+				if dict(attrs).get('href') is not None:
+					self.favicon = dict(attrs).get('href')
 
 		elif tag == "meta":
 			name = dict(attrs).get('name')
@@ -171,7 +175,8 @@ class SiteInformations:
 		self.new = str()
 		self.slash = int()
 		self.urlparse = None
-		self.nb_words = int()		
+		self.nb_words = int()
+		self.favicon = str()
 
 	def get_back_stopwords(self):
 		self.STOP_WORDS = get_back_stopwords()
@@ -226,9 +231,12 @@ class SiteInformations:
 				speak('on ne prend pas les liens.')
 			else:
 				self.links = self.clean_links(self.parser.output_list)
-				
+
+			# favicon
+			self.favicon = self.parser.favicon
+
 			return (self.links, self.title, self.description, self.keywords,
-				self.language, self.score, self.nb_words)
+				self.language, self.score, self.nb_words, self.favicon)
 		else:
 			return None, '', None, None, None, None, None
 
@@ -241,7 +249,7 @@ class SiteInformations:
 
 		new : the links to add in the new list of links
 
-		"""		
+		"""
 		links = list(set(links))
 		new_list = list()
 		canAdd = True
@@ -262,7 +270,7 @@ class SiteInformations:
 				# delete anchors :
 				infos_url = urlparse(new)
 				new = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
-			
+
 				if new.endswith('/'):
 					new = new[:-1]
 
