@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""Crawler5 for Swiftea : http://swiftea.alwaysdata.net"""
+"""Crawler for Swiftea : http://swiftea.alwaysdata.net"""
 
 from os import system
 from time import strftime

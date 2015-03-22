@@ -2,7 +2,7 @@
 
 Swiftea's Crawler is the crawler we used on Swiftea. Currently, it can :
 
-  - Visit web pages
+  - Visit websites
   - Parse them
   - Index them
 
@@ -24,10 +24,11 @@ Want to contribute? Great!
 
 #### Examples
   - Add something : "Add feature ..."
+  - Update : "Update ..."
   - Improve something : "Improve ..."
   - Change something : "Change ..."
   - Fix something : "Fix ..."
-  - Fix an issue : "Fix #123456"
+  - Fix an issue : "Fix #123456" or "Close #123456"
 
 License
 ----
