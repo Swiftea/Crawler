@@ -59,7 +59,7 @@ def stats_stop_words(begining, end):
 def stats_links(stat):
 	"""Number of links for statistics."""
 	with open(FILE_STATS, 'a') as myfile:
-		myfile.write(stat + '\n') # write the number of links find
+		myfile.write(stat + '\n') # write the number of links finded
 
 def start():
 	"""Test lot off things :
@@ -93,13 +93,13 @@ def start():
 	if not path.isdir(DIR_LINKS):
 		# no link repertory, let program tack list of link (1),
 		# or fill a file with links
-		print("""Repèrtoire des liens introuvable, 
-1: laisser le programme choisir une liste...
-2: remplir un fichier d'une liste de liens...
-(voir le fichier doc.txt dans config)""")
-		rep = input("Votre choix (1/2) : ")
+		print("""No links directory,
+1: let programm choose a list...
+2: fill a file yourself...
+(see doc.txt file in config)""")
+		rep = input("What's your choice ? (1/2) : ")
 		if rep == '1':
-			# Write in the file of bases links a list of basic links
+			# basic links
 			mkdir(DIR_LINKS)
 			with open(FILE_BASELINKS, 'w') as myfile:
 				myfile.write("""http://www.planet-libre.org
@@ -123,10 +123,10 @@ http://swiftea.alwaysdata.net
 http://trukastuss.over-blog.com""")
 		else:
 			print("""
-Créer un fichier '0' sans extention, contenant une liste de 20 liens maximum.
-Ils doivent être en 'http://' ou 'https://' et ne pas finir par un '/'.
-Choisissez des urls de sites internets populaires.
-Appuyer sur Entrée quand le fichier est près""")
+Create a file '0' without extention who contains a list of 20 links maximum.
+They must start with 'http://' or 'https://' and no ends with '/'.
+Choose popular websites.
+Press enter when done""")
 			system('pause')
 
 def get_back_stopwords():
@@ -145,7 +145,7 @@ def get_back_stopwords():
 		r.encoding = 'utf-8'
 		STOP_WORDS['it'] = r.text
 	except requests.exceptions.ConnectionError:
-		print('erreur de recupération des stopwords', 10)
+		print('Failed to get stopwords', 10)
 		return dict()
 	else:
 		return STOP_WORDS

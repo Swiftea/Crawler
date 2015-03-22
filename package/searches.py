@@ -182,7 +182,7 @@ class SiteInformations:
 		self.STOP_WORDS = get_back_stopwords()
 		if self.STOP_WORDS == dict():
 			# no STOP_WORDS : the program will stop
-			speak('pas de STOP_WORDS, le programme va se fermer')
+			speak('STOP_WORDS is null, quit program')
 			return 'error'
 		else:
 			return 'ok'
@@ -220,7 +220,7 @@ class SiteInformations:
 				self.language = self.parser.language
 				self.score += 0.5
 			else:
-				speak('pas de langue : ' + self.url)
+				speak('No language : ' + self.url)
 
 			# key words :
 			self.keywords = self.clean_keywords(self.parser.keywords) # get back keywords
@@ -228,7 +228,7 @@ class SiteInformations:
 			# links :
 			if nofollow:
 				self.links = list()
-				speak('on ne prend pas les liens.')
+				speak('No take links')
 			else:
 				self.links = self.clean_links(self.parser.output_list)
 

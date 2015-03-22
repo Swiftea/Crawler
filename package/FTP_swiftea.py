@@ -18,7 +18,7 @@ class FTPSwiftea(FTPConnect):
 		rep = self.upload(FILE_INDEX, FTP_INDEX)
 		if 'Error' in rep:
 			# sending index failed
-			speak("l'envoie de l'index a échoué : " + rep, 21)
+			speak("Failed to send index : " + rep, 21)
 			return 'error'
 		else:
 			speak(rep)
@@ -28,7 +28,7 @@ class FTPSwiftea(FTPConnect):
 		rep = self.download(local_file_name, serveur_file_name)
 		if 'Error' in rep:
 			# download index failed
-			speak("erreur de téléchargement de l'index inversé : " + rep, 22)
+			speak("Failed to download inverted index : " + rep, 22)
 			return None, 'error'
 		else:
 			with open(local_file_name, 'r', encoding='utf-8') as myfile:
@@ -36,10 +36,10 @@ class FTPSwiftea(FTPConnect):
 			speak(rep)
 			return index, rep
 
-	def can_send(self): # not use at the moment, must be test
+	def can_send(self): # not use at the moment, must be tested
 		"""Return True if the program can send to database, False if not.
 
-		On the ftp serveur there is a file who contain data :
+		On the ftp server there is a file who contains data :
 		- max requests per minute
 		- number of requests did
 		- the timestamp
@@ -60,7 +60,7 @@ class FTPSwiftea(FTPConnect):
 				result = True
 			content['number request'] += nb_request
 		"""
-		# Thing more complexe : return the number of requests who can do 
+		# Thing more complexe : return the number of requests who can do
 		if time() - content['timestamp'] >= 60:
 			# the next minute
 			content['number request'] = 0 # reset meter

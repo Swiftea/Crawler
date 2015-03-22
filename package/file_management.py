@@ -14,8 +14,8 @@ from package.module import speak, stats_links
 class FileManagement:
 	"""A file managment for the crawler.
 
-	methodes : 
-	sometimes is a methode who group other methodes : 
+	methodes :
+	sometimes is a methode who group other methodes :
 		get_nbr_max, save_meters, check_size_files
 	get_stop : check if the user want to stop
 	get_nbr_max : get back the maxiaml number of links in a file
@@ -36,7 +36,7 @@ class FileManagement:
 		self.config = ConfigParser()
 
 		if not path.exists(FILE_CONFIG):
-			# create the config file : 
+			# create the config file :
 			self.config['DEFAULT'] = {
 				'run': True,
 				'reading_file_number': '0',
@@ -44,11 +44,11 @@ class FileManagement:
 				'reading_line_number': '0',
 				'links_number': LINKS_NUMBER
 			}
-	
+
 			with open(FILE_CONFIG, 'w') as configfile:
 				self.config.write(configfile)
 		else:
-			# read the config file : 
+			# read the config file :
 			self.config.read_file(open(FILE_CONFIG))
 			self.run = bool(self.config['DEFAULT']['run'])
 			self.reading_file_number = int(self.config['DEFAULT']['reading_file_number'])
@@ -61,7 +61,7 @@ class FileManagement:
 		self.get_nbr_max()
 		self.save_meters()
 
-	# sometimes : 
+	# sometimes :
 
 	def get_stop(self):
 		"""Check if the user want to stop program."""
@@ -72,7 +72,7 @@ class FileManagement:
 		"""Get back the maximal number of links in a file."""
 		self.config.read_file(open(FILE_CONFIG))
 		self.links_number = int(self.config['DEFAULT']['links_number'])
-	
+
 	def save_meters(self):
 		"""Save meters in the config file."""
 		self.config['DEFAULT'] = {
@@ -84,7 +84,7 @@ class FileManagement:
 		}
 		with open(FILE_CONFIG, 'w') as configfile:
 			self.config.write(configfile)
-	
+
 	def check_size_files(self): # not use : don't work
 		"""Alerte if size of files is over than MAX_SIZE."""
 		try: size = path.getsize(FILE_NEWS) # get the size
@@ -107,7 +107,7 @@ class FileManagement:
 		try: size = path.getsize(FILE_ERROR) # get the size
 		except FileNotFoundError:
 			# no news file
-			speak('fichier erreurs introuvable dans check_size', 2)
+			speak('Errors file is not found in check_zize', 2)
 		else:
 			if size > MAX_SIZE:
 				with  ZipFile(FILE_ARCHIVE_ERRORS, 'r') as myzip:
@@ -149,14 +149,14 @@ class FileManagement:
 				self.writing_file_number += 1
 				# more than {links_number} link : {writing_file_number}
 				speak(
-					'plus de {0} liens : {1} : fichier écriture {2}.'.format(
+					'More {0} links : {1} : writing file {2}.'.format(
 					str(self.links_number), str(len(links_to_add)),
 					str(self.writing_file_number))
 				)
 
 	def get_url(self):
 		"""Get the url of the next page."""
-		# joining : /liens/(reading meter) : 
+		# joining : /liens/(reading meter) :
 		file_name = DIR_LINKS + str(self.reading_file_number)
 		try:
 			with open(file_name, 'r', errors='replace',
@@ -164,18 +164,18 @@ class FileManagement:
 				list_links = myfile.read().split() # list of urls
 		except FileNotFoundError:
 			# no link file
-			speak('fichier lecture introuvable dans get_url : ' + file_name, 4)
+			speak('Reading file is not found in get_url : ' + file_name, 4)
 			return 'stop'
 		else:
 			url = list_links[self.reading_line_number]
 			self.reading_line_number += 1
 			if len(list_links) == (self.reading_line_number): # if is the last links of the file
 				self.reading_line_number = 0
-				if self.reading_file_number != 0: # or > 0 ? lequel est le plus rapide
+				if self.reading_file_number != 0: # or > 0 ? wich is better ?
 					remove(file_name)
 					# file {file_name} deleted
-					speak('fichier ' + file_name + ' supprimé')
+					speak('file "' + file_name + '" is remove')
 				self.reading_file_number += 1
 				# the program have read all the links : next reading_file_number
-				speak('fichier lecture suivant : ' + str(self.reading_file_number))
+				speak('Next reading file : ' + str(self.reading_file_number))
 			return url

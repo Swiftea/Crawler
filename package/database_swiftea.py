@@ -28,7 +28,7 @@ class DataBase_swiftea(DataBase):
 			if result != ():
 				# url funded in the data base, there is a answer :
 				last_crawl = result[0][1] # datetime.datetime object
-				if (datetime.now() - last_crawl) > timedelta(minutes=CRAWL_DELAY): # must be day, but minute is better for tests
+				if (datetime.now() - last_crawl) > timedelta(minutes=CRAWL_DELAY): # must be days, but minutes is better for tests
 					# the program already crawl this web site 30 days ago
 					popularity = result[0][0]+1
 					speak('mise à jour de ' + infos[key]['url']) # update the document : url
@@ -41,49 +41,49 @@ WHERE url = %s """, \
 						speak('la mise à jour a échoué : ' + rep, 16) # update failed
 						return 'error'
 				else:
-					# the program don't crawl this web site 30 days ago
-					speak('pas de mise a jour, site récemment cralwé') # no update, web site recently crawl
+					# already crawl 30 days ago
+					speak('No updates, already crawled recently') # no update, web site recently crawl
 			else:
-				# url not funded in data base, the url don't exist in the database, we add it :
+				# url not finded in database, the url don't exist in the database, we add it :
 				speak('ajout : ' + infos[key]['url']) # adding : url
 				result, rep = self.send_command(
 """INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, nb_words, favicon)
 VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 (infos[key]['title'], infos[key]['description'], infos[key]['url'],	infos[key]['language'], infos[key]['score'], infos[key]['nb_words'], infos[key]['favicon']))
 				if 'error' in rep:
-					speak("l'ajout a échoué : " + rep, 16) # the adding failed
+					speak("Failed to add : " + rep, 16) # the adding failed
 					return 'error'
 		# end loop
-		return 'ok' # all operaton are correct
+		return 'ok' # all operations are correct
 
 	def get_user(self): # not use
 		"""Get back user name."""
 		result, rep = self.send_command("SELECT pseudo FROM users")
 		if 'error' in rep:
-			speak('la demande du pseudo a échoué : ' + rep, 16)
+			speak('Failed to get username : ' + rep, 16)
 		return result
 
 	def drop_BDD(self): # not use
 		"""WARNING !!! Delete all documents in database."""
 		# do you realy want to drop the table ?
-		oui = input('Voulez-vous vraiment vider la table ? : ')
-		if oui == 'oui':
+		response = input('Do you really want to delete all entries in index ? : ')
+		if response == 'yes':
 			result, rep = self.send_command("TRUNCATE TABLE index_url")
 			if 'error' in rep:
 				# drop table failed
-				speak('le vidage de la table a échoué : ', rep, 16)
+				speak('Failed to empty table : ', rep, 16)
 			else:
 				# table droped
-				speak('table purgée !')
+				speak('Table is empty !')
 		else:
 			# the table didn't be drop
-			speak("la table n'as pas été vidée.")
+			speak("Not empty !")
 
 	def get_id(self, url):
 		"""Return the id of a document in database."""
 		result, rep = self.send_command("SELECT id FROM index_url WHERE url = %s", (url,))
 		if 'error' in rep:
-			speak("erreur de récupération de l'id0 : " + rep, 18)
+			speak("Failed to get id : " + rep, 18)
 			return 'error'
 		else:
 			return result[0]
@@ -93,14 +93,14 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		speak('suppression du document : ' + url) # delete the document
 		result, rep = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url,))
 		if 'error' in rep:
-			# document didn't be deleye
-			speak("le documment n'a pas été supprimé : {0}, {1}".format(url, rep), 17)
+			# document is not remove
+			speak("Doc is not remove : {0}, {1}".format(url, rep), 17)
 
 	def suggestions(self):
 		"""Return the list of url in Suggestions and delete their."""
 		result, rep = self.send_command("SELECT url FROM suggestions LIMIT 5")
 		if 'error' in rep:
-			speak("la demande de l'url a échoué : " + rep, 16) # query failed
+			speak("Failed to get url : " + rep, 16) # query failed
 			return 'error'
 		else:
 			suggest_links = list()
