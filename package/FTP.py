@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""Module to connect to a ftp serveur."""
+"""Module to connect to a ftp server."""
 
 __author__ = "Seva Nathan"
 
@@ -21,7 +21,7 @@ class FTPConnect(FTP):
 		user : username to use for connection
 		password : password to use for connection
 
-		ideas : 
+		ideas :
 		return the result if there is one
 		return a tuple of string who descibe all steps of the connection and of transferts
 
@@ -33,12 +33,12 @@ class FTPConnect(FTP):
 
 	def connection(self):
 		try:
-			# connection to the ftp serveur : 
+			# connection to the ftp serveur :
 			self.connect(self.host)
 			# loging in :
 			self.login(self.user, self.password)
 		except all_errors as error:
-			rep = 'Connexion failed to ftp serveur : ' + str(error)
+			rep = 'Failed to connect to server : ' + str(error)
 		else:
 			# use utf-8 encoding :
 			self.sendcmd("OPTS UTF8 ON")
@@ -50,7 +50,7 @@ class FTPConnect(FTP):
 		try:
 			rep = self.quit()
 		except all_errors as error:
-			rep = "Can't quit serveur : " + str(error)
+			rep = "Can't quit server : " + str(error)
 		else:
 			self.close()
 		finally:
@@ -62,14 +62,14 @@ class FTPConnect(FTP):
 			return rep
 		else:
 			with open(local_file_name, 'br') as myfile:
-				try: 
+				try:
 					rep = self.storbinary(
 						'STOR ' + serveur_file_name, myfile)
 				except all_errors as error:
-					rep = 'Error when trying to send file ' + \
+					rep = 'Failed to send file ' + \
 						local_file_name + ' : ' + str(error)
 				else:
-					rep = 'Sending the file : ' + rep
+					rep = 'Send file : ' + rep
 				finally:
 					self.quit_connection()
 			return rep
@@ -84,10 +84,10 @@ class FTPConnect(FTP):
 					rep = self.retrbinary(
 						'RETR ' + serveur_file_name, myfile.write)
 				except all_errors as error:
-					rep = 'Error when trying to download file ' + \
+					rep = 'Failed to download file ' + \
 						serveur_file_name + ' : ' + str(error)
 				else:
-					rep = 'Downloading the file : ' + rep
+					rep = 'Download file : ' + rep
 				finally:
 						self.quit_connection()
 			return rep

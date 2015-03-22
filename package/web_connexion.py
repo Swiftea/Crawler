@@ -31,19 +31,19 @@ class WebConnexion:
 		try:
 			r = requests.get(url, headers=HEADERS)
 		except requests.exceptions.ConnectionError:
-			speak('erreur de connexion au site web (ConnectionError)', 6)
+			speak('Failed to connect to website (ConnectionError)', 6)
 			return 'continue', nofollow, 0
 		except requests.exceptions.Timeout: # peut mieux faire ?
-			speak('le site web ne répond pas', 7)
+			speak('Website not responding', 7)
 			return 'continue', nofollow, 0
 		except requests.exceptions.RequestException as error:
-			speak('erreur de connexion au site web : ' + str(error), 8)
+			speak('Failed to connect to website : ' + str(error), 8)
 			return 'continue', nofollow, 0
 		else:
 			try:
 				allowed = self.reqrobots.allowed(url, USER_AGENT)
 			except ServerError as error:
-				speak('error robot.txt : ' + str(error), 24)
+				speak('Error robot.txt : ' + str(error), 24)
 				allowed = True
 			if r.status_code == requests.codes.ok and \
 				r.headers['Content-Type'].startswith('text/html') and \
@@ -56,7 +56,7 @@ class WebConnexion:
 
 	def searche_encoding(self, r):
 		"""Return encoding of r's requests web page and the score."""
-		# searche in headers : 
+		# searche in headers :
 		headers = str(r.headers).lower()
 		charset = headers.find('charset')
 		end_charset = headers.find('\'', charset)
@@ -69,5 +69,5 @@ class WebConnexion:
 				return self.parser.encoding, .5
 			else:
 				# encoding not given
-				speak("pas d'indication d'encodage", 9)
+				speak("No enconding", 9)
 				return 'utf-8', 0

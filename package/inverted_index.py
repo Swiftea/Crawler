@@ -15,7 +15,7 @@ class InvertedIndex:
 	def __init__(self):
 		"""Build the InvertedIndex manager.
 
-		example : 
+		example :
 		'word'{1:12,20:39}'site'{2:14}
 		the word 'word' is 20 times in the first document,
 		the word 'site' is 14 times in the document 2.
@@ -48,7 +48,7 @@ class InvertedIndex:
 			now = time()
 			if now - beginning < TIMEOUT_INDEX:
 				occurence = words_add.count(word)
-	
+
 				place_word = self.index.find("'" + word + "'")
 				if place_word != -1:
 					# if the word is in the index
@@ -61,8 +61,8 @@ class InvertedIndex:
 					self.index += "'" + word + "'{" + str(id0) + ':' + \
 						str(occurence) +  '}'
 			else:
-				# indexation too long : next doc
-				speak('indexation trop longue : on passe.', 23)
+				# indexing too long : next doc
+				speak('Indexing too long : pass', 23)
 				return 'del'
 
 		words_add = list(set(words_add))
@@ -81,21 +81,21 @@ class InvertedIndex:
 			stop_words = self.STOP_WORDS['it']
 		else:
 			stop_words = []
-	
+
 		title = title.lower().strip().split()
 		result = []
-	
+
 		for key, value in enumerate(title):
 			title[key] = value.strip()
-	
+
 		for value in title:
 			if len(value) > 2:
 				if value not in stop_words:
 					result.append(value)
-	
+
 		return result
 
-	# for testing : 
+	# for testing :
 
 	def save_index(self, name='save_index.txt'):
 		"""Save the index in a file to check errors."""

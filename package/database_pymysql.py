@@ -10,9 +10,9 @@ import pymysql # for database access
 __author__ = "Seva Nathan"
 
 class DataBase:
-	"""Using : 
+	"""Using :
 
-	With creating a subclass : 
+	With creating a subclass :
 	result, rep = self.send_comand(comand, data=tuple())
 	result is the data asked
 	rep is a message
@@ -44,7 +44,7 @@ class DataBase:
 			rep = 'Connected to data base'
 		finally:
 			return rep
-	
+
 	def close_connection(self):
 		"""Close the database connection."""
 		self.cur.close()

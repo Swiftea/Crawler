@@ -59,7 +59,7 @@ def stats_stop_words(begining, end):
 def stats_links(stat):
 	"""Number of links for statistics."""
 	with open(FILE_STATS, 'a') as myfile:
-		myfile.write(stat + '\n') # write the number of links find
+		myfile.write(stat + '\n') # write the number of links finded
 
 def start():
 	"""Test lot off things :
@@ -93,13 +93,13 @@ def start():
 	if not path.isdir(DIR_LINKS):
 		# no link repertory, let program tack list of link (1),
 		# or fill a file with links
-		print("""Repèrtoire des liens introuvable, 
+		print("""Repèrtoire des liens introuvable,
 1: laisser le programme choisir une liste...
 2: remplir un fichier d'une liste de liens...
 (voir le fichier doc.txt dans config)""")
 		rep = input("Votre choix (1/2) : ")
 		if rep == '1':
-			# Write in the file of bases links a list of basic links
+			# basic links
 			mkdir(DIR_LINKS)
 			with open(FILE_BASELINKS, 'w') as myfile:
 				myfile.write("""http://www.planet-libre.org

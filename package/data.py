@@ -10,7 +10,7 @@ __author__ = "Seva Nathan"
 
 setdefaulttimeout(30) # timeout is 30sec
 
-# strings for direcories and files :
+# strings for directories and files :
 DIR_LINKS = 'liens/'
 DIR_CONFIG = 'config/'
 DIR_DATA = 'data/'
@@ -55,7 +55,7 @@ avec quelle liens de départ commencer.
 	0 : fin du programme
 	1 : fichier journal introuvable dans check_size
 	2 : fichier erreurs introuvable dans check_size
-	3 : 
+	3 :
 	4 : fichier lecture introuvable dans get_url, stop
 	5 : erreur compteur liens dans get_url, continue
 
@@ -75,7 +75,7 @@ avec quelle liens de départ commencer.
 	17 : le documment n'a pas été supprimé
 	18 : erreur de récupération de l'id0
 	19 : aucune connexion avec la BDD
-	
+
 	20 : erreur de connexion au serveur ftp
 	21 : erreur d'envoie de l'index inversé, continue
 	22 : erreur de téléchargement de l'index inversé
@@ -86,7 +86,7 @@ avec quelle liens de départ commencer.
 
 ---fichier config.ini : ---
 Le fichier config.txt doit être dans le dossier 'config', il est créé s'il n'existe pas.
-Son contenu : 
+Son contenu :
  - run = True ou False
  - reading_file_number = un nombre, le fichier où on prend les urls
  - reading_line_number = un nombre, le numéro du lien que l'on examine

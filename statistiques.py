@@ -13,7 +13,7 @@ __author__ = "Seva Nathan"
 def stats_links():
 	try: fichier = open(FILE_STATS, 'r')
 	except FileNotFoundError:
-		print("fichier stats.txt introuvable")
+		print("File stats.txt not found")
 		return None
 	contenu = fichier.read()
 	fichier.close()
@@ -22,14 +22,14 @@ def stats_links():
 	for i, elt in enumerate(liste):
 	    total += int(elt)
 	moy = total / len(liste)
-	print('moyenne de liens dans une url : ' + str(moy))
+	print('Average links in webpage : ' + str(moy))
 	return None
 
 def stats_keywords():
 
 	try: fichier = open(FILE_STATS2, 'r')
 	except FileNotFoundError:
-		print("fichier stats2.txt introuvable")
+		print("File stats2.txt not found")
 		return None
 	else:
 		contenu = fichier.read()
@@ -39,7 +39,7 @@ def stats_keywords():
 		for i, elt in enumerate(liste):
 			total += float(elt)
 		moy = total / len(liste)
-		print('moyenne des pourcentages de mot supprimé : ' + str(moy))
+		print('Average percentage of removed words : ' + str(moy))
 	return None
 
 if __name__ == '__main__':

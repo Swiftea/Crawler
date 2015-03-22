@@ -33,11 +33,11 @@ class Crawler:
 		self.file_management = FileManagement()
 		self.ftp = FTPSwiftea(HOST_FTP, USER, PASSWORD)
 		self.inverted_index = InvertedIndex()
-		speak("récupération de l'index") # get back the index
+		speak("Get index") # get back the index
 		result, rep = self.ftp.get_index(FILE_INDEX, FTP_INDEX)
 		if result is None and self.file_management.reading_file_number != 0:
 			 # no index, program will stop :
-			speak("pas d'index, le programme va se fermer")
+			speak("No index, quit program")
 			leaving()
 		else:
 			self.inverted_index.setIndex(result)
@@ -54,7 +54,7 @@ class Crawler:
 			for k in range(3):
 				while len(self.infos) < 10:
 					# speak what is happen : reading in file {}, link {}
-					speak('lecture : {0}, liens : {1}'.format(
+					speak('Reading : {0}, links : {1}'.format(
 						str(self.file_management.reading_file_number),
 						str(self.file_management.reading_line_number+1)))
 					# get the url of the web site :
@@ -70,7 +70,7 @@ class Crawler:
 
 				nbr_page_crawl += 10
 				# {} new documents
-				speak('{} nouveaux documents ! '.format(nbr_page_crawl))
+				speak('{} new documents ! '.format(nbr_page_crawl))
 
 				self.send_DB()
 				self.indexation()
@@ -80,8 +80,7 @@ class Crawler:
 				self.file_management.sometimes()
 				# user wants stop ? :
 				if self.file_management.run is False:
-					# the user wants stop program
-					speak("l'utilisateur veut quitter le programme")
+					speak("User wants stop  program")
 					self.end()
 
 			# end of loop range(3) : 30 web sites crawled
@@ -90,9 +89,9 @@ class Crawler:
 			self.suggestions()
 
 	def crawl_web_site(self, url):
-		"""score : .5 encodage, .5 css, .5 langue, """
+		"""score : .5 encondig, .5 css, .5 language, """
 		speak('url : ' + url) # the  url is {}
-		# get the code of web page :
+		# get the code of webpage :
 		code, nofollow, score = self.webconnexion.get_code(url)
 		if code is 'continue':
 			return
@@ -143,8 +142,8 @@ class Crawler:
 		speak('suggestions : ')
 		suggestions = self.data_base.suggestions()
 		if suggestions is 'error':
-			# Can't get back suggest urls
-			speak('erreur de récupération des suggestions')
+			# Can't get suggested urls
+			speak('Failed to get suggestions')
 			self.end() # ?
 		else:
 			suggestions = self.web_site_infos.clean_links(suggestions)
@@ -152,12 +151,12 @@ class Crawler:
 				self.crawl_web_site(url)
 			self.send_DB()
 			self.indexation()
-			# reset the list of dict of informations of webs sites :
+			# reset the list of dict of informations of websites :
 			self.infos.clear()
 
 	def end(self):
 		self.send_index()
-		speak('le programme vas se fermer') # the program will quit
+		speak('Programm will quit') # the program will quit
 		leaving()
 
 if __name__ == '__main__':
