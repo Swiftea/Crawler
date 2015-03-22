@@ -17,11 +17,11 @@ class FTPConnect(FTP):
 	def __init__(self, host, user='', password=''):
 		"""Build the ftp managment.
 
-		host : host name of the ftp serveur
-		user : user name to use for connection
+		host : hostname of the ftp serveur
+		user : username to use for connection
 		password : password to use for connection
 
-		idea : 
+		ideas : 
 		return the result if there is one
 		return a tuple of string who descibe all steps of the connection and of transferts
 
@@ -35,12 +35,13 @@ class FTPConnect(FTP):
 		try:
 			# connection to the ftp serveur : 
 			self.connect(self.host)
+			# loging in :
 			self.login(self.user, self.password)
 		except all_errors as error:
 			rep = 'Connexion failed to ftp serveur : ' + str(error)
 		else:
+			# use utf-8 encoding :
 			self.sendcmd("OPTS UTF8 ON")
-			self.encoding = 'utf-8'
 			rep = self.getwelcome()
 		finally:
 			return rep
@@ -52,6 +53,7 @@ class FTPConnect(FTP):
 			rep = "Can't quit serveur : " + str(error)
 		else:
 			self.close()
+		finally:
 			return rep
 
 	def upload(self, local_file_name, serveur_file_name):
@@ -98,7 +100,7 @@ class FTPConnect(FTP):
 			try:
 				rep = self.retrlines('LIST')
 			except all_errors as error:
-				return None, 'error : ' + str(error)
+				return None, 'Error : ' + str(error)
 			else:
 				return rep, 'ok'
 			finally:
@@ -112,7 +114,7 @@ class FTPConnect(FTP):
 			try:
 				rep = self.rename(name1, name2)
 			except all_errors as error:
-				return 'error : ' + str(error)
+				return 'Error : ' + str(error)
 			else:
 				return rep
 			finally:
@@ -126,7 +128,7 @@ class FTPConnect(FTP):
 			try:
 				rep = self.delete(file_name)
 			except all_errors as error:
-				return 'error : ' + str(error)
+				return 'Error : ' + str(error)
 			else:
 				return rep
 			finally:
@@ -140,7 +142,7 @@ class FTPConnect(FTP):
 			try:
 				rep = self.mkd(dir_name)
 			except all_errors as error:
-				return 'error : ' + str(error)
+				return 'Error : ' + str(error)
 			else:
 				return rep
 			finally:
@@ -154,7 +156,7 @@ class FTPConnect(FTP):
 			try:
 				rep  = self.rmd(dir_name)
 			except all_errors as error:
-				return 'error : ' + str(error)
+				return 'Error : ' + str(error)
 			else:
 				return rep
 			finally:
@@ -168,7 +170,7 @@ class FTPConnect(FTP):
 			try:
 				rep = self.sendcmd(comand)
 			except all_errors as error:
-				return 'error : ' + str(error)
+				return 'Error : ' + str(error)
 			else:
 				return rep
 			finally:
@@ -186,6 +188,6 @@ class FTPConnect(FTP):
 			try:
 				rep = self.cwd(path)
 			except all_errors as error:
-				return 'error : ' + str(error)
+				return 'Error : ' + str(error)
 			finally:
 				self.quit_connection()

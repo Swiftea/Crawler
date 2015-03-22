@@ -18,7 +18,7 @@ from package.FTP_swiftea import FTPSwiftea
 
 __author__ = "Seva Nathan"
 
-class Crawler6:
+class Crawler:
 	"""Crawler Class.
 
 	rep : a message
@@ -33,8 +33,10 @@ class Crawler6:
 		self.file_management = FileManagement()
 		self.ftp = FTPSwiftea(HOST_FTP, USER, PASSWORD)
 		self.inverted_index = InvertedIndex()
+		speak("récupération de l'index") # get back the index
 		result, rep = self.ftp.get_index(FILE_INDEX, FTP_INDEX)
 		if result is None and self.file_management.reading_file_number != 0:
+			 # no index, program will stop :
 			speak("pas d'index, le programme va se fermer")
 			leaving()
 		else:
@@ -51,43 +53,45 @@ class Crawler6:
 		while True:
 			for k in range(3):
 				while len(self.infos) < 10:
-					# speak what is happen:
+					# speak what is happen : reading in file {}, link {}
 					speak('lecture : {0}, liens : {1}'.format(
 						str(self.file_management.reading_file_number),
 						str(self.file_management.reading_line_number+1)))
 					# get the url of the web site :
 					url = self.file_management.get_url()
 					if url is 'continue': # if there is an error
-						continue # redémare la boucle
+						continue # restart loop
 					elif url is 'stop':
-						self.end()
+						self.end() # quit program
 					self.crawl_web_site(url)
 					self.file_management.save_links(list(set(self.links)))
 
 				# end of crawling loop
 
 				nbr_page_crawl += 10
+				# {} new documents
 				speak('{} nouveaux documents ! '.format(nbr_page_crawl))
 
 				self.send_DB()
 				self.indexation()
-				# reset the list of dict of informations of webs sites : 
+				# reset the list of dict of informations of web sites : 
 				self.infos.clear()
 				# get_nbr_max, save_meters, get_stop, check_size_file : 
 				self.file_management.sometimes()
 				# user wants stop ? :
 				if self.file_management.run is False:
-					speak('the user want stop program')
+					# the user wants stop program
+					speak("l'utilisateur veut quitter le programme")
 					self.end()
 
-			# end of loop range(3) : 30 web sites crawling
+			# end of loop range(3) : 30 web sites crawled
 
 			self.send_index()
 			self.suggestions()
 
 	def crawl_web_site(self, url):
 		"""score : .5 encodage, .5 css, .5 langue, """
-		speak('url : ' + url) # speak the url
+		speak('url : ' + url) # the  url is {}
 		# get the code of web page : 
 		code, nofollow, score = self.webconnexion.get_code(url)
 		if code is 'continue':
@@ -105,7 +109,6 @@ class Crawler6:
 			self.links.extend(links)
 
 	def send_DB(self):
-		# can_send = self.ftp.can_send()
 		rep = self.data_base.send_infos(self.infos)
 		if rep is 'error':
 			self.end()
@@ -115,7 +118,7 @@ class Crawler6:
 			id0 = self.data_base.get_id(infoswebpage['url'])
 			if id0 is 'error':
 				self.end()
-			speak('indexation : {0} {1}'.format(
+			speak('indexation : {0} {1}'.format( # indexing : id url
 				str(id0[0]), infoswebpage['url']))
 			rep = self.inverted_index.append_doc(infoswebpage, id0[0])
 			if rep is 'del':
@@ -127,72 +130,38 @@ class Crawler6:
 			self.end()
 
 	def suggestions(self):
-		"""se connecter à la base et récupéré 5 url à crawler
-		supprimer les urls de la table suggestions
-		crawler les urls
-		envoyé les docs
-		indexé les doc
-		reprendre la boucle
+		"""Sugesstions
+
+		Get back 5 urls from the data base
+		Delete the 5 urls
+		Crawl the 5 urls
+		Send all the documents of the 5 urls
+		Index the documents
+		Tavk back the main loop
+
 		"""
 		speak('suggestions : ')
 		suggestions = self.data_base.suggestions()
 		if suggestions is 'error':
+			# Can't get back suggest urls
 			speak('erreur de récupération des suggestions')
-			self.end() # qu-est-ce qu'on fait ?
+			self.end() # ?
 		else:
 			suggestions = self.web_site_infos.clean_links(suggestions)
 			for url in suggestions:
 				self.crawl_web_site(url)
 			self.send_DB()
 			self.indexation()
-			self.infos.clear() # reset the list of dict of informations of webs sites
+			# reset the list of dict of informations of webs sites :
+			self.infos.clear()
 
 	def end(self):
 		self.send_index()
-		speak('le programme vas se fermer')
+		speak('le programme vas se fermer') # the program will quit
 		leaving()
 
 if __name__ == '__main__':
-	crawler = Crawler6()
+	crawler = Crawler()
 	crawler.start()
 	print('fin/end')
 	system('pause')
-
-"""
-à faire : 
-- prendre l'url de l'icone du site
-- suggestions : netocentre passe pas bien
-- erreur de nettoyage des liens quand ya des " : http://www.telerama.fr/breve/"Films de Cannes 2014"
-
-à revoir : 
-- archivage
-- revoir le nom de toutes les variables
-
-à tester:
-- ne pas augmenter mettre à jour quand on a visité le site peu de temps avant (on tourne peut-être en rond mais faudrait peut-être quand même incrémenter la papularité, sans mettre à jour le reste ?)
-- configparser : l'arrêt
-- le fichiers liens se remplicent rapidement
-
-plus tard :
-- prendre la liste des les liens de départ sur le site Swiftea
-- passer l'index inversé dans la base de donnée
-- requettes par minute
-
-remarque : 
-- erreur handle_entityref
-- n°31 et 7:50 dans les mots-clefs ?
-- l'id dans la DB correspond à la ligne dans les fichiers statistiques : c'esr dar !
-- l'indexation est vraiment trop longue !
-- pourquoi un id dans la table suggestions ?
-- score : 1.5 (encodage, css, langue)
-- refaire les erreur dans database_swiftea
-- prendre le title des image pour mots-clés
-- utilisé un module pour faire les documentations des modules
-
-suggestions : 
-- l'utilisateur peut signaler une erreur d'information ou 404
-
-libraries :
-mypysql
-reppy
-"""

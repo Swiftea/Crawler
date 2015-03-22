@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 """Searches class :
 
@@ -14,31 +14,30 @@ from html.entities import *
 from html.parser import HTMLParser
 
 
-from package.data import * # to have required datas
+from package.data import * # to have required data
 from package.module import speak, stats_stop_words, get_back_stopwords
 
 class MyParser(HTMLParser):
-	"""
-	self.objet : le type de texte en question, pour le titre, la description, les mots-clés.
+	"""My parser for extract data.
 
-	Handle_entityref et handle_charref traite les carractères spéciaux en fontion de l'encodage et les ajoutes aux chaine en question en fontion de self.objet.
+	self.objet : the type of text for title, description and keywords
+	dict(attrs).get('content') : convert attrs in a dict and retrun the value
 
-	dict(attrs).get('content') : transforme les attibuts en dictionnaire et renvoie la valeur
 	"""
 	def __init__(self):
 		HTMLParser.__init__(self)
-		self.output_list = list() # la liste de liens
-		self.keyword = '' # tous les mots-clé dans une chaine
-		self.keyword_add = '' # le mot à ajouter à la liste de mots-clés
+		self.output_list = list() # list of links
+		self.keywords = '' # all keywords in a string
+		self.keyword_add = '' # the word to add to key
 		self.objet = None
-		self.css, self.h1 = False, False # si il y a une feuille css associer
-		self.first_title = '' # la premier titre de la page
+		self.css, self.h1 = False, False # if there is a css file in the source code
+		self.first_title = '' # the first title (h1) of the web site
 		self.description, self.language, self.title  = '', '', ''
 
 	def handle_starttag(self, tag, attrs):
-		if tag =='html': # début de la page : on remet toutes les variables à leur valeur par défautl.
+		if tag =='html': # bigining of the source code : reset all variables
 			self.output_list = list()
-			self.first_title, self.keyword, self.keyword_add = '', '', ''
+			self.first_title, self.keywords, self.keyword_add = '', '', ''
 			self.css, self.h1 = False, False
 			self.description, self.language, self.title = '', '', ''
 			self.objet = None
@@ -104,7 +103,7 @@ class MyParser(HTMLParser):
 		elif (tag == 'h1' or tag == 'h2' or tag == 'h3'	or tag == 'strong'
 			or tag == 'em'):
 			self.objet = None
-			self.keyword = self.keyword + ' ' + self.keyword_add
+			self.keywords = self.keywords + ' ' + self.keyword_add
 		elif tag == 'meta':
 			self.objet = None
 		if tag == 'h1':
@@ -133,6 +132,7 @@ class MyParser(HTMLParser):
 	def add_letter(self, letter):
 		self.title += letter
 
+
 class Parser_encoding(HTMLParser):
 	"""Searche encoding."""
 	def __init__(self):
@@ -158,7 +158,7 @@ class Parser_encoding(HTMLParser):
 
 class SiteInformations:
 	def __init__(self):
-		"""Build the calss : define variables."""
+		"""Build the class : define variables."""
 		self.url = str()
 		self.score = float()
 		self.title = str()
@@ -176,6 +176,7 @@ class SiteInformations:
 	def get_back_stopwords(self):
 		self.STOP_WORDS = get_back_stopwords()
 		if self.STOP_WORDS == dict():
+			# no STOP_WORDS : the program will stop
 			speak('pas de STOP_WORDS, le programme va se fermer')
 			return 'error'
 		else:
@@ -186,8 +187,8 @@ class SiteInformations:
 
 		url : the url of the page
 		score : the score of the page
-		code : the code of the page
-		nofollow : if it take the links of the page
+		code : the source code of the page
+		nofollow : if we take the links of the page
 		return : list of links, title, description, key words, language,
 			score, number of words
 
@@ -251,14 +252,14 @@ class SiteInformations:
 			if new == "/" or new == "#" or new[:7] == "mailto:" or 'javascript:' in new or new == '':
 				continue
 			else:
-				# Si url à besoin d'être reconstruite :
+				# if the url need to be rebuild :
 				if new[:4] != "http":
-					if new[0] == "/": # Si url à reconstruire commence par /
+					if new[0] == "/": # if the url begin with /
 						new = self.url + new
 					else:
 						new = self.url + "/" + new
 
-				# Suppresion des ancres :
+				# delete anchors :
 				infos_url = urlparse(new)
 				new = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
 			
@@ -278,11 +279,7 @@ class SiteInformations:
 		return list(set(new_list))
 
 	def clean_keywords(self, keywords):
-		"""Clean the keywords founded.
-
-		var : number of keywords, for stats
-
-		"""
+		"""Clean the keywords founded."""
 		if self.language == 'fr':
 			stop_words = self.STOP_WORDS['fr']
 		elif self.language == 'en':

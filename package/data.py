@@ -1,6 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
-"""data for crawler"""
+"""Data for crawler"""
 
 __author__ = "Seva Nathan"
 
@@ -28,7 +28,6 @@ FILE_CAN_SEND = DIR_DATA + 'can_send.json'
 
 # strings for ftp location
 FTP_INDEX = '/www/data/inverted-index/inverted-index.txt'
-FTP_CAN_SEND = '/www/data/can_send.json'
 
 # lists for clean up links and keywords :
 BAD_EXTENTIONS = ['.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif', '.ico', '.svg', '.tiff', '.tif' '.raw', '.flv', '.mpeg', '.mpg', '.wma', '.mp4', '.mp3', '.fla', '.avi']
@@ -37,18 +36,18 @@ END_CHARS = ['.', ',', ';', '!', '?', '»', '\'', '"', ')', ':', '...', '/', ']'
 
 # others informations :
 USER_AGENT = 'Swiftea-Bot'
-MAX_SIZE = 500
-TIMEOUT_INDEX = 120
+MAX_SIZE = 500 # max size of a error and log file (FILE_ERROR and FILE_NEWS)
+TIMEOUT_INDEX = 120 # time in second for index a document
 HEADERS = {"User-Agent": USER_AGENT}
-LINKS_NUMBER = 5000
+LINKS_NUMBER = 5000 # max links in a file
+CRAWL_DELAY = 30 # the program don't crawl the web sites if it was crawled 30 days ago
 
-# doc (read me):
-DOC = """----- Documentation -----
+# README :
+README = """----- Documentation -----
 
-Le robot crawler pour Swfitea demande lors de la 1er exécution avec quels
-liens de départ démmarer le crawler. On a donc le choix entre remplir un
-fichier '0' sans extention, de liens de départ ou de laisser le programme
-récupérer une liste de liens de départ.
+Le robot crawler pour Swfitea demande lors de la 1er exécution avec quels liens de départ démmarer le crawler.
+On a donc le choix entre remplir un fichier '0' sans extention,
+de liens de départ ou de laisser le programme récupérer une liste de liens de départ.
 Si le dossier des liens est inexistant, le programme demanderra aussi
 avec quelle liens de départ commencer.
 
@@ -85,34 +84,26 @@ avec quelle liens de départ commencer.
 
 	24 : error robot.txt
 
----fichier config.txt : ---
-Le fichier config.txt doit être dans le dossier 'config',
-il est créé s'il n'existe pas.
+---fichier config.ini : ---
+Le fichier config.txt doit être dans le dossier 'config', il est créé s'il n'existe pas.
 Son contenu : 
- - arrêt = 'continue' ou 'stop'
- - compteur fichier lecture = un nombre, le fichier où on prend les URLs
- - compteur liens = un nombre, le numéro du lien que l'on examine
- - compteur fichier écriture = un nombre, le fichier où on enregistre les liens trouvés
- - nombre de liens dans un fichier = un nombre, environ le nombre de liens dans un fichier
-Exemple : "
-arrêt : no
-compteur fichier lecture : 0
-compteur liens : 0
-compteur fichier écriture : 1
-nombre de liens dans un fichier : 500
-"
+ - run = True ou False
+ - reading_file_number = un nombre, le fichier où on prend les urls
+ - reading_line_number = un nombre, le numéro du lien que l'on examine
+ - writing_file_number = un nombre, le fichier où on enregistre les liens trouvés
+ - links_number = un nombre, environ le nombre maximal de liens dans un fichier
 
----fichier journal.txt : ---
+---fichier journal.log : ---
  - copie de ce qui s'affiche dans la console
  - auto-suppression quand il dépasse 500 Ko
 
----fichier erreur.txt: ---
- - contient le rapport de chaque erreur recontré
- - possibilité de le supprimé
+---fichier erreur.log: ---
+ - contient le rapport de chaque erreur recontrée
+ - auto-suppression quand il dépasse 500 Ko
 
----fichier stats.txt : ---
- - contient les nombres de liens trouvé dans une page
- - lancer le fichier statistiques pour avoir la moyenne et bientôt d'autre statistiques
+---fichier stats_links.txt et  stats_stopwords.txt: ---
+ - contient les nombres de liens trouvé dans une page et le pourcentage de stopwords supprimés
+ - lancer le fichier statistiques.py
  - ne pas supprimer
 
 ---fichier liens de base : ---

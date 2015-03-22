@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 """Module of management of database."""
 
@@ -11,11 +11,15 @@ __author__ = "Seva Nathan"
 
 class DataBase:
 	"""Using : 
+
 	With creating a subclass : 
 	result, rep = self.send_comand(comand, data=tuple())
+	result is the data asked
+	rep is a message
+
 	"""
 	def __init__(self, host, user, password, base):
-		"""Build the claas."""
+		"""Build the class."""
 		self.host = host # hostname
 		self.user = user # username
 		self.password = password # password

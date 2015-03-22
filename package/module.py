@@ -1,21 +1,21 @@
 #!/usr/bin/python3
 
-"""Define functions and create files ans directories for user and program."""
+"""Define functions and create files and directories for user and program."""
 
 __author__ = "Seva Nathan"
 
-from sys import exit # for leave the programme
-from time import strftime # for have date time
+from sys import exit # to leave the programme
+from time import strftime # to have date and time data
 from os import path, mkdir, remove, system
 import requests # to get back stopwords
 
 
-from package.data import * # for get required datas
+from package.data import * # to get required data
 
 def speak(message, EC=None):
-	"""Manage newspaper.
+	"""Manage the newspaper.
 
-	print() and write() message
+	print() and write() message.
 	This function print in console that the program do and save a copy in the
 	newspaper file.
 	EC : error code : optional, if given run errors function
@@ -32,9 +32,9 @@ def speak(message, EC=None):
 			myfile.write(message.capitalize() + '\n')
 
 def errors(EC, message):
-	"""Write error report in the errors file.
+	"""Write the error report in the errors file.
 
-	Normaly call by speak function when a EC parameter is not None.
+	Normaly call by speak function when a EC parameter is given.
 	EC : error code
 
 	"""
@@ -43,13 +43,12 @@ def errors(EC, message):
 
 def leaving():
 	"""Function who manage the end of the prgoram."""
-	speak('end\n', 0)
-	system("pause")
+	speak('fin\n', 0) # end
+	system("pause") # only word on windows
 	exit()
-	tamere # name error (for win)
 
 def stats_stop_words(begining, end):
-	"""Percentage of del word with stopwords for statistics."""
+	"""Percentage of deleted word with stopwords for statistics."""
 	if end != 0:
 		stats = str(((begining-end) * 100) / end)
 	else:
@@ -81,17 +80,19 @@ def start():
 	# create doc file if it doesn't exist :
 	if not path.exists(FILE_DOC):
 		with open(FILE_DOC, 'w') as myfile:
-			myfile.write(DOC)
+			myfile.write(README)
 	else:
 		with open(FILE_DOC, 'r') as myfile:
 			content = myfile.read()
-		if content != DOC:
+		if content != README:
 			remove(FILE_DOC)
 		with open(FILE_DOC, 'w') as myfile:
-			myfile.write(DOC)
+			myfile.write(README)
 
 	# create directory of links if it doesn't exist :
 	if not path.isdir(DIR_LINKS):
+		# no link repertory, let program tack list of link (1),
+		# or fill a file with links
 		print("""Repèrtoire des liens introuvable, 
 1: laisser le programme choisir une liste...
 2: remplir un fichier d'une liste de liens...

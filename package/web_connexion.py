@@ -1,6 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
-"""module pour les fonctions qui s'occupe des sites web"""
+"""Manage the connection to web sites."""
 
 __author__ = "Seva Nathan"
 
@@ -55,7 +55,7 @@ class WebConnexion:
 				return 'continue', nofollow, 0
 
 	def searche_encoding(self, r):
-		"""Return encoding of r's requests web page and the score"""
+		"""Return encoding of r's requests web page and the score."""
 		# searche in headers : 
 		headers = str(r.headers).lower()
 		charset = headers.find('charset')
@@ -68,5 +68,6 @@ class WebConnexion:
 			if self.parser.encoding is not None:
 				return self.parser.encoding, .5
 			else:
+				# encoding not given
 				speak("pas d'indication d'encodage", 9)
 				return 'utf-8', 0

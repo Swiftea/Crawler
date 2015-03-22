@@ -13,7 +13,14 @@ from package.data import TIMEOUT_INDEX
 class InvertedIndex:
 	"""Manage the inverted index for the crawler."""
 	def __init__(self):
-		"""Build the InvertedIndex manager."""
+		"""Build the InvertedIndex manager.
+
+		example : 
+		'word'{1:12,20:39}'site'{2:14}
+		the word 'word' is 20 times in the first document,
+		the word 'site' is 14 times in the document 2.
+
+		"""
 		self.index = str()
 		self.STOP_WORDS = dict()
 
@@ -30,7 +37,7 @@ class InvertedIndex:
 		return self.index
 
 	def append_doc(self, infoswebpage, id0):
-		"""Add all word of a doc in the index."""
+		"""Add all words of a doc in the index."""
 		words_add = infoswebpage['keywords']
 		keywords_title = self.generate_keywords(infoswebpage['title'], infoswebpage['language'])
 		words_add.extend(keywords_title)
@@ -48,13 +55,13 @@ class InvertedIndex:
 					place_end = self.index.find('}', place_word)
 					if self.index.find(str(id0), place_word, place_end) == -1:
 						place_apo = self.index.find('\'', place_end)
-						self.index = self.index[:place_end] + ',' + str(id0) + \
-							':' + str(occurence) + self.index[place_apo-1:]
+						self.index = self.index[:place_end] + ',' + str(id0) + ':' + str(occurence) + self.index[place_apo-1:]
 				else:
 					# if we need to add it in the index
 					self.index += "'" + word + "'{" + str(id0) + ':' + \
 						str(occurence) +  '}'
 			else:
+				# indexation too long : next doc
 				speak('indexation trop longue : on passe.', 23)
 				return 'del'
 
@@ -88,7 +95,7 @@ class InvertedIndex:
 	
 		return result
 
-	# test : 
+	# for testing : 
 
 	def save_index(self, name='save_index.txt'):
 		"""Save the index in a file to check errors."""

@@ -4,10 +4,8 @@
 
 __author__ = "Seva Nathan"
 
-from os import remove, path, rename # remove file and know it size
-import json # to save documents not sending
+from os import remove, path, rename # remove, rename and know size of files
 from configparser import ConfigParser
-from zipfile import ZipFile
 
 
 from package.data import * # to have required datas
@@ -17,10 +15,8 @@ class FileManagement:
 	"""A file managment for the crawler.
 
 	methodes : 
-	often and sometimes are methodes that group other methodes.
-	sometimes : get_nbr_max, save_meters, check_size_files
-	get_meters : get back meters : writing file, reading file, link lines in reading file
-	line of links, maximal nuimber of links in a file
+	sometimes is a methode who group other methodes : 
+		get_nbr_max, save_meters, check_size_files
 	get_stop : check if the user want to stop
 	get_nbr_max : get back the maxiaml number of links in a file
 	save_meters : save meters in the config file
@@ -40,6 +36,7 @@ class FileManagement:
 		self.config = ConfigParser()
 
 		if not path.exists(FILE_CONFIG):
+			# create the config file : 
 			self.config['DEFAULT'] = {
 				'run': True,
 				'reading_file_number': '0',
@@ -51,6 +48,7 @@ class FileManagement:
 			with open(FILE_CONFIG, 'w') as configfile:
 				self.config.write(configfile)
 		else:
+			# read the config file : 
 			self.config.read_file(open(FILE_CONFIG))
 			self.run = bool(self.config['DEFAULT']['run'])
 			self.reading_file_number = int(self.config['DEFAULT']['reading_file_number'])
@@ -58,22 +56,10 @@ class FileManagement:
 			self.reading_line_number = int(self.config['DEFAULT']['reading_line_number'])
 			self.links_number = int(self.config['DEFAULT']['links_number'])
 
-
-		# un peu dégeulasse : (?)
-		with ZipFile(FILE_ARCHIVE_NEWS, 'w') as myzip:
-			pass # create zip file
-		with ZipFile(FILE_ARCHIVE_ERRORS, 'w') as myzip:
-			pass # create zip file
-
-		self.get_stop()
-		self.get_nbr_max()
-
 	def sometimes(self):
-		"""When a links file is fulled."""
 		self.get_stop()
 		self.get_nbr_max()
 		self.save_meters()
-		#self.check_size_files() # don't work well ! (?)
 
 	# sometimes : 
 
@@ -99,10 +85,11 @@ class FileManagement:
 		with open(FILE_CONFIG, 'w') as configfile:
 			self.config.write(configfile)
 	
-	def check_size_files(self):
+	def check_size_files(self): # not use : don't work
 		"""Alerte if size of files is over than MAX_SIZE."""
 		try: size = path.getsize(FILE_NEWS) # get the size
 		except FileNotFoundError:
+			# no news file
 			speak('fichier journal introuvable dans check_size', 1)
 		else:
 			if size > MAX_SIZE:
@@ -119,6 +106,7 @@ class FileManagement:
 
 		try: size = path.getsize(FILE_ERROR) # get the size
 		except FileNotFoundError:
+			# no news file
 			speak('fichier erreurs introuvable dans check_size', 2)
 		else:
 			if size > MAX_SIZE:
@@ -136,8 +124,12 @@ class FileManagement:
 	# other :
 
 	def save_links(self, new_links):
-		"""Save the link in a file without doublons,
-		and check if the file if full."""
+		"""Save the links
+
+		Save the link in a file without doublons,
+		and check if the file if full.
+
+		"""
 		stats_links(str(len(new_links)))
 		file_name = DIR_LINKS + str(self.writing_file_number)
 		if not path.exists(file_name):
@@ -152,8 +144,10 @@ class FileManagement:
 				myfile.seek(0)
 				links_to_add = list(set(old_links + new_links))
 				myfile.write('\n'.join(links_to_add))
+
 			if len(links_to_add) > self.links_number: # check the size
 				self.writing_file_number += 1
+				# more than {links_number} link : {writing_file_number}
 				speak(
 					'plus de {0} liens : {1} : fichier écriture {2}.'.format(
 					str(self.links_number), str(len(links_to_add)),
@@ -169,6 +163,7 @@ class FileManagement:
 				encoding='utf8') as myfile:
 				list_links = myfile.read().split() # list of urls
 		except FileNotFoundError:
+			# no link file
 			speak('fichier lecture introuvable dans get_url : ' + file_name, 4)
 			return 'stop'
 		else:
@@ -178,7 +173,9 @@ class FileManagement:
 				self.reading_line_number = 0
 				if self.reading_file_number != 0: # or > 0 ? lequel est le plus rapide
 					remove(file_name)
+					# file {file_name} deleted
 					speak('fichier ' + file_name + ' supprimé')
 				self.reading_file_number += 1
+				# the program have read all the links : next reading_file_number
 				speak('fichier lecture suivant : ' + str(self.reading_file_number))
 			return url
