@@ -32,7 +32,7 @@ Want to contribute? Great!
 License
 ----
 
-MIT
+GNU GENERAL PUBLIC LICENSE (v3)
 
 **Free Software, Hell Yeah!**
 
