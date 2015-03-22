@@ -223,7 +223,7 @@ class SiteInformations:
 				speak('pas de langue : ' + self.url)
 
 			# key words :
-			self.keywords = self.clean_keywords(self.parser.keyword) # get back keywords
+			self.keywords = self.clean_keywords(self.parser.keywords) # get back keywords
 
 			# links :
 			if nofollow:
