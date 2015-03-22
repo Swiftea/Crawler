@@ -74,9 +74,9 @@ class Crawler:
 
 				self.send_DB()
 				self.indexation()
-				# reset the list of dict of informations of web sites : 
+				# reset the list of dict of informations of web sites :
 				self.infos.clear()
-				# get_nbr_max, save_meters, get_stop, check_size_file : 
+				# get_nbr_max, save_meters, get_stop, check_size_file :
 				self.file_management.sometimes()
 				# user wants stop ? :
 				if self.file_management.run is False:
@@ -92,7 +92,7 @@ class Crawler:
 	def crawl_web_site(self, url):
 		"""score : .5 encodage, .5 css, .5 langue, """
 		speak('url : ' + url) # the  url is {}
-		# get the code of web page : 
+		# get the code of web page :
 		code, nofollow, score = self.webconnexion.get_code(url)
 		if code is 'continue':
 			return
@@ -100,7 +100,7 @@ class Crawler:
 		infoswebpage['url'] = url
 		(links, infoswebpage['title'], infoswebpage['description'],
 			infoswebpage['keywords'], infoswebpage['language'],
-			infoswebpage['score'], infoswebpage['nb_words']
+			infoswebpage['score'], infoswebpage['nb_words'], infoswebpage['favicon']
 			) = self.web_site_infos.start_job(url, code, nofollow, score)
 		if infoswebpage['title'] is '':
 			return
