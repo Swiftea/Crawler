@@ -27,7 +27,7 @@ def speak(message, EC=None):
 			myfile.write(str(EC) + ' ' + message + '\n')
 		errors(EC, message)
 	else:
-		print(message.capitalize())
+		print(message)
 		with open(FILE_NEWS, 'a') as myfile:
 			myfile.write(message.capitalize() + '\n')
 

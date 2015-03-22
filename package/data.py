@@ -2,8 +2,6 @@
 
 """Data for crawler"""
 
-__author__ = "Seva Nathan"
-
 from socket import setdefaulttimeout # set the timeout
 
 __author__ = "Seva Nathan"

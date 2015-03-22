@@ -50,7 +50,7 @@ class FileManagement:
 		else:
 			# read the config file :
 			self.config.read_file(open(FILE_CONFIG))
-			self.run = bool(self.config['DEFAULT']['run'])
+			self.run = str(self.config['DEFAULT']['run'])
 			self.reading_file_number = int(self.config['DEFAULT']['reading_file_number'])
 			self.writing_file_number = int(self.config['DEFAULT']['writing_file_number'])
 			self.reading_line_number = int(self.config['DEFAULT']['reading_line_number'])
@@ -66,7 +66,7 @@ class FileManagement:
 	def get_stop(self):
 		"""Check if the user want to stop program."""
 		self.config.read_file(open(FILE_CONFIG))
-		self.run = bool(self.config['DEFAULT']['run'])
+		self.run = str(self.config['DEFAULT']['run'])
 
 	def get_nbr_max(self):
 		"""Get back the maximal number of links in a file."""
@@ -76,7 +76,7 @@ class FileManagement:
 	def save_meters(self):
 		"""Save meters in the config file."""
 		self.config['DEFAULT'] = {
-			'run': str(self.run),
+			'run': self.run,
 			'reading_file_number': str(self.reading_file_number),
 			'writing_file_number': str(self.writing_file_number),
 			'reading_line_number': str(self.reading_line_number),
@@ -86,11 +86,10 @@ class FileManagement:
 			self.config.write(configfile)
 
 	def check_size_files(self): # not use : don't work
-		"""Alerte if size of files is over than MAX_SIZE."""
 		try: size = path.getsize(FILE_NEWS) # get the size
 		except FileNotFoundError:
 			# no news file
-			speak('fichier journal introuvable dans check_size', 1)
+			speak('Log file is not found in check_size', 1)
 		else:
 			if size > MAX_SIZE:
 				with  ZipFile(FILE_ARCHIVE_NEWS, 'r') as myzip:
