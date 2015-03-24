@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# -*-coding:Utf-8 -*
+#!/usr/bin/python3
 
 """testeur de fonction crawler"""
 
