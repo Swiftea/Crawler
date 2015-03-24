@@ -27,7 +27,7 @@ class Crawler:
 	def __init__(self):
 		start()
 		self.web_site_infos = SiteInformations()
-		if self.web_site_infos.get_back_stopwords() is 'error':
+		if self.web_site_infos.get_back_stopwords() == 'error':
 			leaving()
 		self.file_management = FileManagement()
 		self.ftp = FTPSwiftea(HOST_FTP, USER, PASSWORD)
@@ -44,7 +44,7 @@ class Crawler:
 		self.data_base = DataBase_swiftea(HOST_DB, USER, PASSWORD, NAME_DB)
 		self.webconnexion = WebConnexion()
 
-		self.infos, self.links = list(), list()
+		self.infos, = list()
 
 	def start(self):
 		nbr_page_crawl = 0
@@ -58,16 +58,14 @@ class Crawler:
 						str(self.file_management.reading_line_number+1)))
 					# get the url of the web site :
 					url = self.file_management.get_url()
-					if url is 'continue': # if there is an error
-						continue # restart loop
-					elif url is 'stop':
+					if url == 'stop':
 						self.end() # quit program
-					self.crawl_web_site(url)
-					self.file_management.save_links(list(set(self.links)))
+					self.crawl_website(url)
+
+					nbr_page_crawl += 1
 
 				# end of crawling loop
 
-				nbr_page_crawl += 10
 				# {} new documents
 				speak('{} new documents ! '.format(nbr_page_crawl))
 
@@ -78,7 +76,7 @@ class Crawler:
 				# get_nbr_max, save_meters, get_stop, check_size_file :
 				self.file_management.sometimes()
 				# user wants stop ? :
-				if self.file_management.run is False:
+				if self.file_management.run == 'false':
 					speak("User wants stop  program")
 					self.end()
 
@@ -87,44 +85,42 @@ class Crawler:
 			self.send_index()
 			self.suggestions()
 
-	def crawl_web_site(self, url):
+	def crawl_website(self, url):
 		"""score : .5 encondig, .5 css, .5 language, """
-		speak('url : ' + url) # the  url is {}
+		speak('Crawled url : ' + url) # the  url is {}
 		# get the code of webpage :
 		code, nofollow, score = self.webconnexion.get_code(url)
-		if code is 'continue':
-			return
-		infoswebpage = {}
-		infoswebpage['url'] = url
-		(links, infoswebpage['title'], infoswebpage['description'],
-			infoswebpage['keywords'], infoswebpage['language'],
-			infoswebpage['score'], infoswebpage['nb_words'], infoswebpage['favicon']
-			) = self.web_site_infos.start_job(url, code, nofollow, score)
-		if infoswebpage['title'] is '':
-			return
-		else:
-			self.infos.append(infoswebpage)
-			self.links.extend(links)
+		if code != 'continue':
+			infoswebpage = {}
+			infoswebpage['url'] = url
+			(links, infoswebpage['title'], infoswebpage['description'],
+				infoswebpage['keywords'], infoswebpage['language'],
+				infoswebpage['score'], infoswebpage['nb_words'], infoswebpage['favicon']
+				) = self.web_site_infos.start_job(url, code, nofollow, score)
+
+			if infoswebpage['title'] != '':
+				self.infos.append(infoswebpage)
+				self.file_management.save_links(links)
 
 	def send_DB(self):
 		rep = self.data_base.send_infos(self.infos)
-		if rep is 'error':
+		if rep == 'error':
 			self.end()
 
 	def indexation(self):
 		for infoswebpage in self.infos:
 			id0 = self.data_base.get_id(infoswebpage['url'])
-			if id0 is 'error':
+			if id0 == 'error':
 				self.end()
-			speak('indexation : {0} {1}'.format( # indexing : id url
+			speak('Indexing : {0} {1}'.format( # indexing : id url
 				str(id0[0]), infoswebpage['url']))
 			rep = self.inverted_index.append_doc(infoswebpage, id0[0])
-			if rep is 'del':
+			if rep == 'del':
 				self.data_base.del_one_doc(infoswebpage['url'], 'index_url')
 
 	def send_index(self):
 		rep = self.ftp.send_index(self.inverted_index.getIndex())
-		if rep is 'error':
+		if rep == 'error':
 			self.end()
 
 	def suggestions(self):
@@ -140,14 +136,14 @@ class Crawler:
 		"""
 		speak('suggestions : ')
 		suggestions = self.data_base.suggestions()
-		if suggestions is 'error':
+		if suggestions == 'error':
 			# Can't get suggested urls
 			speak('Failed to get suggestions')
 			self.end() # ?
 		else:
 			suggestions = self.web_site_infos.clean_links(suggestions)
 			for url in suggestions:
-				self.crawl_web_site(url)
+				self.crawl_website(url)
 			self.send_DB()
 			self.indexation()
 			# reset the list of dict of informations of websites :
@@ -161,4 +157,4 @@ class Crawler:
 if __name__ == '__main__':
 	crawler = Crawler()
 	crawler.start()
-	print('fin/end')
+	print('end')
