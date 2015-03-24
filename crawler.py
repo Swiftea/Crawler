@@ -2,7 +2,6 @@
 
 """Crawler for Swiftea : http://swiftea.alwaysdata.net"""
 
-from os import system
 from time import strftime
 
 
@@ -163,4 +162,3 @@ if __name__ == '__main__':
 	crawler = Crawler()
 	crawler.start()
 	print('fin/end')
-	system('pause')

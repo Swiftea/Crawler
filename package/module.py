@@ -6,7 +6,7 @@ __author__ = "Seva Nathan"
 
 from sys import exit # to leave the programme
 from time import strftime # to have date and time data
-from os import path, mkdir, remove, system
+from os import path, mkdir, remove
 import requests # to get back stopwords
 
 
@@ -44,7 +44,6 @@ def errors(EC, message):
 def leaving():
 	"""Function who manage the end of the prgoram."""
 	speak('fin\n', 0) # end
-	system("pause") # only word on windows
 	exit()
 
 def stats_stop_words(begining, end):
@@ -127,7 +126,6 @@ Create a file '0' without extention who contains a list of 20 links maximum.
 They must start with 'http://' or 'https://' and no ends with '/'.
 Choose popular websites.
 Press enter when done""")
-			system('pause')
 
 def get_back_stopwords():
 	STOP_WORDS = dict()
