@@ -32,13 +32,13 @@ class FileManagement:
 		self.reading_file_number = 0 # meter of the reading file
 		self.reading_line_number = 0 # meter of links in the reading file
 		self.links_number = LINKS_NUMBER # number of maximum links in a file
-		self.run = True # run program bool
+		self.run = 'true' # run program bool
 		self.config = ConfigParser()
 
 		if not path.exists(FILE_CONFIG):
 			# create the config file :
 			self.config['DEFAULT'] = {
-				'run': True,
+				'run': 'true',
 				'reading_file_number': '0',
 				'writing_file_number': '1',
 				'reading_line_number': '0',
@@ -50,7 +50,7 @@ class FileManagement:
 		else:
 			# read the config file :
 			self.config.read_file(open(FILE_CONFIG))
-			self.run = str(self.config['DEFAULT']['run'])
+			self.run = self.config['DEFAULT']['run']
 			self.reading_file_number = int(self.config['DEFAULT']['reading_file_number'])
 			self.writing_file_number = int(self.config['DEFAULT']['writing_file_number'])
 			self.reading_line_number = int(self.config['DEFAULT']['reading_line_number'])
@@ -60,13 +60,14 @@ class FileManagement:
 		self.get_stop()
 		self.get_nbr_max()
 		self.save_meters()
+		return self.run
 
 	# sometimes :
 
 	def get_stop(self):
 		"""Check if the user want to stop program."""
 		self.config.read_file(open(FILE_CONFIG))
-		self.run = str(self.config['DEFAULT']['run'])
+		self.run = self.config['DEFAULT']['run']
 
 	def get_nbr_max(self):
 		"""Get back the maximal number of links in a file."""

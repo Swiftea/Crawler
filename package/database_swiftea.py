@@ -23,7 +23,7 @@ class DataBase_swiftea(DataBase):
 			result, rep = self.send_command("SELECT popularity, last_crawl FROM index_url WHERE url = %s", (infos[key]['url'],))
 			if 'error' in rep:
 				# the query for popularity and last_crawl has failed
-				speak('la demande de popularity et last_crawl a échoué : ' + rep, 16)
+				speak('Popularity and last_crawl query failed : ' + rep, 16)
 				return 'error'
 			if result != ():
 				# url funded in the data base, there is a answer :
@@ -31,27 +31,27 @@ class DataBase_swiftea(DataBase):
 				if (datetime.now() - last_crawl) > timedelta(minutes=CRAWL_DELAY): # must be days, but minutes is better for tests
 					# the program already crawl this web site 30 days ago
 					popularity = result[0][0]+1
-					speak('mise à jour de ' + infos[key]['url']) # update the document : url
+					speak('Updating : ' + infos[key]['url']) # update the document : url
 					result, rep = self.send_command(
 """UPDATE index_url
 SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, nb_words=%s, score=%s, nb_words=%s, favicon=%s
 WHERE url = %s """, \
 (infos[key]['title'], infos[key]['description'], infos[key]['language'], popularity, infos[key]['nb_words'], infos[key]['score'], infos[key]['nb_words'], infos[key]['favicon'], infos[key]['url']))
 					if 'error' in rep:
-						speak('la mise à jour a échoué : ' + rep, 16) # update failed
+						speak('Failed to update : ' + rep, 16) # update failed
 						return 'error'
 				else:
 					# already crawl 30 days ago
 					speak('No updates, already crawled recently') # no update, web site recently crawl
 			else:
 				# url not finded in database, the url don't exist in the database, we add it :
-				speak('ajout : ' + infos[key]['url']) # adding : url
+				speak('Adding : ' + infos[key]['url'])
 				result, rep = self.send_command(
 """INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, nb_words, favicon)
 VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 (infos[key]['title'], infos[key]['description'], infos[key]['url'],	infos[key]['language'], infos[key]['score'], infos[key]['nb_words'], infos[key]['favicon']))
 				if 'error' in rep:
-					speak("Failed to add : " + rep, 16) # the adding failed
+					speak("Failed to add : " + rep, 16)
 					return 'error'
 		# end loop
 		return 'ok' # all operations are correct

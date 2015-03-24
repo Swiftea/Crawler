@@ -43,7 +43,7 @@ def errors(EC, message):
 
 def leaving():
 	"""Function who manage the end of the prgoram."""
-	speak('fin\n', 0) # end
+	speak('end\n', 0)
 	exit()
 
 def stats_stop_words(begining, end):
@@ -58,7 +58,7 @@ def stats_stop_words(begining, end):
 def stats_links(stat):
 	"""Number of links for statistics."""
 	with open(FILE_STATS, 'a') as myfile:
-		myfile.write(stat + '\n') # write the number of links finded
+		myfile.write(stat + '\n') # write the number of links found
 
 def start():
 	"""Test lot off things :
@@ -90,8 +90,6 @@ def start():
 
 	# create directory of links if it doesn't exist :
 	if not path.isdir(DIR_LINKS):
-		# no link repertory, let program tack list of link (1),
-		# or fill a file with links
 		print("""No links directory,
 1: let programm choose a list...
 2: fill a file yourself...
@@ -126,6 +124,7 @@ Create a file '0' without extention who contains a list of 20 links maximum.
 They must start with 'http://' or 'https://' and no ends with '/'.
 Choose popular websites.
 Press enter when done""")
+			input()
 
 def get_back_stopwords():
 	STOP_WORDS = dict()
