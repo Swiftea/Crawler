@@ -8,33 +8,33 @@ from package.module import speak
 
 __author__ = "Seva Nathan"
 
-class FTPSwiftea(FTPConnect):
+class FTPManager(FTPConnect):
 	def __init__(self, host, user, password):
 		FTPConnect.__init__(self, host, user, password)
 
-	def send_index(self, index):
+	def send_inverted_index(self, inverted_index):
 		with open(FILE_INDEX, 'w', encoding='utf-8') as myfile:
-			myfile.write(index)
-		rep = self.upload(FILE_INDEX, FTP_INDEX)
-		if 'Error' in rep:
+			myfile.write(inverted_index)
+		response = self.upload(FILE_INDEX, FTP_INDEX)
+		if 'Error' in response:
 			# sending index failed
-			speak("Failed to send index : " + rep, 21)
-			return 'error'
+			speak("Failed to send index : " + response, 21)
+			return True
 		else:
-			speak(rep)
-			return 'ok'
+			speak(response)
+			return False
 
-	def get_index(self, local_file_name, serveur_file_name):
-		rep = self.download(local_file_name, serveur_file_name)
-		if 'Error' in rep:
-			# download index failed
-			speak("Failed to download inverted index : " + rep, 22)
+	def get_inverted_index(self, local_filename, server_filename):
+		response = self.download(local_filename, server_filename)
+		if 'Error' in response:
+			# download inverted index failed
+			speak("Failed to download inverted index : " + response, 22)
 			return None, 'error'
 		else:
-			with open(local_file_name, 'r', encoding='utf-8') as myfile:
+			with open(local_filename, 'r', encoding='utf-8') as myfile:
 				index = myfile.read()
-			speak(rep)
-			return index, rep
+			speak(response)
+			return index, response
 
 	def can_send(self): # not use at the moment, must be tested
 		"""Return True if the program can send to database, False if not.

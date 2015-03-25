@@ -5,154 +5,145 @@
 from time import strftime
 
 
-from package.module import speak, leaving, start
+from package.module import speak, quit, start
 from package.data import *
 from package.private_data import *
 from package.web_connexion import WebConnexion
-from package.file_management import FileManagement
-from package.database_swiftea import DataBase_swiftea
+from package.file_manager import FileManager
+from package.database_swiftea import DatabaseSwiftea
 from package.searches import SiteInformations
 from package.inverted_index import InvertedIndex
-from package.FTP_swiftea import FTPSwiftea
+from package.ftp_manager import FTPManager
 
 __author__ = "Seva Nathan"
 
 class Crawler:
 	"""Crawler Class.
 
-	rep : a message
+	response : a message
 	result : data asked
 
 	"""
 	def __init__(self):
 		start()
-		self.web_site_infos = SiteInformations()
-		if self.web_site_infos.get_back_stopwords() == 'error':
-			leaving()
-		self.file_management = FileManagement()
-		self.ftp = FTPSwiftea(HOST_FTP, USER, PASSWORD)
+		self.site_informations = SiteInformations()
+		if not self.site_informations.get_stopwords():
+			quit()
+		self.file_manager = FileManager()
+		self.ftp_manager = FTPManager(HOST_FTP, USER, PASSWORD)
 		self.inverted_index = InvertedIndex()
 		speak("Get index") # get back the index
-		result, rep = self.ftp.get_index(FILE_INDEX, FTP_INDEX)
-		if result is None and self.file_management.reading_file_number != 0:
-			 # no index, program will stop :
+		inverted_index, response = self.ftp_manager.get_inverted_index(FILE_INDEX, FTP_INDEX)
+		if inverted_index is None and self.file_manager.reading_file_number != 0:
 			speak("No index, quit program")
-			leaving()
+			quit()
 		else:
-			self.inverted_index.setIndex(result)
-		self.inverted_index.setSTOP_WORDS(self.web_site_infos.STOP_WORDS)
-		self.data_base = DataBase_swiftea(HOST_DB, USER, PASSWORD, NAME_DB)
-		self.webconnexion = WebConnexion()
+			self.inverted_index.setInvertedIndex(inverted_index)
+		self.inverted_index.setStopwords(self.site_informations.STOPWORDS)
+		self.database = DatabaseSwiftea(HOST_DB, USER, PASSWORD, NAME_DB)
+		self.web_connexion = WebConnexion()
 
 		self.infos = list()
+		self.crawled_websites = 0
 
 	def start(self):
-		nbr_page_crawl = 0
 		speak(strftime("%d/%m/%y %H:%M:%S")) # speak time
 		while True:
 			for k in range(3):
 				while len(self.infos) < 10:
-					# speak what is happen : reading in file {}, link {}
-					speak('Reading : {0}, links : {1}'.format(
-						str(self.file_management.reading_file_number),
-						str(self.file_management.reading_line_number+1)))
-					# get the url of the web site :
-					url = self.file_management.get_url()
+					speak('Reading {0}, link {1}'.format(
+						str(self.file_manager.reading_file_number),
+						str(self.file_manager.reading_line_number+1)))
+					# get the url of the website :
+					url = self.file_manager.get_url()
 					if url == 'stop':
-						self.end() # quit program
+						self.safe_quit() # quit program
 					self.crawl_website(url)
-
-					nbr_page_crawl += 1
 
 				# end of crawling loop
 
-				# {} new documents
-				speak('{} new documents ! '.format(nbr_page_crawl))
+				speak('{} new documents ! '.format(self.crawled_websites))
 
-				self.send_DB()
-				self.indexation()
-				# reset the list of dict of informations of web sites :
+				self.send_to_db()
+				self.indexing()
+				# reset the list of dict of informations of websites :
 				self.infos.clear()
-				# get_nbr_max, save_meters, get_stop, check_size_file :
-				self.file_management.sometimes()
-				# user wants stop ? :
-				if self.file_management.run == 'false':
+				self.file_manager.check_stop_crawling()
+				self.file_manager.get_max_links()
+				self.file_manager.save_config()
+				#self.file_manager.check_size_file()
+				if self.file_manager.run == 'false':
 					speak("User wants stop  program")
-					self.end()
+					self.safe_quit()
 
-			# end of loop range(3) : 30 web sites crawled
+			# end of loop range(3) : 30 websites crawled
 
-			self.send_index()
+			self.send_inverted_index()
 			self.suggestions()
 
 	def crawl_website(self, url):
 		"""score : .5 encondig, .5 css, .5 language, """
-		speak('Crawled url : ' + url) # the  url is {}
-		# get the code of webpage :
-		code, nofollow, score = self.webconnexion.get_code(url)
-		if code != 'continue':
-			infoswebpage = {}
-			infoswebpage['url'] = url
-			(links, infoswebpage['title'], infoswebpage['description'],
-				infoswebpage['keywords'], infoswebpage['language'],
-				infoswebpage['score'], infoswebpage['nb_words'], infoswebpage['favicon']
-				) = self.web_site_infos.start_job(url, code, nofollow, score)
+		speak('Crawling url : ' + url)
+		# get the webpage's html code :
+		html_code, is_nofollow, score = self.web_connexion.get_code(url)
+		if html_code is not None:
+			webpage_infos = {}
+			webpage_infos['url'] = url
+			(links, webpage_infos['title'], webpage_infos['description'],
+				webpage_infos['keywords'], webpage_infos['language'],
+				webpage_infos['score'], webpage_infos['nb_words'], webpage_infos['favicon']
+				) = self.site_informations.get_infos(url, html_code, is_nofollow, score)
 
-			if infoswebpage['title'] != '':
-				self.infos.append(infoswebpage)
-				self.file_management.save_links(links)
+			if webpage_infos['title'] != '':
+				self.infos.append(webpage_infos)
+				self.crawled_websites += 1
+				self.file_manager.save_links(links)
 
-	def send_DB(self):
-		rep = self.data_base.send_infos(self.infos)
-		if rep == 'error':
-			self.end()
+	def send_to_db(self):
+		"""Send infos to database."""
+		response = self.database.send_infos(self.infos)
+		if response == 'error':
+			self.safe_quit()
 
-	def indexation(self):
-		for infoswebpage in self.infos:
-			id0 = self.data_base.get_id(infoswebpage['url'])
-			if id0 == 'error':
-				self.end()
-			speak('Indexing : {0} {1}'.format( # indexing : id url
-				str(id0[0]), infoswebpage['url']))
-			rep = self.inverted_index.append_doc(infoswebpage, id0[0])
-			if rep == 'del':
-				self.data_base.del_one_doc(infoswebpage['url'], 'index_url')
+	def indexing(self):
+		for webpage_infos in self.infos:
+			doc_id = self.database.get_doc_id(webpage_infos['url'])
+			if doc_id == 'error':
+				self.safe_quit()
+			speak('Indexing : {0} {1}'.format(doc_id, webpage_infos['url']))
+			error = self.inverted_index.append_doc(webpage_infos, doc_id)
+			if error:
+				self.database.del_one_doc(webpage_infos['url'], 'index_url')
 
-	def send_index(self):
-		rep = self.ftp.send_index(self.inverted_index.getIndex())
-		if rep == 'error':
-			self.end()
+	def send_inverted_index(self):
+		error = self.ftp_manager.send_inverted_index(self.inverted_index.getInvertedIndex())
+		if error:
+			self.safe_quit()
 
 	def suggestions(self):
-		"""Sugesstions
+		"""Suggestions :
 
-		Get back 5 urls from the data base
-		Delete the 5 urls
-		Crawl the 5 urls
-		Send all the documents of the 5 urls
-		Index the documents
-		Tavk back the main loop
+		Get 5 urls from database, delete them, crawl them,
+		send all infos of them, index them and return to main loop.
 
 		"""
-		speak('suggestions : ')
-		suggestions = self.data_base.suggestions()
-		if suggestions == 'error':
-			# Can't get suggested urls
+		speak('Suggestions : ')
+		suggestions = self.database.suggestions()
+		if suggestions is not None:
 			speak('Failed to get suggestions')
-			self.end() # ?
 		else:
-			suggestions = self.web_site_infos.clean_links(suggestions)
+			suggestions = self.site_informations.clean_links(suggestions)
 			for url in suggestions:
 				self.crawl_website(url)
-			self.send_DB()
-			self.indexation()
+			self.send_to_db()
+			self.indexing()
 			# reset the list of dict of informations of websites :
 			self.infos.clear()
 
-	def end(self):
-		self.send_index()
+	def safe_quit(self):
+		self.send_inverted_index()
 		speak('Programm will quit')
-		leaving()
+		quit()
 
 if __name__ == '__main__':
 	crawler = Crawler()

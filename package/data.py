@@ -2,22 +2,19 @@
 
 """Data for crawler"""
 
-from socket import setdefaulttimeout # set the timeout
+from datetime import timedelta
 
 __author__ = "Seva Nathan"
 
-setdefaulttimeout(30) # timeout is 30sec
 
 # strings for directories and files :
-DIR_LINKS = 'liens/'
+DIR_LINKS = 'links/'
 DIR_CONFIG = 'config/'
 DIR_DATA = 'data/'
-FILE_ARCHIVE_NEWS = DIR_DATA + 'archive_news.zip'
-FILE_ARCHIVE_ERRORS = DIR_DATA + 'archive_errors.zip'
-FILE_NEWS = DIR_CONFIG + 'journal.log'
+FILE_NEWS = DIR_CONFIG + 'events.log'
 FILE_STATS = DIR_DATA + 'stats_links.txt'
 FILE_STATS2 = DIR_DATA + 'stats_stopwords.txt'
-FILE_ERROR = DIR_CONFIG + 'erreur.log'
+FILE_ERROR = DIR_CONFIG + 'errors.log'
 FILE_CONFIG = DIR_CONFIG + 'config.ini'
 FILE_DOC = DIR_CONFIG + 'Readme'
 FILE_BASELINKS = DIR_LINKS + '0'
@@ -34,11 +31,12 @@ END_CHARS = ['.', ',', ';', '!', '?', '»', '\'', '"', ')', ':', '...', '/', ']'
 
 # others informations :
 USER_AGENT = 'Swiftea-Bot'
-MAX_SIZE = 500 # max size of a error and log file (FILE_ERROR and FILE_NEWS)
-TIMEOUT_INDEX = 120 # time in second for index a document
 HEADERS = {"User-Agent": USER_AGENT}
-LINKS_NUMBER = 5000 # max links in a file
-CRAWL_DELAY = 30 # the program don't crawl the web sites if it was crawled 30 days ago
+MAX_SIZE = 500 # max size of a error and log file (FILE_ERROR and FILE_NEWS)
+INDEXING_TIMEOUT = 120 # time in second for index a document
+MAX_LINKS = 5000 # max links in a file
+CRAWL_DELAY = timedelta(minutes=30) # the program don't crawl the website if it was crawled x ago
+TIMEOUT = 30
 
 # README :
 README = """----- Documentation -----

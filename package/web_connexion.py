@@ -11,7 +11,7 @@ from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
 
 
-from package.data import USER_AGENT, HEADERS
+from package.data import USER_AGENT, HEADERS, TIMEOUT
 from package.module import speak
 from package.searches import Parser_encoding
 
@@ -22,52 +22,52 @@ class WebConnexion:
 		self.parser = Parser_encoding()
 
 	def get_code(self, url):
-		"""Return code, nofollow and score."""
+		"""Return code, is_nofollow and score."""
 		if url.endswith('!nofollow!'):
 			url = url[:-10]
-			nofollow = True
+			is_nofollow = True
 		else:
-			nofollow = False
+			is_nofollow = False
 		try:
-			r = requests.get(url, headers=HEADERS)
-		except requests.exceptions.ConnectionError:
-			speak('Failed to connect to website (ConnectionError)', 6)
-			return 'continue', nofollow, 0
-		except requests.exceptions.Timeout: # peut mieux faire ?
-			speak('Website not responding', 7)
-			return 'continue', nofollow, 0
+			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+		except requests.exceptions.Timeout:
+			speak('Website not responding : ' + url, 7)
+			return None, is_nofollow, 0
 		except requests.exceptions.RequestException as error:
-			speak('Failed to connect to website : ' + str(error), 8)
-			return 'continue', nofollow, 0
+			speak('Failed to connect to website : {}, {}'.format(str(error), url), 8)
+			return None, is_nofollow, 0
 		else:
 			try:
-				allowed = self.reqrobots.allowed(url, USER_AGENT)
-			except ServerError as error:
-				speak('Error robot.txt : ' + str(error), 24)
+				request_robots = requests.get(url + '/robots.txt', timeout=TIMEOUT)
+			except requests.exceptions.RequestException as error:
 				allowed = True
-			if r.status_code == requests.codes.ok and \
-				r.headers['Content-Type'].startswith('text/html') and \
-				allowed:
-				# searche encoding of web page :
-				r.encoding, score = self.searche_encoding(r)
-				return r.text, nofollow, score
 			else:
-				return 'continue', nofollow, 0
+				try:
+					allowed = self.reqrobots.allowed(url, USER_AGENT)
+				except ServerError as error:
+					speak('Error robot.txt : ' + str(error), 24)
+					allowed = True
+			finally:
+				if request.status_code == requests.codes.ok and request.headers['Content-Type'].startswith('text/html') and	allowed:
+					# search encoding of webpage :
+					request.encoding, score = self.search_encoding(request)
+					return request.text, is_nofollow, score
+				else:
+					return None, is_nofollow, 0
 
-	def searche_encoding(self, r):
-		"""Return encoding of r's requests web page and the score."""
-		# searche in headers :
-		headers = str(r.headers).lower()
+	def search_encoding(self, request):
+		"""Return encoding of webpage request and the score."""
+		# search in headers :
+		headers = str(request.headers).lower()
 		charset = headers.find('charset')
 		end_charset = headers.find('\'', charset)
 		if charset != -1 and end_charset != -1:
 			return headers[charset+8:end_charset], .5
 		else:
-			# searche in source code:
-			self.parser.feed(r.text)
+			# search in source code:
+			self.parser.feed(request.text)
 			if self.parser.encoding is not None:
 				return self.parser.encoding, .5
 			else:
-				# encoding not given
-				speak("No enconding", 9)
+				speak("No encoding", 9)
 				return 'utf-8', 0

@@ -41,7 +41,7 @@ def errors(EC, message):
 	with open(FILE_ERROR, 'a') as myfile:
 		myfile.write(str(EC) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ' : ' + message + '\n')
 
-def leaving():
+def quit():
 	"""Function who manage the end of the prgoram."""
 	speak('end\n', 0)
 	exit()
@@ -126,7 +126,7 @@ Choose popular websites.
 Press enter when done""")
 			input()
 
-def get_back_stopwords():
+def get_stopwords():
 	STOP_WORDS = dict()
 	try:
 		r = requests.get('http://swiftea.alwaysdata.net/data/stopwords/fr.stopwords.txt')

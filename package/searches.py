@@ -15,7 +15,7 @@ from html.parser import HTMLParser
 
 
 from package.data import * # to have required data
-from package.module import speak, stats_stop_words, get_back_stopwords
+from package.module import speak, stats_stop_words, get_stopwords
 
 class MyParser(HTMLParser):
 	"""My parser for extract data.
@@ -73,7 +73,7 @@ class MyParser(HTMLParser):
 				if dict(attrs).get('href') is not None:
 					self.favicon = dict(attrs).get('href')
 
-		elif tag == "meta":
+		elif tag == 'meta':
 			name = dict(attrs).get('name')
 			content = dict(attrs).get('content')
 			if name is not None and content is not None:
@@ -120,7 +120,7 @@ class MyParser(HTMLParser):
 			try:
 				letter = html5[name + ';']
 			except KeyError:
-				speak('erreur handle_entityref', 11)
+				speak('error handle_entityref', 11)
 		else:
 			if self.objet == 'title':
 				self.add_letter(letter)
@@ -144,7 +144,7 @@ class Parser_encoding(HTMLParser):
 		self.encoding = str()
 
 	def handle_starttag(self, tag, attrs):
-		if tag == "meta":
+		if tag == 'meta':
 			# <meta charset="utf-8">
 			charset = dict(attrs).get('charset')
 			if charset is not None:
@@ -178,17 +178,17 @@ class SiteInformations:
 		self.nb_words = int()
 		self.favicon = str()
 
-	def get_back_stopwords(self):
-		self.STOP_WORDS = get_back_stopwords()
-		if self.STOP_WORDS == dict():
-			# no STOP_WORDS : the program will stop
-			speak('STOP_WORDS is null, quit program')
-			return 'error'
+	def get_stopwords(self):
+		self.STOPWORDS = get_stopwords()
+		if self.STOPWORDS == dict():
+			# no STOPWORDS : the program will stop
+			speak('STOPWORDS is null, quit program')
+			return False
 		else:
-			return 'ok'
+			return True
 
-	def start_job(self, url, code, nofollow, score):
-		"""Start all opérations.
+	def get_infos(self, url, code, nofollow, score):
+		"""Get all webpage's informations.
 
 		url : the url of the page
 		score : the score of the page
@@ -222,7 +222,7 @@ class SiteInformations:
 			else:
 				speak('No language : ' + self.url)
 
-			# key words :
+			# keywords :
 			self.keywords = self.clean_keywords(self.parser.keywords) # get back keywords
 
 			# links :
@@ -238,7 +238,7 @@ class SiteInformations:
 			return (self.links, self.title, self.description, self.keywords,
 				self.language, self.score, self.nb_words, self.favicon)
 		else:
-			return None, '', None, None, None, None, None
+			return None, '', None, None, None, None, None, None
 
 	def clean_text(self, text):
 		"""Clean up text (\n\r\t )."""
@@ -257,15 +257,16 @@ class SiteInformations:
 		for i, elt in enumerate(links):
 			new = elt.strip()
 
-			if new == "/" or new == "#" or new[:7] == "mailto:" or 'javascript:' in new or new == '':
+			if new == '/' or new == '#' or new.startswith('mailto:') or 'javascript:' in new or new == '':
 				continue
 			else:
-				# if the url need to be rebuild :
-				if new[:4] != "http":
-					if new[0] == "/": # if the url begin with /
+				if not new.startswith('http') and not new.startswith('www'):
+					if new.startswith('/'):
 						new = self.url + new
+					elif new.startswith('//'):
+						new = 'http' + new
 					else:
-						new = self.url + "/" + new
+						new = self.url + '/' + new
 
 				# delete anchors :
 				infos_url = urlparse(new)
@@ -274,12 +275,12 @@ class SiteInformations:
 				if new.endswith('/'):
 					new = new[:-1]
 
-				nb_index = new.find("index.")
+				nb_index = new.find('index.')
 				if nb_index != -1:
 					new = new[:nb_index]
 
 				if infos_url.query != '':
-					new += "?" + infos_url.query
+					new += '?' + infos_url.query
 
 			if not new.endswith(tuple(BAD_EXTENTIONS)):
 				new_list.append(new)
@@ -287,15 +288,15 @@ class SiteInformations:
 		return list(set(new_list))
 
 	def clean_keywords(self, keywords):
-		"""Clean the keywords founded."""
+		"""Clean found keywords."""
 		if self.language == 'fr':
-			stop_words = self.STOP_WORDS['fr']
+			stop_words = self.STOPWORDS['fr']
 		elif self.language == 'en':
-			stop_words = self.STOP_WORDS['en']
+			stop_words = self.STOPWORDS['en']
 		elif self.language == 'es':
-			stop_words = self.STOP_WORDS['es']
+			stop_words = self.STOPWORDS['es']
 		elif self.language == 'it':
-			stop_words = self.STOP_WORDS['it']
+			stop_words = self.STOPWORDS['it']
 		else:
 			stop_words = []
 
