@@ -8,7 +8,7 @@ from time import time
 
 
 from package.module import speak
-from package.data import INDEXING_TIMEOUT
+from package.data import INDEXING_TIMEOUT, DIR_OUTPUT
 
 class InvertedIndex:
 	"""Manage the inverted inverted_index for the crawler."""
@@ -96,12 +96,12 @@ class InvertedIndex:
 
 	def save_index(self, name='save_index.txt'):
 		"""Save the inverted_index in a file to check errors."""
-		with open(name, 'w', encoding='utf-8', errors='replace') as myfile:
+		with open(DIR_OUTPUT + name, 'w', encoding='utf-8', errors='replace') as myfile:
 			myfile.write(str(self.inverted_index))
 			myfile.write('\n')
 
 	def save_keyword(self, words_to_add):
 		"""Save the keywords in a file to check errors."""
-		with open('save_keywords.txt', 'a', encoding='utf-8', errors='replace') as myfile:
+		with open(DIR_OUTPUT + 'save_keywords.txt', 'a', encoding='utf-8', errors='replace') as myfile:
 			myfile.write(str(words_to_add))
 			myfile.write('\n\n')

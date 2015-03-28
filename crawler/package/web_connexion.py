@@ -13,7 +13,7 @@ from reppy.exceptions import ServerError
 
 from package.data import USER_AGENT, HEADERS, TIMEOUT
 from package.module import speak
-from package.searches import Parser_encoding
+from package.parsers import Parser_encoding
 
 class WebConnexion:
 	"""Manage the web connexion with the page to crawl."""

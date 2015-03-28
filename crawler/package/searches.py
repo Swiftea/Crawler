@@ -13,7 +13,8 @@ from urllib.parse import urlparse
 
 
 from package.data import * # to have required data
-from package.module import speak, stats_stop_words, get_stopwords
+from package.module import speak, stats_stop_words, get_stopwords, clean_text
+from package.parsers import MyParser
 
 class SiteInformations:
 	def __init__(self):
@@ -24,6 +25,7 @@ class SiteInformations:
 		self.description = str()
 		self.language = str()
 		self.links = list()
+		self.images = list()
 		self.keywords = list()
 		self.parser = MyParser()
 		self.code = str()
@@ -59,13 +61,13 @@ class SiteInformations:
 		self.parser.feed(code)
 
 		if self.parser.title != '':
-			self.title = self.clean_text(self.parser.title) # find title and clean it
+			self.title = clean_text(self.parser.title) # find title and clean it
 
 			# description :
 			if self.parser.description == '':
-				self.description = self.clean_text(self.parser.first_title)
+				self.description = clean_text(self.parser.first_title)
 			else:
-				self.description = self.clean_text(self.parser.description)
+				self.description = clean_text(self.parser.description)
 
 			if self.parser.css:
 				self.score += 0.5
@@ -87,17 +89,16 @@ class SiteInformations:
 			else:
 				self.links = self.clean_links(self.parser.links)
 
-			# favicon
+			# favicon :
 			self.favicon = self.parser.favicon
 
-			return (self.links, self.title, self.description, self.keywords,
-				self.language, self.score, self.nb_words, self.favicon)
-		else:
-			return None, '', None, None, None, None, None, None
+			# images : 
+			self.images = list(set(self.clean_images(self.parser.images)))
 
-	def clean_text(self, text):
-		"""Clean up text (\n\r\t )."""
-		return ' '.join(text.split())
+			return (self.links, self.title, self.description, self.keywords,
+				self.language, self.score, self.nb_words, self.favicon, self.images)
+		else:
+			return None, '', None, None, None, None, None, None, None
 
 	def clean_links(self, links):
 		"""Clean the list of links.
@@ -107,40 +108,55 @@ class SiteInformations:
 		"""
 		links = list(set(links))
 		new_list = list()
-		canAdd = True
 
-		for i, elt in enumerate(links):
-			new = elt.strip()
-
-			if new == '/' or new == '#' or new.startswith('mailto:') or 'javascript:' in new or new == '':
-				continue
-			else:
-				if not new.startswith('http') and not new.startswith('www'):
-					if new.startswith('/'):
-						new = self.url + new
-					elif new.startswith('//'):
-						new = 'http' + new
+		for i, url in enumerate(links):
+			new = url.strip()
+			infos_url = urlparse(self.url)
+			if not new.endswith(BAD_EXTENTIONS) or new != '/' or new != '#' \
+				or not new.startswith('mailto:') or not 'javascript:' in new or new != '':
+				if not new.startswith('http') or not new.startswith('www'):
+					base_url = infos_url.scheme + '://' + infos_url.netloc
+					if new.startswith('//'):
+						new = 'http:' + new
+					elif new.startswith('/'):
+						new = base_url + new
 					else:
-						new = self.url + '/' + new
-
+						new = base_url + '/' + new
 				# delete anchors :
 				infos_url = urlparse(new)
 				new = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
-
 				if new.endswith('/'):
 					new = new[:-1]
-
 				nb_index = new.find('index.')
 				if nb_index != -1:
 					new = new[:nb_index]
-
 				if infos_url.query != '':
 					new += '?' + infos_url.query
-
-			if not new.endswith(tuple(BAD_EXTENTIONS)):
 				new_list.append(new)
-
 		return list(set(new_list))
+
+	def clean_images(self, images):
+		new_images = list()
+		for key, image in enumerate(images):
+			# image is a tuple : (url, alt)
+			url = image[0].strip()
+
+			if url.endswith(IMG_EXTENTIONS) or not url.startswith('http') \
+				or not url.startswith('www'):
+				if url.startswith('//'):
+					url = 'http:' + url
+				elif url.startswith('/'):
+					url = self.url + url
+				else:
+					url = self.url + '/' + url
+			if url.endswith('/'):
+				url = url[:-1]
+			slash = url.rfind('/')
+			point = url.rfind('.')
+			name = url[slash+1:point]
+
+			new_images.append((url, image[1], name))
+		return new_images
 
 	def clean_keywords(self, keywords):
 		"""Clean found keywords."""
@@ -168,10 +184,10 @@ class SiteInformations:
 				keyword = keyword.replace(' ', '')
 
 				# remove useless chars
-				if keyword.startswith(tuple(START_CHARS)):
+				if keyword.startswith(START_CHARS):
 					keyword = keyword[1:]
 
-				if keyword.endswith(tuple(END_CHARS)):
+				if keyword.endswith(END_CHARS):
 					keyword = keyword[:-1]
 
 				if len(keyword) > 1:
@@ -192,7 +208,7 @@ class SiteInformations:
 		stats_stop_words(begining, self.nb_words)
 
 		# after : (for test)
-		with open('mot.txt', 'a', errors='replace') as myfile:
+		with open(DIR_OUTPUT + 'mot.txt', 'a', errors='replace') as myfile:
 			myfile.write(str(result))
 			myfile.write('\n\n')
 		return result

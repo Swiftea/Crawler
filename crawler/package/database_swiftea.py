@@ -8,7 +8,7 @@ from datetime import datetime
 
 from package.module import speak
 from package.database_manager import DatabaseManager
-from package.data import CRAWL_DELAY
+from package.data import CRAWL_DELAY, CRAWL_IMG_DELAY
 
 __author__ = "Seva Nathan"
 
@@ -53,7 +53,37 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 					speak("Failed to add : " + response, 16)
 					return True
 		# end loop
-		return False # all operations are correct
+		return False # all is correct
+
+	def send_images(self, images):
+		"""Base name : index_img ; id, url, alt, last_crawl
+
+		images is a list of tuple (ulr, alt)
+		Return True if an error occured.
+
+		"""
+		for key, image in enumerate(images):
+			# images is a tuple (url, alt)
+			result, response = self.send_command("SELECT last_crawl FROM index_img WHERE url = %s", (image[0],))
+			if response != 'Send command : ok':
+				speak('Failed to get last_crawl when send image : ' + response, 27)
+				return True
+			if result is not None:
+				# crawl delay :
+				if (datetime.now() - result[0]) > CRAWL_IMG_DELAY:
+					speak('Updating image : ' + image[1])
+					result, response = self.send_command("UPDATE index_img SET alt=%s, last_crawl=NOW() WHERE url=%s", (image[1], image[0]))
+					if response != 'Send command : ok':
+						speak('Failed to update : ' + response, 25)
+						return True
+				else:
+					speak('No update image, already crawled recently')
+			else:
+				speak('Adding image : ' + image[1])
+				result, response = self.send_command("INSERT INTO index_img (url, alt, last_crawl) VALUES (%s, %s, NOW())", (image[0], image[1]))
+				if response != 'Send command : ok':
+					speak('Failed to add image : ' + response, 26)
+		return False # all is correct
 
 	def get_doc_id(self, url):
 		"""Return the id of a document in database."""

@@ -25,7 +25,6 @@ class Crawler:
 
 	"""
 	def __init__(self):
-		start()
 		self.site_informations = SiteInformations()
 		if not self.site_informations.get_stopwords():
 			quit()
@@ -91,7 +90,8 @@ class Crawler:
 			webpage_infos['url'] = url
 			(links, webpage_infos['title'], webpage_infos['description'],
 				webpage_infos['keywords'], webpage_infos['language'],
-				webpage_infos['score'], webpage_infos['nb_words'], webpage_infos['favicon']
+				webpage_infos['score'], webpage_infos['nb_words'],
+				webpage_infos['favicon'], webpage_infos['images']
 				) = self.site_informations.get_infos(url, html_code, is_nofollow, score)
 
 			if webpage_infos['title'] != '':
@@ -101,8 +101,17 @@ class Crawler:
 
 	def send_to_db(self):
 		"""Send infos to database."""
-		response = self.database.send_infos(self.infos)
-		if response == 'error':
+		response_url = self.database.send_infos(self.infos)
+		with open(DIR_OUTPUT + 'image.txt', 'a') as myfile:
+			for webpage_infos in self.infos:
+				for image in webpage_infos['images']:
+					myfile.write(image[0] + '\n')
+					myfile.write(image[1] + '\n')
+					myfile.write(image[2] + '\n\n')
+		#name
+		#response_img = self.database.send_images(self.images, self.infos)
+		response_img = False
+		if response_url or response_img:
 			self.safe_quit()
 
 	def indexing(self):
@@ -146,5 +155,6 @@ class Crawler:
 		quit()
 
 if __name__ == '__main__':
+	start()
 	crawler = Crawler()
 	crawler.start()

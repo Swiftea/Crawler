@@ -46,6 +46,10 @@ def quit():
 	speak('end\n', 0)
 	exit()
 
+def clean_text(text):
+	"""Clean up text (\n\r\t )."""
+	return ' '.join(text.split())
+
 def stats_stop_words(begining, end):
 	"""Percentage of deleted word with stopwords for statistics."""
 	if end != 0:
@@ -75,6 +79,8 @@ def start():
 		mkdir(DIR_CONFIG)
 	if not path.isdir(DIR_DATA):
 		mkdir(DIR_DATA)
+	if not path.isdir(DIR_OUTPUT):
+		mkdir(DIR_OUTPUT)
 
 	# create doc file if it doesn't exist :
 	if not path.exists(FILE_DOC):

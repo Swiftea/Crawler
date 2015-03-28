@@ -6,7 +6,7 @@ from html.parser import HTMLParser
 from html.entities import *
 
 
-from package.module import speak
+from package.module import speak, clean_text
 
 __author__ = "Seva Nathan"
 
@@ -20,20 +20,24 @@ class MyParser(HTMLParser):
 	def __init__(self):
 		HTMLParser.__init__(self)
 		self.links = list() # list of links
+		self.images = list() # list of tuple alt and  url
 		self.keywords = '' # all keywords in a string
 		self.keyword_add = '' # the word to add to key
 		self.objet = None
 		self.css, self.h1 = False, False # if there is a css file in the source code
 		self.first_title = '' # the first title (h1) of the web site
 		self.description, self.language, self.title, self.favicon  = '', '', '', ''
+		self.text = False
 
 	def handle_starttag(self, tag, attrs):
 		if tag =='html': # bigining of the source code : reset all variables
 			self.links = list()
+			self.images = list()
 			self.first_title, self.keywords, self.keyword_add = '', '', ''
 			self.css, self.h1 = False, False
 			self.description, self.language, self.title, self.favicon = '', '', '', ''
 			self.objet = None
+			self.text = False
 
 			if dict(attrs).get('lang') is not None:
 				self.language = dict(attrs).get('lang').lower().strip()[:2]
@@ -82,8 +86,19 @@ class MyParser(HTMLParser):
 				if httpequiv.lower() == 'content-language':
 					self.language = contentlanguage.lower().strip()[:2]
 
-		if (tag == 'h1' or tag == 'h2' or tag == 'h3' or tag == 'strong'
-			or tag == 'em'):
+		elif tag == 'p':
+			self.text = True
+
+		elif tag == 'img':
+			if self.text:
+				alt = dict(attrs).get('alt')
+				src = dict(attrs).get('src')
+				if alt is not None and src is not None:
+					alt = clean_text(alt)
+					if len(alt) > 5 and src != '':
+						self.images.append((dict(attrs).get('src'), alt))
+
+		if tag == 'h1' or tag == 'h2' or tag == 'h3' or tag == 'strong' or tag == 'em':
 			self.objet = 'key_word'
 
 	def handle_data(self, data):
@@ -103,6 +118,8 @@ class MyParser(HTMLParser):
 			self.keywords = self.keywords + ' ' + self.keyword_add
 		elif tag == 'meta':
 			self.objet = None
+		elif tag == 'p':
+			self.text = False
 		if tag == 'h1':
 			self.h1 = False
 

@@ -11,6 +11,7 @@ __author__ = "Seva Nathan"
 DIR_LINKS = 'links/'
 DIR_CONFIG = 'config/'
 DIR_DATA = 'data/'
+DIR_OUTPUT = 'output/'
 FILE_NEWS = DIR_CONFIG + 'events.log'
 FILE_STATS = DIR_DATA + 'stats_links.txt'
 FILE_STATS2 = DIR_DATA + 'stats_stopwords.txt'
@@ -25,9 +26,10 @@ FILE_CAN_SEND = DIR_DATA + 'can_send.json'
 FTP_INDEX = '/www/data/inverted-index/inverted-index.txt'
 
 # lists for clean up links and keywords :
-BAD_EXTENTIONS = ['.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif', '.ico', '.svg', '.tiff', '.tif' '.raw', '.flv', '.mpeg', '.mpg', '.wma', '.mp4', '.mp3', '.fla', '.avi']
-START_CHARS = ['«', '\'', '"', '(', ':', '/' , '[', '{', '-']
-END_CHARS = ['.', ',', ';', '!', '?', '»', '\'', '"', ')', ':', '...', '/', ']', '}', '-']
+BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif', '.ico', '.svg', '.tiff', '.tif' '.raw', '.flv', '.mpeg', '.mpg', '.wma', '.mp4', '.mp3', '.fla', '.avi')
+IMG_EXTENTIONS = ('.jpeg', '.jpg', '.png', '.gif', '.bmp', '.ico')
+START_CHARS = ('«', '\'', '"', '(', ':', '/' , '[', '{', '-')
+END_CHARS = ('.', ',', ';', '!', '?', '»', '\'', '"', ')', ':', '...', '/', ']', '}', '-')
 
 # others informations :
 USER_AGENT = 'Swiftea-Bot'
@@ -36,6 +38,7 @@ MAX_SIZE = 500 # max size of a error and log file (FILE_ERROR and FILE_NEWS)
 INDEXING_TIMEOUT = 120 # time in second for index a document
 MAX_LINKS = 5000 # max links in a file
 CRAWL_DELAY = timedelta(minutes=30) # the program don't crawl the website if it was crawled x ago
+CRAWL_IMG_DELAY = timedelta(days=15)
 TIMEOUT = 30
 
 # README :
@@ -79,6 +82,8 @@ avec quelle liens de départ commencer.
 	23 : Indexation trop longue
 
 	24 : error robot.txt
+
+	25 : failed to update image
 
 ---fichier config.ini : ---
 Le fichier config.txt doit être dans le dossier 'config', il est créé s'il n'existe pas.
