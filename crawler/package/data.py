@@ -37,7 +37,7 @@ HEADERS = {"User-Agent": USER_AGENT}
 MAX_SIZE = 500 # max size of a error and log file (FILE_ERROR and FILE_NEWS)
 INDEXING_TIMEOUT = 120 # time in second for index a document
 MAX_LINKS = 5000 # max links in a file
-CRAWL_DELAY = timedelta(minutes=30) # the program don't crawl the website if it was crawled x ago
+CRAWL_DELAY = timedelta(days=2) # the program don't crawl the website if it was crawled x ago
 CRAWL_IMG_DELAY = timedelta(days=15)
 TIMEOUT = 30
 

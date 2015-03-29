@@ -45,8 +45,7 @@ class InvertedIndex:
 		beginning = time()
 
 		for word in words_to_add:
-			now = time()
-			if now - beginning < INDEXING_TIMEOUT:
+			if time() - beginning < INDEXING_TIMEOUT:
 				occurence = words_to_add.count(word)
 
 				word_position = self.inverted_index.find("'" + word + "'")
@@ -79,12 +78,12 @@ class InvertedIndex:
 		else:
 			stopwords = []
 
-		title = title.lower().strip().split()
-		result = []
+		title = title.lower().split()
 
 		for key, value in enumerate(title):
 			title[key] = value.strip()
 
+		result = []
 		for value in title:
 			if len(value) > 2:
 				if value not in stopwords:

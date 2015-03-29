@@ -87,7 +87,7 @@ class SiteInformations:
 			stats_stop_words(begining_size, self.nb_words) # stats
 			# tests :
 			with open(DIR_OUTPUT + 'mot.txt', 'a', errors='replace') as myfile:
-				myfile.write(str(result))
+				myfile.write(str(self.keywords)) # problem !?)
 				myfile.write('\n\n')
 
 			# links :
@@ -201,15 +201,16 @@ class SiteInformations:
 				if len(keyword) > 1: # l', d', s'
 					if keyword[1] == '\'' or keyword[1] == '’':
 						keyword = keyword[2:]
+				elif len(keyword) > 2:
 					if keyword[-2] == '\'': # word's
 						keyword = keyword[:-2]
 
 				# word/word2
 				if '/' in keyword:
-					keyword = keyword.split('/')
+					keyword = keyword.split('/') # str -> list
 					for word in keyword:
 						if len(word) > 2  and word not in stopwords:
-							result.append(keyword)
+							result.append(word)
 				else:
 					if len(keyword) > 2  and keyword not in stopwords:
 						result.append(keyword)

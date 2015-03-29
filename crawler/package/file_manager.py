@@ -81,7 +81,6 @@ class FileManager:
 	def check_size_files(self): # not use : don't work
 		try: size = path.getsize(FILE_NEWS) # get the size
 		except FileNotFoundError:
-			# no news file
 			speak('Log file is not found in check_size', 1)
 		else:
 			if size > MAX_SIZE:
