@@ -1,4 +1,7 @@
-# Swiftea's Open Source Web Crawler [![Build Status](https://travis-ci.org/Swiftea/Crawler.svg?branch=master)](https://travis-ci.org/Swiftea/Crawler)
+# Swiftea's Open Source Web Crawler
+
+[![Build Status](https://travis-ci.org/Swiftea/Crawler.svg?branch=master)](https://travis-ci.org/Swiftea/Crawler)
+[![Coverage Status](https://coveralls.io/repos/Swiftea/Crawler/badge.svg)](https://coveralls.io/r/Swiftea/Crawler)
 
 Swiftea's Crawler is the crawler we used on Swiftea. Currently, it can :
 
