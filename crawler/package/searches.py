@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 
 from package.data import * # to have required data
-from package.module import speak, stats_stop_words, get_stopwords, clean_text
+from package.module import speak, stats_stop_words, get_stopwords, clean_text, remove_duplicates
 from package.parsers import MyParser
 
 class SiteInformations:
@@ -92,7 +92,7 @@ class SiteInformations:
 			# favicon :
 			self.favicon = self.parser.favicon
 
-			# images : 
+			# images :
 			self.images = list(set(self.clean_images(self.parser.images)))
 
 			return (self.links, self.title, self.description, self.keywords,
@@ -106,15 +106,19 @@ class SiteInformations:
 		new : the links to add in the new list of links
 
 		"""
-		links = list(set(links))
-		new_list = list()
+		links = remove_duplicates(links)
+		new_links = list()
 
 		for i, url in enumerate(links):
 			new = url.strip()
-			infos_url = urlparse(self.url)
-			if not new.endswith(BAD_EXTENTIONS) or new != '/' or new != '#' \
-				or not new.startswith('mailto:') or not 'javascript:' in new or new != '':
-				if not new.startswith('http') or not new.startswith('www'):
+			if (not new.endswith(BAD_EXTENTIONS) and
+				new != '/' and
+				new != '#' and
+				not new.startswith('mailto:') and
+				not 'javascript:' in new and
+				new != ''):
+				if not new.startswith('http') and not new.startswith('www'):
+					infos_url = urlparse(self.url)
 					base_url = infos_url.scheme + '://' + infos_url.netloc
 					if new.startswith('//'):
 						new = 'http:' + new
@@ -132,8 +136,9 @@ class SiteInformations:
 					new = new[:nb_index]
 				if infos_url.query != '':
 					new += '?' + infos_url.query
-				new_list.append(new)
-		return list(set(new_list))
+				new_links.append(new)
+
+		return remove_duplicates(new_links)
 
 	def clean_images(self, images):
 		new_images = list()

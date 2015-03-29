@@ -47,8 +47,16 @@ def quit():
 	exit()
 
 def clean_text(text):
-	"""Clean up text (\n\r\t )."""
+	"""Clean up text (\n\r\t)."""
 	return ' '.join(text.split())
+
+def remove_duplicates(list):
+	new_list = []
+	for elt in list:
+		if not elt in new_list:
+			new_list.append(elt)
+
+	return new_list
 
 def stats_stop_words(begining, end):
 	"""Percentage of deleted word with stopwords for statistics."""
@@ -65,13 +73,13 @@ def stats_links(stat):
 		myfile.write(stat + '\n') # write the number of links found
 
 def start():
-	"""Test lot off things :
+	"""Test lot of things :
 
-	create config derectory
-	create doc file if it doesn't exist
-	create config file if it doesn't exist
-	create links directory if it doesn't exist
-	create index directory if it doesn't exist
+	create config directory
+	create doc file if  doesn't exists
+	create config file if it doesn't exists
+	create links directory if it doesn't exists
+	create index directory if it doesn't exists
 
 	"""
 	# create directories if they don't exist
