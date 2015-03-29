@@ -4,12 +4,13 @@ python:
 # command to install dependencies
 install:
     - "pip install -r requirements.txt"
-    - "pip install coverage"
+    - "pip install pytest pytest-cov"
     - "pip install coveralls"
 # cd to crawler folder
 before_script: cd crawler
 # command to run tests
 script:
-    - "PYTHONPATH=. coverage && PYTHONPATH=. py.test"
+    - "PYTHONPATH=. py.test"
 
-after_success: coveralls
+after_success: 
+    - coveralls
