@@ -80,7 +80,15 @@ class SiteInformations:
 				speak('No language : ' + self.url)
 
 			# keywords :
-			self.keywords = self.clean_keywords(self.parser.keywords) # get back keywords
+			keywords = clean_text(self.parser.keywords.lower()).split()
+			begining_size = len(keywords) # stats
+			self.keywords = self.clean_keywords(keywords)
+			self.nb_words = len(self.keywords)
+			stats_stop_words(begining_size, self.nb_words) # stats
+			# tests :
+			with open(DIR_OUTPUT + 'mot.txt', 'a', errors='replace') as myfile:
+				myfile.write(str(result))
+				myfile.write('\n\n')
 
 			# links :
 			if nofollow:
@@ -146,8 +154,10 @@ class SiteInformations:
 			# image is a tuple : (url, alt)
 			url = image[0].strip()
 
-			if url.endswith(IMG_EXTENTIONS) or not url.startswith('http') \
-				or not url.startswith('www'):
+			if (url.endswith(IMG_EXTENTIONS) and
+				not url.startswith('http') and
+				not url.startswith('www')):
+			
 				if url.startswith('//'):
 					url = 'http:' + url
 				elif url.startswith('/'):
@@ -166,23 +176,16 @@ class SiteInformations:
 	def clean_keywords(self, keywords):
 		"""Clean found keywords."""
 		if self.language == 'fr':
-			stop_words = self.STOPWORDS['fr']
+			stopwords = self.STOPWORDS['fr']
 		elif self.language == 'en':
-			stop_words = self.STOPWORDS['en']
+			stopwords = self.STOPWORDS['en']
 		elif self.language == 'es':
-			stop_words = self.STOPWORDS['es']
+			stopwords = self.STOPWORDS['es']
 		elif self.language == 'it':
-			stop_words = self.STOPWORDS['it']
+			stopwords = self.STOPWORDS['it']
 		else:
-			stop_words = []
-
-		# size at the begining of the cleaning :
-		keywords = keywords.lower().split() # str -> list
-
-		begining = len(keywords) # stats
-
+			stopwords = []
 		result = []
-
 		for keyword in keywords:
 			# 2 chars at least and check if word is not only special chars
 			if len(keyword) > 2 and not keyword.isnumeric():
@@ -195,25 +198,19 @@ class SiteInformations:
 				if keyword.endswith(END_CHARS):
 					keyword = keyword[:-1]
 
-				if len(keyword) > 1:
-					if keyword[1] == '\'' or keyword[1] == '""':
+				if len(keyword) > 1: # l', d', s'
+					if keyword[1] == '\'' or keyword[1] == '’':
 						keyword = keyword[2:]
+					if keyword[-2] == '\'': # word's
+						keyword = keyword[:-2]
 
 				# word/word2
 				if '/' in keyword:
 					keyword = keyword.split('/')
-
-				if len(keyword) > 2:
-					if isinstance(keyword, list):
-						result.extend(keyword)
-					else:
+					for word in keyword:
+						if len(word) > 2  and word not in stopwords:
+							result.append(keyword)
+				else:
+					if len(keyword) > 2  and keyword not in stopwords:
 						result.append(keyword)
-
-		self.nb_words = len(result)
-		stats_stop_words(begining, self.nb_words)
-
-		# after : (for test)
-		with open(DIR_OUTPUT + 'mot.txt', 'a', errors='replace') as myfile:
-			myfile.write(str(result))
-			myfile.write('\n\n')
 		return result

@@ -8,6 +8,8 @@ class TestCrawlerBase(object):
     def setup_method(self, _):
         """Configure the app."""
         self.url = 'http://www.example.fr'
+        self.language = 'fr'
+        self.STOPWORDS = {'fr':('mot', 'pour')}
 
 class TestCrawlerBasic(TestCrawlerBase):
     def test_clean_text(self):
@@ -20,3 +22,10 @@ class TestCrawlerBasic(TestCrawlerBase):
         links = SiteInformations.clean_links(self, links)
 
         assert links == ['http://www.example.fr/page.php', 'http://www.example.fr']
+
+    def test_clean_keywords(self):
+        keywords = SiteInformations.clean_keywords(self, ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau'])
+        assert keywords == ['bureau', 'word', 'example', 'oiseau']
+
+    def test_remove_duplicates(self):
+        assert remove_duplicates(['mot', 'mot']) == ['mot']
