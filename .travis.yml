@@ -3,12 +3,14 @@ python:
   - "3.4"
 # command to install dependencies
 install:
-    - "pip install -r requirements.txt --use-mirrors"
+    - "pip install -r requirements.txt"
     - "pip install coverage"
     - "pip install coveralls"
 # cd to crawler folder
 before_script: cd crawler
 # command to run tests
-script: coverage PYTHONPATH=. py.test
+script:
+    - "coverage ""
+    - "PYTHONPATH=. py.test"
 
 after_success: coveralls
