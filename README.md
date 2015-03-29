@@ -1,4 +1,4 @@
-# Swiftea's Open Source Web Crawler
+# Swiftea's Open Source Web Crawler [![Build Status](https://travis-ci.org/Swiftea/Crawler.svg?branch=master)](https://travis-ci.org/Swiftea/Crawler)
 
 Swiftea's Crawler is the crawler we used on Swiftea. Currently, it can :
 
