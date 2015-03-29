@@ -10,7 +10,6 @@ install:
 before_script: cd crawler
 # command to run tests
 script:
-    - "coverage "
-    - "PYTHONPATH=. py.test"
+    - "PYTHONPATH=. coverage py.test"
 
 after_success: coveralls
