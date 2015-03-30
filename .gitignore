@@ -1,4 +1,4 @@
-crawler/test/__pycache__/
+crawler/tests/__pycache__/
 crawler/package/__pycache__/
 crawler/package/private_data.py
 crawler/links/

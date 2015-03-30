@@ -189,8 +189,6 @@ class SiteInformations:
 		for keyword in keywords:
 			# 2 chars at least and check if word is not only special chars
 			if len(keyword) > 2 and not keyword.isnumeric():
-				keyword = keyword.replace(' ', '')
-
 				# remove useless chars
 				if keyword.startswith(START_CHARS):
 					keyword = keyword[1:]
@@ -201,7 +199,7 @@ class SiteInformations:
 				if len(keyword) > 1: # l', d', s'
 					if keyword[1] == '\'' or keyword[1] == '’':
 						keyword = keyword[2:]
-				elif len(keyword) > 2:
+				if len(keyword) > 2:
 					if keyword[-2] == '\'': # word's
 						keyword = keyword[:-2]
 
