@@ -9,6 +9,10 @@ install:
 # cd to crawler folder
 before_script: cd crawler
 # command to run tests
+branches:
+  only:
+    - master
+    - develop
 script:
     - "PYTHONPATH=. py.test"
 
