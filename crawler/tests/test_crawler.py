@@ -13,8 +13,7 @@ class TestCrawlerBase(object):
 
 class TestCrawlerBasic(TestCrawlerBase):
     def test_clean_text(self):
-        text = ('Sample text with non-desired \r whitespaces \t chars \n')
-        text = clean_text(text)
+        text = clean_text('Sample text with non-desired \r whitespaces \t chars \n')
         assert not '\n' in text and not '\r' in text and not '\t' in text
 
     def test_clean_links(self):
@@ -24,8 +23,14 @@ class TestCrawlerBasic(TestCrawlerBase):
         assert links == ['http://www.example.fr/page.php', 'http://www.example.fr']
 
     def test_clean_keywords(self):
-        keywords = SiteInformations.clean_keywords(self, ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau'])
+        keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau']
+        keywords = SiteInformations.clean_keywords(self, keywords)
         assert keywords == ['bureau', 'word', 'example', 'oiseau']
 
     def test_remove_duplicates(self):
         assert remove_duplicates(['mot', 'mot']) == ['mot']
+
+    def test_detect_language(self):
+        keywords = 'un texte d\'exemple pour tester la fonction'.split()
+        language = SiteInformations.detect_language(self, keywords)
+        assert language == 'fr'
