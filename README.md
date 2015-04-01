@@ -1,7 +1,10 @@
 # Swiftea's Open Source Web Crawler
 
+## Master branch :
 [![Build Status](https://travis-ci.org/Swiftea/Crawler.svg?branch=master)](https://travis-ci.org/Swiftea/Crawler)
-[![Coverage Status](https://coveralls.io/repos/Swiftea/Crawler/badge.svg)](https://coveralls.io/r/Swiftea/Crawler)
+
+## Develop branch :
+[![Build Status](https://travis-ci.org/Swiftea/Crawler.svg?branch=develop)](https://travis-ci.org/Swiftea/Crawler)
 
 Swiftea's Crawler is the crawler we used on Swiftea. Currently, it can :
 
@@ -15,9 +18,22 @@ Swiftea's Crawler uses a number of open source projects to work properly:
 
 * [Python 3]
 
-## Development
+## Contributing
 
 Want to contribute? Great!
+
+Fork the repository. Then, run:
+
+    git clone --recursive git@github.com:<username>/Crawler.git
+    cd Crawler
+    git flow init -d
+    git flow feature start <your feature>
+
+Then, do work and commit your changes. Finally publish your feature.
+
+    git flow feature publish <your feature>
+
+When done, open a pull request to your feature branch.
 
 ### Commit conventions :
 

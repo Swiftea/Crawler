@@ -72,19 +72,27 @@ class SiteInformations:
 			if self.parser.css:
 				self.score += 0.5
 
-			 # language :
+			keywords = clean_text(self.parser.keywords.lower()).split()
+			begining_size = len(keywords) # stats
+			# language :
 			if self.parser.language != '':
 				self.language = self.parser.language
 				self.score += 0.5
+				# keywords :
+				self.keywords = self.clean_keywords(keywords)
 			else:
-				speak('No language : ' + self.url)
+				self.language = self.detect_language(keywords)
+				if self.language != '':
+					self.keywords = self.clean_keywords(keywords)
+					speak('No language : ' + self.url)
 
-			# keywords :
-			keywords = clean_text(self.parser.keywords.lower()).split()
-			begining_size = len(keywords) # stats
-			self.keywords = self.clean_keywords(keywords)
+			# if language is not supported
+			if self.language not in self.STOPWORDS:
+				self.title == ''
+
 			self.nb_words = len(self.keywords)
 			stats_stop_words(begining_size, self.nb_words) # stats
+
 			# tests :
 			with open(DIR_OUTPUT + 'mot.txt', 'a', errors='replace') as myfile:
 				myfile.write(str(self.keywords)) # problem !?)
@@ -107,6 +115,30 @@ class SiteInformations:
 				self.language, self.score, self.nb_words, self.favicon, self.images)
 		else:
 			return None, '', None, None, None, None, None, None, None
+
+	def detect_language(self, keywords):
+		total_stopwords = 0
+
+	    # Nb stopwords
+		nb_stopwords = dict()
+		for lang in self.STOPWORDS:
+			nb_stopwords[lang] = 0
+
+			for keyword in keywords:
+				if keyword in self.STOPWORDS[lang]:
+					total_stopwords += 1
+					nb_stopwords[lang] += 1
+
+		if nb_stopwords and total_stopwords != 0:
+			language = max(nb_stopwords, key=nb_stopwords.get)
+			percent = round(nb_stopwords[language] * 100 / total_stopwords)
+
+			if(percent < 30):
+				language = ''
+		else:
+			language = ''
+
+		return language
 
 	def clean_links(self, links):
 		"""Clean the list of links.
@@ -157,7 +189,7 @@ class SiteInformations:
 			if (url.endswith(IMG_EXTENTIONS) and
 				not url.startswith('http') and
 				not url.startswith('www')):
-			
+
 				if url.startswith('//'):
 					url = 'http:' + url
 				elif url.startswith('/'):
