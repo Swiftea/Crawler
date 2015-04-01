@@ -65,8 +65,10 @@ class InvertedIndex:
 					# the first char isn't a letter
 					if '_' in self.inverted_index.keys():
 						inverted_index = self.inverted_index['_']
+						first_letter = '_'
 					else:
 						self.inverted_index['_'] = inverted_index = str()
+						first_letter = '_'
 				word_position = inverted_index.find("'" + word + "'")
 				if word_position != -1:
 					# the word is in the inverted-index
@@ -99,31 +101,6 @@ class InvertedIndex:
 		#self.save_keyword(str(list(set(words_to_add)))) # tests
 
 		return new_inverted_index
-
-	def generate_keywords(self, title, language):
-		if language == 'fr':
-			stopwords = self.STOPWORDS['fr']
-		elif language == 'en':
-			stopwords = self.STOPWORDS['en']
-		elif language == 'es':
-			stopwords = self.STOPWORDS['es']
-		elif language == 'it':
-			stopwords = self.STOPWORDS['it']
-		else:
-			stopwords = []
-
-		title = title.lower().split()
-
-		for key, value in enumerate(title):
-			title[key] = value.strip()
-
-		result = []
-		for value in title:
-			if len(value) > 2:
-				if value not in stopwords:
-					result.append(value)
-
-		return result
 
 	# for testing :
 

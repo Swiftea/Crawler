@@ -83,12 +83,9 @@ class SiteInformations:
 			keywords = clean_text(self.parser.keywords.lower()).split()
 			begining_size = len(keywords) # stats
 			self.keywords = self.clean_keywords(keywords)
+			self.keywords.extend(self.clean_keywords(clean_text(self.parser.title.lower()).split()))
 			self.nb_words = len(self.keywords)
 			stats_stop_words(begining_size, self.nb_words) # stats
-			# tests :
-			with open(DIR_OUTPUT + 'mot.txt', 'a', errors='replace') as myfile:
-				myfile.write(str(self.keywords)) # problem !?)
-				myfile.write('\n\n')
 
 			# links :
 			if nofollow:

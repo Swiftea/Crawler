@@ -32,7 +32,8 @@ class Crawler:
 		self.ftp_manager = FTPManager(HOST_FTP, USER, PASSWORD)
 		self.inverted_index = InvertedIndex()
 		speak("Get index") # get back the index
-		inverted_index, response = self.ftp_manager.get_inverted_index(FILE_INDEX, FTP_INDEX)
+		inverted_index, response = self.ftp_manager.get_inverted_index()
+		speak(response)
 		if inverted_index is None and self.file_manager.reading_file_number != 0:
 			speak("No index, quit program")
 			quit()
@@ -120,14 +121,19 @@ class Crawler:
 			if doc_id == 'error':
 				self.safe_quit()
 			speak('Indexing : {0} {1}'.format(doc_id, webpage_infos['url']))
-			error = self.inverted_index.append_doc(webpage_infos, doc_id)
-			if error:
+			keywords = webpage_infos['keywords']
+			inverted_index = self.inverted_index.append_doc(keywords, doc_id)
+			if inverted_index is None:
 				self.database.del_one_doc(webpage_infos['url'], 'index_url')
 
 	def send_inverted_index(self):
-		error = self.ftp_manager.send_inverted_index(self.inverted_index.getInvertedIndex())
-		if error:
+		speak('Send index')
+		response = self.ftp_manager.send_inverted_index(self.inverted_index.getInvertedIndex())
+		if response:
+			speak("Failed to send index : " + response, 21)
 			self.safe_quit()
+		else:
+			speak('All transferts are completed')
 
 	def suggestions(self):
 		"""Suggestions :
