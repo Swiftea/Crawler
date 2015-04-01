@@ -132,12 +132,12 @@ class SiteInformations:
 
 		if nb_stopwords:
 			language = max(nb_stopwords, key=nb_stopwords.get)
-			if(total_stopwords != 0):
-				percent = round(nb_stopwords[language] * 100 / total_stopwords)
-				speak('Detected language : "' + language + '" with ' + str(nb_stopwords[language]) + '/' + str(total_stopwords) + ' : ' + str(percent) + '%')
+			#if(total_stopwords != 0):
+				#percent = round(nb_stopwords[language] * 100 / total_stopwords)
+				#speak('Detected language : "' + language + '" with ' + str(nb_stopwords[language]) + '/' + #str(total_stopwords) + ' : ' + str(percent) + '%')
 		else:
 			language = ''
-			speak('Can\'t detect language')
+			#speak('Can\'t detect language')
 
 		return language
 
