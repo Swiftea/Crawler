@@ -84,12 +84,11 @@ class SiteInformations:
 				self.language = self.detect_language(keywords)
 				if self.language != '':
 					self.keywords = self.clean_keywords(keywords)
-					#speak('No language : ' + self.url)
+					speak('No language : ' + self.url)
 
 			# if language is not supported
-			for lang in self.STOPWORDS:
-				if lang != self.language:
-					self.title == ''
+			if self.language not in self.STOPWORDS:
+				self.title == ''
 
 			self.nb_words = len(self.keywords)
 			stats_stop_words(begining_size, self.nb_words) # stats
@@ -130,14 +129,14 @@ class SiteInformations:
 					total_stopwords += 1
 					nb_stopwords[lang] += 1
 
-		if nb_stopwords:
+		if nb_stopwords and total_stopwords != 0:
 			language = max(nb_stopwords, key=nb_stopwords.get)
-			#if(total_stopwords != 0):
-				#percent = round(nb_stopwords[language] * 100 / total_stopwords)
-				#speak('Detected language : "' + language + '" with ' + str(nb_stopwords[language]) + '/' + #str(total_stopwords) + ' : ' + str(percent) + '%')
+			percent = round(nb_stopwords[language] * 100 / total_stopwords)
+
+			if(percent < 30):
+				language = ''
 		else:
 			language = ''
-			#speak('Can\'t detect language')
 
 		return language
 
