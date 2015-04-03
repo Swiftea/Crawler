@@ -90,7 +90,9 @@ def start():
 		mkdir(DIR_DATA)
 	if not path.isdir(DIR_OUTPUT):
 		mkdir(DIR_OUTPUT)
-
+	if not path.isdir(DIR_INDEX):
+		mkdir(DIR_INDEX)
+		
 	# create doc file if it doesn't exist :
 	if not path.exists(FILE_DOC):
 		with open(FILE_DOC, 'w') as myfile:

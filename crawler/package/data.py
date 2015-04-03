@@ -12,6 +12,7 @@ DIR_LINKS = 'links/'
 DIR_CONFIG = 'config/'
 DIR_DATA = 'data/'
 DIR_OUTPUT = 'output/'
+DIR_INDEX = DIR_DATA + 'inverted_index/'
 FILE_NEWS = DIR_CONFIG + 'events.log'
 FILE_STATS = DIR_DATA + 'stats_links.txt'
 FILE_STATS2 = DIR_DATA + 'stats_stopwords.txt'
@@ -19,17 +20,17 @@ FILE_ERROR = DIR_CONFIG + 'errors.log'
 FILE_CONFIG = DIR_CONFIG + 'config.ini'
 FILE_DOC = DIR_CONFIG + 'Readme'
 FILE_BASELINKS = DIR_LINKS + '0'
-FILE_INDEX = DIR_DATA + 'inverted_index.txt'
 FILE_CAN_SEND = DIR_DATA + 'can_send.json'
 
 # strings for ftp location
-FTP_INDEX = '/www/data/inverted-index/inverted-index.txt'
+FTP_INDEX = '/www/data/inverted-index/'
 
 # lists for clean up links and keywords :
 BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif', '.ico', '.svg', '.tiff', '.tif' '.raw', '.flv', '.mpeg', '.mpg', '.wma', '.mp4', '.mp3', '.fla', '.avi')
 IMG_EXTENTIONS = ('.jpeg', '.jpg', '.png', '.gif', '.bmp', '.ico')
 START_CHARS = ('«', '\'', '"', '(', ':', '/' , '[', '{', '-')
 END_CHARS = ('.', ',', ';', '!', '?', '»', '\'', '"', ')', ':', '...', '/', ']', '}', '-')
+ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 # others informations :
 USER_AGENT = 'Swiftea-Bot'

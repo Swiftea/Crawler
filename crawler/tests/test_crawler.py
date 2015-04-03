@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 from package.module import *
-from package.searches import *
+from package.searches import SiteInformations
+from package.inverted_index import InvertedIndex
 
 class TestCrawlerBase(object):
     """Base class for all crawler test classes."""
@@ -10,6 +11,8 @@ class TestCrawlerBase(object):
         self.url = 'http://www.example.fr'
         self.language = 'fr'
         self.STOPWORDS = {'fr':('mot', 'pour')}
+        self.inverted_index = {'t': "'train'{1:2}"}
+        self.alphabet = ALPHABET
 
 class TestCrawlerBasic(TestCrawlerBase):
     def test_clean_text(self):
@@ -42,3 +45,19 @@ class TestCrawlerBasic(TestCrawlerBase):
         favicon = '/icon.ico'
         favicon = SiteInformations.clean_favicon(self, favicon)
         assert favicon == 'http://www.example.fr/icon.ico'
+
+    def test_append_doc(self):
+        inverted_index = InvertedIndex.append_doc(self, ['voiture', 'mot', 'tobogan'], '2')
+        assert inverted_index == {'m': "'mot'{2:1}", 'v': "'voiture'{2:1}", 't': "'train'{1:2}'tobogan'{2:1}"}
+
+        inverted_index = InvertedIndex.append_doc(self, ['voiture', 'mot', 'mot', 'mot', 'chanteur', 'avion'], '3')
+        assert inverted_index == {'a': "'avion'{3:1}", 'c': "'chanteur'{3:1}", 'm': "'mot'{2:1,3:3}", 'v': "'voiture'{2:1,3:1}"}
+
+        inverted_index = InvertedIndex.append_doc(self, ['avion', 'avion'], '3')
+        assert inverted_index == {'a': "'avion'{3:2}"}
+
+        inverted_index = InvertedIndex.append_doc(self, ['avion', 'avion'], '20')
+        assert inverted_index == {'a': "'avion'{3:2,20:2}"}
+
+        inverted_index = InvertedIndex.append_doc(self, ['avion', 'avion', 'avion', 'avion', 'avion', 'avion', 'avion', 'avion', 'avion', 'avion', 'avion', 'avion', 'avion', 'avion'], '455')
+        assert inverted_index == {'a': "'avion'{3:2,20:2,455:14}"}

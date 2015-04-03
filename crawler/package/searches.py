@@ -94,8 +94,7 @@ class SiteInformations:
 
 			# tests :
 			with open(DIR_OUTPUT + 'mot.txt', 'a', errors='replace') as myfile:
-				myfile.write(str(self.keywords)) # problem !?)
-				myfile.write('\n\n')
+				myfile.write(str(self.keywords) + '\n\n') # problem !?)
 
 			# links :
 			if nofollow:
