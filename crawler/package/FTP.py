@@ -59,12 +59,12 @@ class FTPConnect(FTP):
 		finally:
 			return response
 
-	def upload(self, local_file_name, serveur_file_name, **kargs):
+	def upload(self, local_file_name, serveur_file_name):
 		response = self.connection()
 		if 'failed' in response:
 			return response
 		else:
-			with open(local_file_name, 'br', **kargs) as myfile:
+			with open(local_file_name, 'br') as myfile:
 				try:
 					response = self.storbinary(
 						'STOR ' + serveur_file_name, myfile)
@@ -77,12 +77,12 @@ class FTPConnect(FTP):
 					self.quit_connection()
 			return response
 
-	def download(self, local_file_name, serveur_file_name, **kargs):
+	def download(self, local_file_name, serveur_file_name):
 		response = self.connection()
 		if 'failed' in response:
 			return response
 		else:
-			with open(local_file_name, 'wb', **kargs) as myfile:
+			with open(local_file_name, 'wb') as myfile:
 				try:
 					response = self.retrbinary(
 						'RETR ' + serveur_file_name, myfile.write)
@@ -180,7 +180,7 @@ class FTPConnect(FTP):
 				self.quit_connection()
 
 	def stop_sending(self):
-		self.connect.abort()
+		self.connect.abort() # mieu à faire ?
 		return 'sending stoped'
 
 	def change_dir(self, path):
@@ -192,3 +192,5 @@ class FTPConnect(FTP):
 				response = self.cwd(path)
 			except all_errors as error:
 				return 'Error : ' + str(error)
+			finally:
+				self.quit_connection()

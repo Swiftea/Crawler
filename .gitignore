@@ -6,5 +6,5 @@ crawler/config/
 crawler/data/
 crawler/output
 crawler/.coverage
-docs/
+various/
 *~

@@ -24,7 +24,7 @@ class MyParser(HTMLParser):
 		self.keywords = '' # all keywords in a string
 		self.keyword_add = '' # the word to add to key
 		self.objet = None
-		self.css, self.h1 = False, False # if there is a css file in the source code
+		self.css = self.h1 = False # if there is a css file in the source code
 		self.first_title = '' # the first title (h1) of the web site
 		self.description, self.language, self.title, self.favicon  = '', '', '', ''
 		self.text = False
@@ -66,7 +66,7 @@ class MyParser(HTMLParser):
 			if dict(attrs).get('rel') == 'stylesheet':
 				self.css = True
 				# LINK REL="ICON" HREF="FAVICON.ICO"
-			elif dict(attrs).get('rel') == 'icon':
+			elif dict(attrs).get('rel') == 'icon' or dict(attrs).get('rel') == 'shortcut icon':
 				if dict(attrs).get('href') is not None:
 					self.favicon = dict(attrs).get('href')
 

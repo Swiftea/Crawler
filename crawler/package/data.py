@@ -30,6 +30,7 @@ BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp
 IMG_EXTENTIONS = ('.jpeg', '.jpg', '.png', '.gif', '.bmp', '.ico')
 START_CHARS = ('«', '\'', '"', '(', ':', '/' , '[', '{', '-')
 END_CHARS = ('.', ',', ';', '!', '?', '»', '\'', '"', ')', ':', '...', '/', ']', '}', '-')
+ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 # others informations :
 USER_AGENT = 'Swiftea-Bot'

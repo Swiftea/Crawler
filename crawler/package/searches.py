@@ -13,9 +13,8 @@ from urllib.parse import urlparse
 
 
 from package.data import * # to have required data
-from package.module import speak, stats_stop_words, get_stopwords, clean_text, remove_duplicates
+from package.module import speak, stats_stop_words, get_stopwords, clean_text, remove_duplicates, get_base_url
 from package.parsers import MyParser
-
 class SiteInformations:
 	def __init__(self):
 		"""Build the class : define variables."""
@@ -72,20 +71,30 @@ class SiteInformations:
 			if self.parser.css:
 				self.score += 0.5
 
-			 # language :
+			keywords = clean_text(self.parser.keywords.lower()).split()
+			begining_size = len(keywords) # stats
+			# language :
 			if self.parser.language != '':
 				self.language = self.parser.language
 				self.score += 0.5
+				# keywords :
+				self.keywords = self.clean_keywords(keywords)
 			else:
-				speak('No language : ' + self.url)
+				self.language = self.detect_language(keywords)
+				if self.language != '':
+					self.keywords = self.clean_keywords(keywords)
+					speak('No language : ' + self.url)
 
-			# keywords :
-			keywords = clean_text(self.parser.keywords.lower()).split()
-			begining_size = len(keywords) # stats
-			self.keywords = self.clean_keywords(keywords)
-			self.keywords.extend(self.clean_keywords(clean_text(self.parser.title.lower()).split()))
+			# if language is not supported
+			if self.language not in self.STOPWORDS:
+				self.title == ''
+
 			self.nb_words = len(self.keywords)
 			stats_stop_words(begining_size, self.nb_words) # stats
+
+			# tests :
+			with open(DIR_OUTPUT + 'mot.txt', 'a', errors='replace') as myfile:
+				myfile.write(str(self.keywords) + '\n\n') # problem !?)
 
 			# links :
 			if nofollow:
@@ -95,7 +104,7 @@ class SiteInformations:
 				self.links = self.clean_links(self.parser.links)
 
 			# favicon :
-			self.favicon = self.parser.favicon
+			self.favicon = self.clean_favicon(self.parser.favicon)
 
 			# images :
 			self.images = list(set(self.clean_images(self.parser.images)))
@@ -104,6 +113,30 @@ class SiteInformations:
 				self.language, self.score, self.nb_words, self.favicon, self.images)
 		else:
 			return None, '', None, None, None, None, None, None, None
+
+	def detect_language(self, keywords):
+		total_stopwords = 0
+
+	    # Nb stopwords
+		nb_stopwords = dict()
+		for lang in self.STOPWORDS:
+			nb_stopwords[lang] = 0
+
+			for keyword in keywords:
+				if keyword in self.STOPWORDS[lang]:
+					total_stopwords += 1
+					nb_stopwords[lang] += 1
+
+		if nb_stopwords and total_stopwords != 0:
+			language = max(nb_stopwords, key=nb_stopwords.get)
+			percent = round(nb_stopwords[language] * 100 / total_stopwords)
+
+			if(percent < 30):
+				language = ''
+		else:
+			language = ''
+
+		return language
 
 	def clean_links(self, links):
 		"""Clean the list of links.
@@ -123,8 +156,7 @@ class SiteInformations:
 				not 'javascript:' in new and
 				new != ''):
 				if not new.startswith('http') and not new.startswith('www'):
-					infos_url = urlparse(self.url)
-					base_url = infos_url.scheme + '://' + infos_url.netloc
+					base_url = get_base_url(self.url)
 					if new.startswith('//'):
 						new = 'http:' + new
 					elif new.startswith('/'):
@@ -145,6 +177,18 @@ class SiteInformations:
 
 		return remove_duplicates(new_links)
 
+	def clean_favicon(self, favicon):
+		base_url = get_base_url(self.url)
+		print(base_url)
+		if not favicon.startswith('http') and not favicon.startswith('www'):
+			if favicon.startswith('//'):
+				favicon = 'http:' + favicon
+			elif favicon.startswith('/'):
+				favicon = base_url + favicon
+			else:
+				favicon = base_url + '/' + favicon
+		return favicon
+
 	def clean_images(self, images):
 		new_images = list()
 		for key, image in enumerate(images):
@@ -154,7 +198,7 @@ class SiteInformations:
 			if (url.endswith(IMG_EXTENTIONS) and
 				not url.startswith('http') and
 				not url.startswith('www')):
-			
+
 				if url.startswith('//'):
 					url = 'http:' + url
 				elif url.startswith('/'):
