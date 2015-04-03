@@ -16,6 +16,9 @@ class TestCrawlerBasic(TestCrawlerBase):
         text = clean_text('Sample text with non-desired \r whitespaces \t chars \n')
         assert not '\n' in text and not '\r' in text and not '\t' in text
 
+    def test_get_base_url(self):
+        assert get_base_url(self.url + '/page1.php') == self.url
+
     def test_clean_links(self):
         links = ['page.php', 'http://www.example.fr/', 'mailto:test@test.fr']
         links = SiteInformations.clean_links(self, links)
@@ -34,3 +37,8 @@ class TestCrawlerBasic(TestCrawlerBase):
         keywords = 'un texte d\'exemple pour tester la fonction'.split()
         language = SiteInformations.detect_language(self, keywords)
         assert language == 'fr'
+
+    def test_clean_favicon(self):
+        favicon = '/icon.ico'
+        favicon = SiteInformations.clean_favicon(self, favicon)
+        assert favicon == 'http://www.example.fr/icon.ico'

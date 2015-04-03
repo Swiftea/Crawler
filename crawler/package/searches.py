@@ -13,9 +13,8 @@ from urllib.parse import urlparse
 
 
 from package.data import * # to have required data
-from package.module import speak, stats_stop_words, get_stopwords, clean_text, remove_duplicates
+from package.module import speak, stats_stop_words, get_stopwords, clean_text, remove_duplicates, get_base_url
 from package.parsers import MyParser
-
 class SiteInformations:
 	def __init__(self):
 		"""Build the class : define variables."""
@@ -50,7 +49,7 @@ class SiteInformations:
 		url : the url of the page
 		score : the score of the page
 		code : the source code of the page
-		nofollow : if we take the links of the page
+		faviconnofollow : if we take the links of the page
 		return : list of links, title, description, key words, language,
 			score, number of words
 
@@ -106,7 +105,7 @@ class SiteInformations:
 				self.links = self.clean_links(self.parser.links)
 
 			# favicon :
-			self.favicon = self.parser.favicon
+			self.favicon = self.clean_favicon(self.parser.favicon)
 
 			# images :
 			self.images = list(set(self.clean_images(self.parser.images)))
@@ -158,8 +157,7 @@ class SiteInformations:
 				not 'javascript:' in new and
 				new != ''):
 				if not new.startswith('http') and not new.startswith('www'):
-					infos_url = urlparse(self.url)
-					base_url = infos_url.scheme + '://' + infos_url.netloc
+					base_url = get_base_url(self.url)
 					if new.startswith('//'):
 						new = 'http:' + new
 					elif new.startswith('/'):
@@ -179,6 +177,18 @@ class SiteInformations:
 				new_links.append(new)
 
 		return remove_duplicates(new_links)
+
+	def clean_favicon(self, favicon):
+		base_url = get_base_url(self.url)
+		print(base_url)
+		if not favicon.startswith('http') and not favicon.startswith('www'):
+			if favicon.startswith('//'):
+				favicon = 'http:' + favicon
+			elif favicon.startswith('/'):
+				favicon = base_url + favicon
+			else:
+				favicon = base_url + '/' + favicon
+		return favicon
 
 	def clean_images(self, images):
 		new_images = list()

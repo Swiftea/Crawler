@@ -8,6 +8,7 @@ from sys import exit # to leave the programme
 from time import strftime # to have date and time data
 from os import path, mkdir, remove
 import requests # to get back stopwords
+from urllib.parse import urlparse
 
 
 from package.data import * # to get required data
@@ -137,7 +138,7 @@ http://trukastuss.over-blog.com""")
 Create a file '0' without extention who contains a list of 20 links maximum.
 They must start with 'http://' or 'https://' and no ends with '/'.
 Choose popular websites.
-Press enter when done""")
+Press enter when done.""")
 			input()
 
 def get_stopwords():
@@ -160,3 +161,8 @@ def get_stopwords():
 		return dict()
 	else:
 		return STOP_WORDS
+
+def get_base_url(url):
+	infos_url = urlparse(url)
+	base_url = infos_url.scheme + '://' + infos_url.netloc
+	return base_url
