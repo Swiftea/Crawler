@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""testeur de fonction crawler"""
+"""Display stats."""
 
 from os import system
 

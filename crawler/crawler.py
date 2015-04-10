@@ -30,16 +30,16 @@ class Crawler:
 			quit()
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPManager(HOST_FTP, USER, PASSWORD)
-		self.inverted_index = InvertedIndex()
+		self.index_manager = InvertedIndex()
 		speak("Get index") # get back the index
-		inverted_index, response = self.ftp_manager.get_inverted_index()
+		self.inverted_index, response = self.ftp_manager.get_inverted_index()
 		speak(response)
-		if inverted_index is None and self.file_manager.reading_file_number != 0:
+		if self.inverted_index is None and self.file_manager.reading_file_number != 0:
 			speak("No index, quit program")
 			quit()
 		else:
-			self.inverted_index.setInvertedIndex(inverted_index)
-		self.inverted_index.setStopwords(self.site_informations.STOPWORDS)
+			self.index_manager.setInvertedIndex(self.inverted_index)
+		self.index_manager.setStopwords(self.site_informations.STOPWORDS)
 		self.database = DatabaseSwiftea(HOST_DB, USER, PASSWORD, NAME_DB)
 		self.web_connexion = WebConnexion()
 
@@ -61,11 +61,11 @@ class Crawler:
 					self.crawl_website(url)
 
 				# end of crawling loop
-
 				speak('{} new documents ! '.format(self.crawled_websites))
 
 				self.send_to_db()
 				self.indexing()
+				self.send_inverted_index()
 				# reset the list of dict of informations of websites :
 				self.infos.clear()
 				self.file_manager.check_stop_crawling()
@@ -78,7 +78,6 @@ class Crawler:
 
 			# end of loop range(3) : 30 websites crawled
 
-			self.send_inverted_index()
 			self.suggestions()
 
 	def crawl_website(self, url):
@@ -87,12 +86,14 @@ class Crawler:
 		# get the webpage's html code :
 		html_code, is_nofollow, score = self.web_connexion.get_code(url)
 		if html_code is not None:
+			if is_nofollow:
+				url = url = url[:-10]
 			webpage_infos = {}
 			webpage_infos['url'] = url
 			(links, webpage_infos['title'], webpage_infos['description'],
 				webpage_infos['keywords'], webpage_infos['language'],
 				webpage_infos['score'], webpage_infos['nb_words'],
-				webpage_infos['favicon'], webpage_infos['images']
+				webpage_infos['favicon'],
 				) = self.site_informations.get_infos(url, html_code, is_nofollow, score)
 
 			if webpage_infos['title'] != '':
@@ -101,18 +102,9 @@ class Crawler:
 				self.file_manager.save_links(links)
 
 	def send_to_db(self):
-		"""Send infos to database."""
+		"""Send info to database."""
 		response_url = self.database.send_infos(self.infos)
-		with open(DIR_OUTPUT + 'image.txt', 'a') as myfile:
-			for webpage_infos in self.infos:
-				for image in webpage_infos['images']:
-					myfile.write(image[0] + '\n')
-					myfile.write(image[1] + '\n')
-					myfile.write(image[2] + '\n\n')
-		#name
-		#response_img = self.database.send_images(self.images, self.infos)
-		response_img = False
-		if response_url or response_img:
+		if response_url:
 			self.safe_quit()
 
 	def indexing(self):
@@ -121,14 +113,13 @@ class Crawler:
 			if doc_id == 'error':
 				self.safe_quit()
 			speak('Indexing : {0} {1}'.format(doc_id, webpage_infos['url']))
-			keywords = webpage_infos['keywords']
-			inverted_index = self.inverted_index.append_doc(keywords, doc_id)
-			if inverted_index is None:
+			self.inverted_index = self.index_manager.append_doc(webpage_infos['keywords'], doc_id)
+			if self.inverted_index is None:
 				self.database.del_one_doc(webpage_infos['url'], 'index_url')
 
 	def send_inverted_index(self):
 		speak('Send index')
-		response = self.ftp_manager.send_inverted_index(self.inverted_index.getInvertedIndex())
+		response = self.ftp_manager.send_inverted_index(self.inverted_index)
 		if response:
 			speak("Failed to send index : " + response, 21)
 			self.safe_quit()

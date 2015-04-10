@@ -23,7 +23,7 @@ class DatabaseManager:
 		self.user = user # username
 		self.password = password # password
 		self.name = name # database name
-		self.cursor, self.connexion = None, None
+		self.cursor = self.connexion = None
 
 	def connection(self):
 		"""Connect to database."""

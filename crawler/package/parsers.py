@@ -5,9 +5,6 @@
 from html.parser import HTMLParser
 from html.entities import *
 
-
-from package.module import speak, clean_text
-
 __author__ = "Seva Nathan"
 
 class MyParser(HTMLParser):
@@ -20,102 +17,81 @@ class MyParser(HTMLParser):
 	def __init__(self):
 		HTMLParser.__init__(self)
 		self.links = list() # list of links
-		self.images = list() # list of tuple alt and  url
 		self.keywords = '' # all keywords in a string
-		self.keyword_add = '' # the word to add to key
-		self.objet = None
-		self.css = self.h1 = False # if there is a css file in the source code
+		self.objet = None # type of parsing information
+		self.css = False # True if there is a css link in the source code
+		self.h1 = False # True if parsing the title of webpage
 		self.first_title = '' # the first title (h1) of the web site
-		self.description, self.language, self.title, self.favicon  = '', '', '', ''
-		self.text = False
+		self.description = self.language = self.title = self.favicon  = ''
 
 	def handle_starttag(self, tag, attrs):
 		if tag =='html': # bigining of the source code : reset all variables
 			self.links = list()
-			self.images = list()
-			self.first_title, self.keywords, self.keyword_add = '', '', ''
-			self.css, self.h1 = False, False
-			self.description, self.language, self.title, self.favicon = '', '', '', ''
+			self.first_title = self.keywords = self.description = ''
+			self.language = self.title = self.favicon  = ''
+			self.css = self.h1 = False
 			self.objet = None
-			self.text = False
 
-			if dict(attrs).get('lang') is not None:
+			if len(dict(attrs).get('lang', '')) >= 2:
 				self.language = dict(attrs).get('lang').lower().strip()[:2]
 
 		elif tag == 'a':
 			url = dict(attrs).get('href')
-			rel = dict(attrs).get('rel')
-			if url is not None:
-				if rel is not None:
-					if 'noindex' not in rel:
-						if 'nofollow' in rel:
-							url += "!nofollow!"
-							self.links.append(url)
-						else:
-							self.links.append(url)
-				else:
-					self.links.append(url)
+			rel = dict(attrs).get('rel', '')
+			if url:
+				if 'noindex' not in rel:
+					if 'nofollow' in rel:
+						url += "!nofollow!"
+						self.links.append(url)
+					else:
+						self.links.append(url)
 
 		elif tag == 'title':
-			self.objet = 'title' # il s'agit du titre
-
-		elif tag == 'h1' and self.first_title == '':
-			self.h1 = True # il s'agit d'un h1
+			self.objet = 'title' # it's about title
 
 		elif tag == 'link': # LINK REL="STYLESHEET" TYPE="text/css"
-			if dict(attrs).get('rel') == 'stylesheet':
+			rel = dict(attrs).get('rel', '')
+			if rel == 'stylesheet':
 				self.css = True
 				# LINK REL="ICON" HREF="FAVICON.ICO"
-			elif dict(attrs).get('rel') == 'icon' or dict(attrs).get('rel') == 'shortcut icon':
-				if dict(attrs).get('href') is not None:
-					self.favicon = dict(attrs).get('href')
+			elif rel == 'icon' or rel == 'shortcut icon':
+				self.favicon = dict(attrs).get('href', '')
 
 		elif tag == 'meta':
-			name = dict(attrs).get('name')
+			name = dict(attrs).get('name', '').lower()
 			content = dict(attrs).get('content')
-			if name is not None and content is not None:
-				if name.lower() == 'description':
+			if content:
+				if name == 'description':
 					self.description = content
 					self.objet = 'description'
-				elif name.lower() == 'language':
+				elif name == 'language':
 					self.language = content.lower().strip()[:2]
 
 			httpequiv = dict(attrs).get('http-equiv')
-			contentlanguage = dict(attrs).get('content-language')
-			if httpequiv is not None and contentlanguage is not None:
+			contentlanguage = dict(attrs).get('content')
+			if httpequiv and contentlanguage:
 				if httpequiv.lower() == 'content-language':
 					self.language = contentlanguage.lower().strip()[:2]
 
-		elif tag == 'p':
-			self.text = True
-
-		elif tag == 'img':
-			if self.text:
-				alt = dict(attrs).get('alt')
-				src = dict(attrs).get('src')
-				if alt is not None and src is not None:
-					alt = clean_text(alt)
-					if len(alt) > 5 and src != '':
-						self.images.append((dict(attrs).get('src'), alt))
+		elif tag == 'h1' and self.first_title == '':
+			self.h1 = True # it's about a h1
 
 		if tag == 'h1' or tag == 'h2' or tag == 'h3' or tag == 'strong' or tag == 'em':
-			self.objet = 'key_word'
+			self.objet = 'keyword'
 
 	def handle_data(self, data):
 		if self.objet == 'title':
 			self.title += data
-		elif self.objet == 'key_word':
-			self.keyword_add = self.keyword_add + ' ' + data
+		elif self.objet == 'keyword':
+			self.keywords += ' ' + data
 		if self.h1:
 			self.first_title = data
 
 	def handle_endtag(self, tag):
 		if tag == 'title':
 			self.objet = None
-		elif (tag == 'h1' or tag == 'h2' or tag == 'h3'	or tag == 'strong'
-			or tag == 'em'):
+		elif tag == 'h1' or tag == 'h2' or tag == 'h3'	or tag == 'strong' or tag == 'em':
 			self.objet = None
-			self.keywords = self.keywords + ' ' + self.keyword_add
 		elif tag == 'meta':
 			self.objet = None
 		elif tag == 'p':
@@ -130,7 +106,7 @@ class MyParser(HTMLParser):
 			try:
 				letter = html5[name + ';']
 			except KeyError:
-				speak('error handle_entityref', 11)
+				pass
 		else:
 			if self.objet == 'title':
 				self.add_letter(letter)
@@ -159,7 +135,6 @@ class Parser_encoding(HTMLParser):
 			charset = dict(attrs).get('charset')
 			if charset is not None:
 				self.encoding = charset
-
 			# <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 			httpequiv = dict(attrs).get('http-equiv')
 			content = dict(attrs).get('content')

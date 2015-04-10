@@ -18,19 +18,17 @@ from package.parsers import MyParser
 class SiteInformations:
 	def __init__(self):
 		"""Build the class : define variables."""
+		self.parser = MyParser()
 		self.url = str()
 		self.score = float()
 		self.title = str()
 		self.description = str()
 		self.language = str()
 		self.links = list()
-		self.images = list()
 		self.keywords = list()
-		self.parser = MyParser()
 		self.code = str()
 		self.new = str()
 		self.slash = int()
-		self.urlparse = None
 		self.nb_words = int()
 		self.favicon = str()
 
@@ -59,8 +57,21 @@ class SiteInformations:
 
 		self.parser.feed(code)
 
-		if self.parser.title != '':
-			self.title = clean_text(self.parser.title) # find title and clean it
+		self.title = clean_text(self.parser.title) # find title and clean it
+
+		keywords = clean_text(self.parser.keywords.lower()).split()
+		begining_size = len(keywords) # stats
+
+		# language :
+		if self.parser.language != '':
+			self.language = self.parser.language
+			self.score += 0.5
+		else:
+			self.language = self.detect_language(keywords)
+
+		if self.language in self.STOPWORDS and self.parser.title != '':
+			self.keywords = self.clean_keywords(keywords)
+			self.keywords.extend(self.clean_keywords(self.title.lower().split()))
 
 			# description :
 			if self.parser.description == '':
@@ -68,51 +79,30 @@ class SiteInformations:
 			else:
 				self.description = clean_text(self.parser.description)
 
+			# css :
 			if self.parser.css:
 				self.score += 0.5
-
-			keywords = clean_text(self.parser.keywords.lower()).split()
-			begining_size = len(keywords) # stats
-			# language :
-			if self.parser.language != '':
-				self.language = self.parser.language
-				self.score += 0.5
-				# keywords :
-				self.keywords = self.clean_keywords(keywords)
-			else:
-				self.language = self.detect_language(keywords)
-				if self.language != '':
-					self.keywords = self.clean_keywords(keywords)
-					speak('No language : ' + self.url)
-
-			# if language is not supported
-			if self.language not in self.STOPWORDS:
-				self.title == ''
 
 			self.nb_words = len(self.keywords)
 			stats_stop_words(begining_size, self.nb_words) # stats
 
-			# tests :
-			with open(DIR_OUTPUT + 'mot.txt', 'a', errors='replace') as myfile:
-				myfile.write(str(self.keywords) + '\n\n') # problem !?)
-
 			# links :
 			if nofollow:
 				self.links = list()
-				speak('No take links')
+				speak('No take links') # why ?
 			else:
 				self.links = self.clean_links(self.parser.links)
 
 			# favicon :
-			self.favicon = self.clean_favicon(self.parser.favicon)
-
-			# images :
-			self.images = list(set(self.clean_images(self.parser.images)))
-
-			return (self.links, self.title, self.description, self.keywords,
-				self.language, self.score, self.nb_words, self.favicon, self.images)
+			if self.parser.favicon != '':
+				self.favicon = self.clean_favicon(self.parser.favicon)
+			else:
+				self.favicon = ''
 		else:
-			return None, '', None, None, None, None, None, None, None
+			self.title = ''
+			self.links = self.description = self.keywords = self.language = self.score = self.nb_words = self.favicon = None
+
+		return self.links, self.title, self.description, self.keywords, self.language, self.score, self.nb_words, self.favicon
 
 	def detect_language(self, keywords):
 		total_stopwords = 0
@@ -179,7 +169,6 @@ class SiteInformations:
 
 	def clean_favicon(self, favicon):
 		base_url = get_base_url(self.url)
-		print(base_url)
 		if not favicon.startswith('http') and not favicon.startswith('www'):
 			if favicon.startswith('//'):
 				favicon = 'http:' + favicon
@@ -188,31 +177,6 @@ class SiteInformations:
 			else:
 				favicon = base_url + '/' + favicon
 		return favicon
-
-	def clean_images(self, images):
-		new_images = list()
-		for key, image in enumerate(images):
-			# image is a tuple : (url, alt)
-			url = image[0].strip()
-
-			if (url.endswith(IMG_EXTENTIONS) and
-				not url.startswith('http') and
-				not url.startswith('www')):
-
-				if url.startswith('//'):
-					url = 'http:' + url
-				elif url.startswith('/'):
-					url = self.url + url
-				else:
-					url = self.url + '/' + url
-			if url.endswith('/'):
-				url = url[:-1]
-			slash = url.rfind('/')
-			point = url.rfind('.')
-			name = url[slash+1:point]
-
-			new_images.append((url, image[1], name))
-		return new_images
 
 	def clean_keywords(self, keywords):
 		"""Clean found keywords."""
@@ -236,6 +200,8 @@ class SiteInformations:
 
 				if keyword.endswith(END_CHARS):
 					keyword = keyword[:-1]
+				if keyword.endswith(END_CHARS2):
+					keyword = keyword[:-3]
 
 				if len(keyword) > 1: # l', d', s'
 					if keyword[1] == '\'' or keyword[1] == '’':
@@ -243,6 +209,19 @@ class SiteInformations:
 				if len(keyword) > 2:
 					if keyword[-2] == '\'': # word's
 						keyword = keyword[:-2]
+
+				point = keyword.find('.')
+				if point != -1:
+					keyword = keyword[:point]
+
+				if not True in [letter in keyword for letter in ALPHABET]:
+					continue
+
+				if not True in [letter != '' for letter in keyword.split(keyword[0])]:
+					continue# keyword = '********'
+
+				if keyword.endswith(END_CHARS): # repeat end chars
+					keyword = keyword[:-1]
 
 				# word/word2
 				if '/' in keyword:

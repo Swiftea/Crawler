@@ -26,17 +26,19 @@ FILE_CAN_SEND = DIR_DATA + 'can_send.json'
 FTP_INDEX = '/www/data/inverted-index/'
 
 # lists for clean up links and keywords :
-BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif', '.ico', '.svg', '.tiff', '.tif' '.raw', '.flv', '.mpeg', '.mpg', '.wma', '.mp4', '.mp3', '.fla', '.avi')
+BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif',
+'.ico', '.svg', '.tiff', '.tif' '.raw', '.flv', '.mpeg', '.mpg', '.wma', '.mp4', '.mp3', '.fla', '.avi', '.gz', '.exe', '.xml')
 IMG_EXTENTIONS = ('.jpeg', '.jpg', '.png', '.gif', '.bmp', '.ico')
 START_CHARS = ('«', '\'', '"', '(', ':', '/' , '[', '{', '-')
 END_CHARS = ('.', ',', ';', '!', '?', '»', '\'', '"', ')', ':', '...', '/', ']', '}', '-')
+END_CHARS2 = ('...', '!!!', '???')
 ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 # others informations :
 USER_AGENT = 'Swiftea-Bot'
 HEADERS = {"User-Agent": USER_AGENT}
 MAX_SIZE = 500 # max size of a error and log file (FILE_ERROR and FILE_NEWS)
-INDEXING_TIMEOUT = 120 # time in second for index a document
+INDEXING_TIMEOUT = 120 # time in second to index a document
 MAX_LINKS = 5000 # max links in a file
 CRAWL_DELAY = timedelta(days=2) # the program don't crawl the website if it was crawled x ago
 CRAWL_IMG_DELAY = timedelta(days=15)

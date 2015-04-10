@@ -133,7 +133,11 @@ class FileManager:
 				encoding='utf8') as myfile:
 				old_links = myfile.read().split('\n')
 				myfile.seek(0)
-				links_to_add = list(set(old_links + new_links))
+				links = old_links + new_links
+				links_to_add = list()
+				for link in links:
+					if link not in links_to_add:
+						links_to_add.append(link)
 				myfile.write('\n'.join(links_to_add))
 
 			if len(links_to_add) > self.max_links: # check the size
@@ -152,7 +156,7 @@ class FileManager:
 		try:
 			with open(filename, 'r', errors='replace',
 				encoding='utf8') as myfile:
-				list_links = myfile.read().split() # list of urls
+				list_links = myfile.read().splitlines() # list of urls
 		except FileNotFoundError:
 			# no link file
 			speak('Reading file is not found in get_url : ' + filename, 4)
@@ -160,7 +164,8 @@ class FileManager:
 		else:
 			url = list_links[self.reading_line_number]
 			self.reading_line_number += 1
-			if len(list_links) == (self.reading_line_number): # if is the last links of the file
+			# if is the last links of the file :
+			if len(list_links) == (self.reading_line_number):
 				self.reading_line_number = 0
 				if self.reading_file_number != 0: # or > 0 ? wich is better ?
 					remove(filename)

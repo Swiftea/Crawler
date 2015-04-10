@@ -56,7 +56,6 @@ def remove_duplicates(list):
 	for elt in list:
 		if not elt in new_list:
 			new_list.append(elt)
-
 	return new_list
 
 def stats_stop_words(begining, end):
@@ -136,6 +135,8 @@ http://www.lequipe.fr
 http://swiftea.alwaysdata.net
 http://trukastuss.over-blog.com""")
 		else:
+			mkdir(DIR_LINKS)
+			open(FILE_BASELINKS, 'x').close()
 			print("""
 Create a file '0' without extention who contains a list of 20 links maximum.
 They must start with 'http://' or 'https://' and no ends with '/'.
