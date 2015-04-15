@@ -6,6 +6,7 @@ install:
     - "pip install -r requirements.txt"
     - "pip install pytest pytest-cov"
     - "pip install coveralls"
+
 # cd to crawler folder
 before_script: cd crawler
 # command to run tests

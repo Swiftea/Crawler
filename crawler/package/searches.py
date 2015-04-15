@@ -99,6 +99,7 @@ class SiteInformations:
 			else:
 				self.favicon = ''
 		else:
+			speak('No language or title')
 			self.title = ''
 			self.links = self.description = self.keywords = self.language = self.score = self.nb_words = self.favicon = None
 

@@ -30,17 +30,8 @@ class Crawler:
 			quit()
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPManager(HOST_FTP, USER, PASSWORD)
+		self.inverted_index = self.get_inverted_indexs()
 		self.index_manager = InvertedIndex()
-		speak("Get index")
-		self.inverted_index, to_read, response = self.ftp_manager.get_inverted_index()
-		speak(response)
-		if self.inverted_index == '0' and self.file_manager.reading_file_number != 0:
-			speak("No index, quit program")
-			quit()
-		elif to_read != []:
-			inverted_index = self.file_manager.get_inverted_index(to_read)
-			for key in inverted_index.keys():
-				self.inverted_index[key] = inverted_index[key]
 		self.index_manager.setInvertedIndex(self.inverted_index)
 		self.index_manager.setStopwords(self.site_informations.STOPWORDS)
 		self.database = DatabaseSwiftea(HOST_DB, USER, PASSWORD, NAME_DB)
@@ -48,6 +39,25 @@ class Crawler:
 
 		self.infos = list()
 		self.crawled_websites = 0
+
+	def get_inverted_indexs(self):
+		speak("Get index")
+		to_download, to_read = self.ftp_manager.get_indexs_to_download()
+		inverted_indexs_ftp = inverted_indexs_local = inverted_index = dict()
+		if to_download != []:
+			inverted_indexs_ftp, response = self.ftp_manager.get_inverted_index(to_download)
+			if response == 'Failed' and self.file_manager.reading_file_number != 0:
+				speak("No index, quit program")
+				quit()
+			else:
+				speak(response)
+		if to_read != []:
+			inverted_indexs_local = self.file_manager.get_inverted_index(to_read)
+
+		inverted_index = inverted_indexs_ftp
+		for key in inverted_indexs_local.keys():
+			inverted_index[key] = inverted_indexs_local[key]
+		return inverted_index
 
 	def start(self):
 		speak(strftime("%d/%m/%y %H:%M:%S")) # speak time
@@ -104,6 +114,8 @@ class Crawler:
 				self.infos.append(webpage_infos)
 				self.crawled_websites += 1
 				self.file_manager.save_links(links)
+			else:
+				speak('Ignore')
 
 	def send_to_db(self):
 		"""Send info to database."""
@@ -126,6 +138,7 @@ class Crawler:
 		response = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		if response:
 			speak("Failed to send index : " + response, 21)
+			self.file_manager.save_index()
 			self.safe_quit()
 		else:
 			speak('All transferts are completed')

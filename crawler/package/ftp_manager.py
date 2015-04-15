@@ -15,29 +15,30 @@ class FTPManager(FTPConnect):
 	def __init__(self, host, user, password):
 		FTPConnect.__init__(self, host, user, password)
 
-	def get_inverted_index(self):
-		to_download = self.get_indexs_to_download() # list of file to get index in ftp
-		to_read = list() # list of to get index in local
+	def get_inverted_index(self, to_download):
+		"""Get back inverted-indexs
+
+		response is 'Transfer complete' or 'Failed'
+
+		"""
 		inverted_index = dict()
 		self.connection()
 		self.cwd(FTP_INDEX)
-		response = 'No inverted-index'
+		speak('Indexs in ftp : ' + str(to_download))
+		response = 'No index on ftp'
 		for letter_index in self.nlst():
 			if letter_index in to_download:
-				local_file_name = DIR_INDEX + letter_index
-				server_file_name = FTP_INDEX + letter_index
-				response = self.download(local_file_name, server_file_name)
+				local_filename = DIR_INDEX + letter_index
+				server_filename = FTP_INDEX + letter_index
+				response = self.download(local_filename, server_filename)
 				if 'Error' in response:
-					speak('Failed to download inverted-index ' + server_file_name + ', ' + response, 22)
-					return '0', None, 'error'
+					speak('Failed to download inverted-index ' + server_filename + ', ' + response, 22)
+					return None, 'Failed', 'error'
 				else:
-					with open(local_file_name, 'r', encoding='utf-8') as myfile:
+					with open(local_filename, 'r', encoding='utf-8') as myfile:
 						inverted_index[letter_index] = myfile.read()
 					response = 'Transfer complete'
-			else:
-				to_read.append(letter_index)
-				response = 'all inverted-indexs in local'
-		return inverted_index, to_read, response
+		return inverted_index, response
 
 	def send_inverted_index(self, inverted_indexs):
 		for index_letter in inverted_indexs:
@@ -51,21 +52,26 @@ class FTPManager(FTPConnect):
 		return None
 
 	def get_indexs_to_download(self):
-		to_download = list()
+		to_download = list() # list of files to get index in ftp
+		to_read = list() # list of files to get index in local
 		list_indexs = listdir(DIR_INDEX) # local
-		if len(list_indexs) == 27:
-			self.connection()
+		self.connection()
+		self.cwd(FTP_INDEX)
+		if len(list_indexs) == 27: # can be improve
 			self.cwd(FTP_INDEX)
 			for data in self.mlsd(facts=['size', 'type']):
 				if data[1]['type'] == 'file':
 					local_size = path.getsize(DIR_INDEX + data[0])
-					if local_size != int(data[1]['size']):
+					if int(data[1]['size']) > local_size:
 						# different sizes, must download
 						to_download.append(data[0])
-		else:
+					else: # int(data[1]['size']) <= local_size
+						to_read.append(data[0])
+		elif len(self.nlst()) == 27:
 			to_download = ALPHABET
 			to_download.append('_')
-		return to_download
+		self.quit_connection()
+		return to_download, to_read
 
 	def can_send(self): # not use at the moment, must be tested
 		"""Return True if the program can send to database, False if not.

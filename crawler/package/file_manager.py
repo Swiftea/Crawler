@@ -176,10 +176,8 @@ class FileManager:
 			return url
 
 	def get_inverted_index(self, to_read):
-		print(to_read)
+		speak('Indexs in local : ' + str(to_read))
 		inverted_index = dict()
-		with open(DIR_INDEX + '_', 'r') as myfile:
-			inverted_index['_'] = myfile.read()
 		for letter_index in to_read:
 			with open(DIR_INDEX + letter_index, 'r') as myfile:
 				inverted_index[letter_index] = myfile.read()

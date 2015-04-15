@@ -59,38 +59,38 @@ class FTPConnect(FTP):
 		finally:
 			return response
 
-	def upload(self, local_file_name, serveur_file_name):
+	def upload(self, local_filename, server_filename):
 		response = self.connection()
 		if 'failed' in response:
 			return response
 		else:
-			with open(local_file_name, 'br') as myfile:
+			with open(local_filename, 'br') as myfile:
 				try:
 					response = self.storbinary(
-						'STOR ' + serveur_file_name, myfile)
+						'STOR ' + server_filename, myfile)
 				except all_errors as error:
 					response = 'Failed to send file ' + \
-						local_file_name + ' : ' + str(error)
+						local_filename + ' : ' + str(error)
 				else:
 					response = 'Send file : ' + response
 				finally:
 					self.quit_connection()
 			return response
 
-	def download(self, local_file_name, serveur_file_name):
+	def download(self, local_filename, server_filename):
 		response = self.connection()
 		if 'failed' in response:
 			return response
 		else:
-			with open(local_file_name, 'wb') as myfile:
+			with open(local_filename, 'wb') as myfile:
 				try:
 					response = self.retrbinary(
-						'RETR ' + serveur_file_name, myfile.write)
+						'RETR ' + server_filename, myfile.write)
 				except all_errors as error:
 					response = 'Failed to download file ' + \
-						serveur_file_name + ' : ' + str(error)
+						server_filename + ' : ' + str(error)
 				else:
-					response = 'Download file ' + serveur_file_name + ': ' + response
+					response = 'Download file ' + server_filename + ': ' + response
 				finally:
 						self.quit_connection()
 			return response
