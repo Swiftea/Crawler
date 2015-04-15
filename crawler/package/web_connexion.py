@@ -5,6 +5,7 @@
 __author__ = "Seva Nathan"
 
 import requests # to get back the source code
+from urllib3.exceptions import ReadTimeoutError
 
 
 from reppy.cache import RobotsCache
@@ -35,6 +36,9 @@ class WebConnexion:
 			return None, is_nofollow, 0
 		except requests.exceptions.RequestException as error:
 			speak('Failed to connect to website : {}, {}'.format(str(error), url), 8)
+			return None, is_nofollow, 0
+		except ReadTimeoutError:
+			speak('Website not responding (2): ' + url, 7)
 			return None, is_nofollow, 0
 		else:
 			try:

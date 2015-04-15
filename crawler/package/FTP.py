@@ -90,7 +90,7 @@ class FTPConnect(FTP):
 					response = 'Failed to download file ' + \
 						serveur_file_name + ' : ' + str(error)
 				else:
-					response = 'Download file : ' + response
+					response = 'Download file ' + serveur_file_name + ': ' + response
 				finally:
 						self.quit_connection()
 			return response

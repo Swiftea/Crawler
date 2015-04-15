@@ -47,16 +47,14 @@ TIMEOUT = 30
 # README :
 README = """----- Documentation -----
 
-Le robot crawler pour Swfitea demande lors de la 1er exécution avec quels liens de départ démmarer le crawler.
-On a donc le choix entre remplir un fichier '0' sans extention,
-de liens de départ ou de laisser le programme récupérer une liste de liens de départ.
-Si le dossier des liens est inexistant, le programme demanderra aussi
-avec quelle liens de départ commencer.
+In the first run, the crawler for swiftea ask what links start crawling.
+So you can fill a fichier named '0' without extention with 10 links max, 
+or let program choose a list of links.
 
----codes erreurs : ---
-	0 : fin du programme
-	1 : fichier journal introuvable dans check_size
-	2 : fichier erreurs introuvable dans check_size
+--- errors code: ---
+	0 : end
+	1 : event file not found in check_size
+	2 : errors file not found in check_size
 	3 :
 	4 : fichier lecture introuvable dans get_url, stop
 	5 : erreur compteur liens dans get_url, continue
@@ -88,14 +86,16 @@ avec quelle liens de départ commencer.
 
 	25 : failed to update image
 
----fichier config.ini : ---
+--- config file : ---
 Le fichier config.txt doit être dans le dossier 'config', il est créé s'il n'existe pas.
 Son contenu :
- - run = True ou False
- - reading_file_number = un nombre, le fichier où on prend les urls
- - reading_line_number = un nombre, le numéro du lien que l'on examine
- - writing_file_number = un nombre, le fichier où on enregistre les liens trouvés
- - links_number = un nombre, environ le nombre maximal de liens dans un fichier
+The file config.ini is in 'config' directory, it is create if doesn't exists.
+It content is:
+ - run = True or False
+ - reading_file_number = number, program take links in this file
+ - reading_line_number = number, the line in the file where program take links
+ - writing_file_number = number, program save found links in this file
+ - links_number = around the number 
 
 ---fichier journal.log : ---
  - copie de ce qui s'affiche dans la console

@@ -7,6 +7,7 @@ from package.searches import SiteInformations
 from package.inverted_index import InvertedIndex
 from package.parsers import Parser_encoding, MyParser
 from package.web_connexion import WebConnexion
+from statistiques import average
 
 class TestCrawlerBase(object):
     """Base class for all crawler test classes."""
@@ -80,9 +81,9 @@ class TestCrawlerBasic(TestCrawlerBase):
 
     def test_clean_keywords(self):
         keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
-        'jean/pierre', 'quoi...', '*****', 'fichier.ext']
+        'jean/pierre', 'quoi...', '*****', 'fichier.ext', 'epee,...']
         keywords = SiteInformations.clean_keywords(self, keywords)
-        assert keywords == ['bureau', 'word', 'example', 'oiseau', 'jean', 'pierre', 'quoi', 'fichier']
+        assert keywords == ['bureau', 'word', 'example', 'oiseau', 'jean', 'pierre', 'quoi', 'fichier', 'epee']
 
     def test_remove_duplicates(self):
         assert remove_duplicates(['mot', 'mot']) == ['mot']
@@ -141,3 +142,6 @@ class TestCrawlerBasic(TestCrawlerBase):
 
     def test_getInvertedIndex(self):
         assert InvertedIndex.getInvertedIndex(self) == {'t': "'train'{1:2}"}
+
+    def test_stats_links(self):
+        assert average(["20", "20", "30", "30"]) == 25

@@ -31,14 +31,17 @@ class Crawler:
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPManager(HOST_FTP, USER, PASSWORD)
 		self.index_manager = InvertedIndex()
-		speak("Get index") # get back the index
-		self.inverted_index, response = self.ftp_manager.get_inverted_index()
+		speak("Get index")
+		self.inverted_index, to_read, response = self.ftp_manager.get_inverted_index()
 		speak(response)
-		if self.inverted_index is None and self.file_manager.reading_file_number != 0:
+		if self.inverted_index == '0' and self.file_manager.reading_file_number != 0:
 			speak("No index, quit program")
 			quit()
-		else:
-			self.index_manager.setInvertedIndex(self.inverted_index)
+		elif to_read != []:
+			inverted_index = self.file_manager.get_inverted_index(to_read)
+			for key in inverted_index.keys():
+				self.inverted_index[key] = inverted_index[key]
+		self.index_manager.setInvertedIndex(self.inverted_index)
 		self.index_manager.setStopwords(self.site_informations.STOPWORDS)
 		self.database = DatabaseSwiftea(HOST_DB, USER, PASSWORD, NAME_DB)
 		self.web_connexion = WebConnexion()
@@ -49,7 +52,7 @@ class Crawler:
 	def start(self):
 		speak(strftime("%d/%m/%y %H:%M:%S")) # speak time
 		while True:
-			for k in range(3):
+			for k in range(50):
 				while len(self.infos) < 10:
 					speak('Reading {0}, link {1}'.format(
 						str(self.file_manager.reading_file_number),
@@ -57,7 +60,7 @@ class Crawler:
 					# get the url of the website :
 					url = self.file_manager.get_url()
 					if url == 'stop':
-						self.safe_quit() # quit program
+						self.safe_quit()
 					self.crawl_website(url)
 
 				# end of crawling loop
@@ -65,7 +68,7 @@ class Crawler:
 
 				self.send_to_db()
 				self.indexing()
-				self.send_inverted_index()
+				
 				# reset the list of dict of informations of websites :
 				self.infos.clear()
 				self.file_manager.check_stop_crawling()
@@ -76,8 +79,9 @@ class Crawler:
 					speak("User wants stop  program")
 					self.safe_quit()
 
-			# end of loop range(3) : 30 websites crawled
+			# end of loop range(n)
 
+			self.send_inverted_index()
 			self.suggestions()
 
 	def crawl_website(self, url):
@@ -119,7 +123,7 @@ class Crawler:
 
 	def send_inverted_index(self):
 		speak('Send index')
-		response = self.ftp_manager.send_inverted_index(self.inverted_index)
+		response = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		if response:
 			speak("Failed to send index : " + response, 21)
 			self.safe_quit()
@@ -133,18 +137,20 @@ class Crawler:
 		send all infos of them, index them and return to main loop.
 
 		"""
-		speak('Suggestions : ')
 		suggestions = self.database.suggestions()
 		if suggestions is not None:
 			speak('Failed to get suggestions')
 		else:
 			suggestions = self.site_informations.clean_links(suggestions)
+			if len(suggestions) > 0:
+				speak('Suggestions : ')
+			else:
+				speak('No suggestions')
 			for url in suggestions:
 				self.crawl_website(url)
 			self.send_to_db()
 			self.indexing()
-			# reset the list of dict of informations of websites :
-			self.infos.clear()
+			self.infos.clear() # reset the list of dict of informations of websites :
 
 	def safe_quit(self):
 		self.send_inverted_index()

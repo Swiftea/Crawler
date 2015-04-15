@@ -134,7 +134,7 @@ http://www.yahoo.com
 http://www.lequipe.fr
 http://swiftea.alwaysdata.net
 http://trukastuss.over-blog.com""")
-		else:
+		elif rep == '2':
 			mkdir(DIR_LINKS)
 			open(FILE_BASELINKS, 'x').close()
 			print("""
@@ -143,6 +143,10 @@ They must start with 'http://' or 'https://' and no ends with '/'.
 Choose popular websites.
 Press enter when done.""")
 			input()
+
+		else:
+			print('Please enter 1 or 2.')
+			quit()
 
 def get_stopwords():
 	STOP_WORDS = dict()
