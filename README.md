@@ -24,8 +24,8 @@ Want to contribute? Great!
 
 Fork the repository. Then, run:
 
-    git clone --recursive git@github.com:<username>/Crawler.git
-    cd Crawler
+    git clone --recursive git@github.com:<username>/Swiftea-Crawler.git
+    cd Swiftea-Crawler
     git flow init -d
     git flow feature start <your feature>
 
