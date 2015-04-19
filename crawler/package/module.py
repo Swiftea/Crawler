@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""Define functions and create files and directories for user and program."""
+"""Define several functions for crawler"""
 
 __author__ = "Seva Nathan"
 
@@ -14,12 +14,15 @@ from urllib.parse import urlparse
 from package.data import * # to get required data
 
 def speak(message, EC=None):
-	"""Manage the newspaper.
+	"""Manage newspaper
 
-	print() and write() message.
-	This function print in console that the program do and save a copy in the
-	newspaper file.
-	EC : error code : optional, if given run errors function
+	This function print in console that program doing and save a copy in
+	newspaper file
+
+	:param message: message to print and write
+	:type message: str
+	:param EC: (optional) error code, if given call errors() with given message
+	:type EC: int
 
 	"""
 	if EC:
@@ -33,25 +36,46 @@ def speak(message, EC=None):
 			myfile.write(message.capitalize() + '\n')
 
 def errors(EC, message):
-	"""Write the error report in the errors file.
+	"""Write the error report with time in errors file
 
-	Normaly call by speak function when a EC parameter is given.
-	EC : error code
+	Normaly call by speak() when a EC parameter is given
+
+	:param message: message to print and write
+	:type message: str
+	:param EC: error code
+	:type EC: int
 
 	"""
 	with open(FILE_ERROR, 'a') as myfile:
 		myfile.write(str(EC) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ' : ' + message + '\n')
 
 def quit():
-	"""Function who manage the end of the prgoram."""
+	"""Function who manage end of prgoram
+
+	Call speak() with 'end' and exit
+
+	"""
 	speak('end\n', 0)
 	exit()
 
 def clean_text(text):
-	"""Clean up text (\n\r\t)."""
+	"""Clean up text (\\n\\r\\t)
+
+	:param text: text to clean_text
+	:type text: str
+	:return: cleaned text
+
+	"""
 	return ' '.join(text.split())
 
 def remove_duplicates(list):
+	"""remove duplicates from a list
+
+	:param list: list to clean
+	:type list: list
+	:return: list without duplpicate
+
+	"""
 	new_list = []
 	for elt in list:
 		if not elt in new_list:
@@ -59,7 +83,14 @@ def remove_duplicates(list):
 	return new_list
 
 def stats_stop_words(begining, end):
-	"""Percentage of deleted word with stopwords for statistics."""
+	"""Percentage of deleted word with stopwords for statistics
+
+	:param begining: size of keywords list before cleaning
+	:type begining: int
+	:param end: size of keywords list after cleaning
+	:type end: int
+
+	"""
 	if end != 0:
 		stats = str(((begining-end) * 100) / end)
 	else:
@@ -68,18 +99,24 @@ def stats_stop_words(begining, end):
 		myfile.write(str(stats) + '\n')
 
 def stats_links(stat):
-	"""Number of links for statistics."""
+	"""Number of links for statistics
+
+	:param stat: number of list in a webpage
+	:type stat: int
+
+	"""
 	with open(FILE_STATS, 'a') as myfile:
 		myfile.write(stat + '\n') # write the number of links found
 
 def start():
-	"""Test lot of things :
+	"""Manage crawler's runing
 
-	create config directory
-	create doc file if  doesn't exists
-	create config file if it doesn't exists
-	create links directory if it doesn't exists
-	create index directory if it doesn't exists
+	Test lot of things :
+		create config directory
+		create doc file if  doesn't exists
+		create config file if it doesn't exists
+		create links directory if it doesn't exists
+		create index directory if it doesn't exists
 
 	"""
 	# create directories if they don't exist
@@ -149,6 +186,11 @@ Press enter when done.""")
 			quit()
 
 def get_stopwords():
+	"""Get stopwords from swiftea website
+
+	:return: a dict: keys are languages and values are stopwords
+
+	"""
 	STOP_WORDS = dict()
 	try:
 		r = requests.get('http://swiftea.alwaysdata.net/data/stopwords/fr.stopwords.txt')
@@ -170,6 +212,13 @@ def get_stopwords():
 		return STOP_WORDS
 
 def get_base_url(url):
+	"""Get base url using urlparse
+
+	:param url: url
+	:type url: str
+	:return: base url of given url
+
+	"""
 	infos_url = urlparse(url)
 	base_url = infos_url.scheme + '://' + infos_url.netloc
 	return base_url

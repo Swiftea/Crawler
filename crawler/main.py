@@ -18,7 +18,7 @@ from package.ftp_manager import FTPManager
 __author__ = "Seva Nathan"
 
 class Crawler:
-	"""Crawler Class.
+	"""Crawler Class
 
 	response : a message
 	result : data asked
@@ -41,6 +41,11 @@ class Crawler:
 		self.crawled_websites = 0
 
 	def get_inverted_indexs(self):
+		"""Get inverted-index
+
+		:return: inverted-index
+
+		"""
 		speak("Get index")
 		to_download, to_read = self.ftp_manager.get_indexs_to_download()
 		inverted_indexs_ftp = inverted_indexs_local = inverted_index = dict()
@@ -60,6 +65,7 @@ class Crawler:
 		return inverted_index
 
 	def start(self):
+		"""Start the main loop of crawling"""
 		speak(strftime("%d/%m/%y %H:%M:%S")) # speak time
 		while True:
 			for k in range(50):
@@ -71,7 +77,7 @@ class Crawler:
 					url = self.file_manager.get_url()
 					if url == 'stop':
 						self.safe_quit()
-					self.crawl_website(url)
+					self.crawl_webpage(url)
 
 				# end of crawling loop
 				speak('{} new documents ! '.format(self.crawled_websites))
@@ -94,8 +100,15 @@ class Crawler:
 			self.send_inverted_index()
 			self.suggestions()
 
-	def crawl_website(self, url):
-		"""score : .5 encondig, .5 css, .5 language, """
+	def crawl_webpage(self, url):
+		"""Crawl the given url
+
+		Score of webpage is define here: .5 encondig, .5 css, .5 language
+
+		:param url: url of webpage
+		:type url: str
+
+		"""
 		speak('Crawling url : ' + url)
 		# get the webpage's html code :
 		html_code, is_nofollow, score = self.web_connexion.get_code(url)
@@ -118,12 +131,13 @@ class Crawler:
 				speak('Ignore')
 
 	def send_to_db(self):
-		"""Send info to database."""
+		"""Send all informations about crawled webpages to database"""
 		response_url = self.database.send_infos(self.infos)
 		if response_url:
 			self.safe_quit()
 
 	def indexing(self):
+		"""Index crawled webpages"""
 		for webpage_infos in self.infos:
 			doc_id = self.database.get_doc_id(webpage_infos['url'])
 			if doc_id == 'error':
@@ -134,6 +148,7 @@ class Crawler:
 				self.database.del_one_doc(webpage_infos['url'], 'index_url')
 
 	def send_inverted_index(self):
+		"""Send inverted-index generate by indexing to ftp server"""
 		speak('Send index')
 		response = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		if response:
@@ -144,10 +159,10 @@ class Crawler:
 			speak('All transferts are completed')
 
 	def suggestions(self):
-		"""Suggestions :
+		"""Suggestions:
 
 		Get 5 urls from database, delete them, crawl them,
-		send all infos of them, index them and return to main loop.
+		send all informations about them, index them and return to main loop
 
 		"""
 		suggestions = self.database.suggestions()
@@ -166,6 +181,7 @@ class Crawler:
 			self.infos.clear() # reset the list of dict of informations of websites :
 
 	def safe_quit(self):
+		"""Send inverted-index and quit"""
 		self.send_inverted_index()
 		speak('Programm will quit')
 		quit()

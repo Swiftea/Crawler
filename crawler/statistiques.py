@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""Display stats."""
+"""Display stats"""
 
 from os import system
 
@@ -9,6 +9,13 @@ from package.data import *
 __author__ = "Seva Nathan"
 
 def average(content=list):
+	"""Calculate average
+
+	:param content: values
+	:type content: list
+	:return: average
+
+	"""
 	total = 0
 	for value in content:
 	    total += int(value)

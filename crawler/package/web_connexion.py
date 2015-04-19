@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
-"""Manage the connection to web sites."""
+"""Connexion to webpage are manage with requests module. 
+Thoses errors are waiting for: timeout with socket module and with urllib3 mudule 
+and all RequestException errors."""
 
 __author__ = "Seva Nathan"
 
@@ -17,13 +19,20 @@ from package.module import speak, get_base_url
 from package.parsers import Parser_encoding
 
 class WebConnexion:
-	"""Manage the web connexion with the page to crawl."""
+	"""Manage the web connexion with the page to crawl"""
 	def __init__(self):
+		"""Build manager"""
 		self.reqrobots = RobotsCache()
 		self.parser_encoding = Parser_encoding()
 
 	def get_code(self, url):
-		"""Return code, is_nofollow and score."""
+		"""Get source code of given url
+
+		:param url: url of webpage
+		:type url: str
+		:return: source code, True if no take links and score
+
+		"""
 		if url.endswith('!nofollow!'):
 			url = url[:-10]
 			is_nofollow = True
@@ -62,7 +71,16 @@ class WebConnexion:
 					return None, is_nofollow, 0
 
 	def search_encoding(self, request):
-		"""Return encoding of webpage request and the score."""
+		"""Searche encoding of webpage in source code
+
+		If an encoding is found in source code, score is .5, but if not
+		score is 0 and encoding is utf-8.
+
+		:param request: request connected to webpage
+		:type request: requests.models.Response
+		:return: encoding of webpage and it score
+
+		"""
 		# search in headers :
 		headers = str(request.headers).lower()
 		charset = headers.find('charset')

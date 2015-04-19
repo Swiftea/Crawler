@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-"""Module of management of database."""
-
 import pymysql # for database access
 
 from package.data import TIMEOUT
@@ -9,24 +7,31 @@ from package.data import TIMEOUT
 __author__ = "Seva Nathan"
 
 class DatabaseManager:
-	"""Using :
+	"""Class to manage database\n\n
+	How to: create a subclass\n
+	result, response = self.send_comand(command, data=tuple(), all=False)\n
+	where result are data asked
 
-	With creating a subclass :
-	result, response = self.send_comand(command, data=tuple(), all=False)
-	result are data asked
-	response is a message
+	:param host: hostname of the ftp server
+	:type host: str
+	:param user: username to use for connexion
+	:type user: str
+	:param password: password to use for connexion
+	:type password: str
+	:param name: name of database
+	:type name: str		
 
 	"""
 	def __init__(self, host, user, password, name):
-		"""Build the class."""
+		"""Build database manager"""
 		self.host = host # hostname
 		self.user = user # username
 		self.password = password # password
 		self.name = name # database name
 		self.cursor = self.connexion = None
 
-	def connection(self):
-		"""Connect to database."""
+	def connexion(self):
+		"""Connect to database"""
 		try:
 			self.connexion = pymysql.connect(host=self.host,
 				user=self.user,
@@ -45,18 +50,22 @@ class DatabaseManager:
 		finally:
 			return response
 
-	def close_connection(self):
-		"""Close the database connection."""
+	def close_connexion(self):
+		"""Close the database connexion"""
 		self.cursor.close()
 		self.connexion.close()
 
 	def send_command(self, command, data=tuple(), all=False):
-		"""Return the result of the comand and the status message.
+		"""Send a query to database
 
-		data must be a variable or a tuple of variables.
+		:param data: data attached to given query
+		:type data: tuple
+		:param all: True if return all results
+		:type all: bool
+		:return: result of the query and status message.
 
 		"""
-		response = self.connection()
+		response = self.connexion()
 		if response != 'Connected to database':
 			return None, response
 		else:
@@ -75,5 +84,5 @@ class DatabaseManager:
 			else:
 				response = 'Send command : ok'
 			finally:
-				self.close_connection()
+				self.close_connexion()
 				return result, response

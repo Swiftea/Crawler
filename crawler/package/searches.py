@@ -1,11 +1,7 @@
 #!/usr/bin/python3
 
-"""Searches class :
-
-MyParser is the html parser,
-SiteInformations groups methodes for informations of the page.
-
-"""
+"""After parse source code, data extracted must be classify and clean. 
+Here is a class who use the html parser and manage all results."""
 
 __author__ = "Seva Nathan"
 
@@ -15,9 +11,11 @@ from urllib.parse import urlparse
 from package.data import * # to have required data
 from package.module import speak, stats_stop_words, get_stopwords, clean_text, remove_duplicates, get_base_url
 from package.parsers import MyParser
+
 class SiteInformations:
+	"""Class to manage searches in source codes"""
 	def __init__(self):
-		"""Build the class : define variables."""
+		"""Build searches manager"""
 		self.parser = MyParser()
 		self.url = str()
 		self.score = float()
@@ -33,22 +31,30 @@ class SiteInformations:
 		self.favicon = str()
 
 	def get_stopwords(self):
+		"""Define stopwords for clean keywords
+
+		:return: true if stopwords are found
+
+		"""
 		self.STOPWORDS = get_stopwords()
 		if self.STOPWORDS == dict():
-			# no STOPWORDS : the program will stop
-			speak('STOPWORDS is null, quit program')
+			speak('No stopwords, quit program')
 			return False
 		else:
 			return True
 
 	def get_infos(self, url, code, nofollow, score):
-		"""Get all webpage's informations.
+		"""Manager all searches of webpage's informations
 
-		url : the url of the page
-		score : the score of the page
-		code : the source code of the page
-		faviconnofollow : if we take the links of the page
-		return : list of links, title, description, key words, language,
+		:param url: url of webpage
+		:type url: str
+		:param score: score of webpage
+		:type score: int
+		:param code: source code of webpage
+		:type code: str
+		:param nofollow: if we take links of webpage
+		:type nofollow: bool
+		:return: links, title, description, key words, language,
 			score, number of words
 
 		"""
@@ -106,6 +112,13 @@ class SiteInformations:
 		return self.links, self.title, self.description, self.keywords, self.language, self.score, self.nb_words, self.favicon
 
 	def detect_language(self, keywords):
+		"""Detect language of webpage if not given
+
+		:param keywords: keywords of webpage used for detecting
+		:type keywords: list
+		:return: language found
+
+		"""
 		total_stopwords = 0
 
 	    # Nb stopwords
@@ -130,16 +143,19 @@ class SiteInformations:
 		return language
 
 	def clean_links(self, links):
-		"""Clean the list of links.
+		"""Clean webpage's links: rebuild urls with base url and
+		remove anchors, mailto, javascript, .index.
 
-		new : the links to add in the new list of links
+		:param links: links to clean
+		:type links: list
+		:return: cleanen links without duplicate
 
 		"""
 		links = remove_duplicates(links)
 		new_links = list()
 
 		for i, url in enumerate(links):
-			new = url.strip()
+			new = url.strip() # link to add in new list of links
 			if (not new.endswith(BAD_EXTENTIONS) and
 				new != '/' and
 				new != '#' and
@@ -169,6 +185,13 @@ class SiteInformations:
 		return remove_duplicates(new_links)
 
 	def clean_favicon(self, favicon):
+		"""Clean favicon
+
+		:param favicon: favicon url to clean
+		:type favicon: str
+		:return: cleaned favicon
+
+		"""
 		base_url = get_base_url(self.url)
 		if not favicon.startswith('http') and not favicon.startswith('www'):
 			if favicon.startswith('//'):
@@ -180,7 +203,15 @@ class SiteInformations:
 		return favicon
 
 	def clean_keywords(self, keywords):
-		"""Clean found keywords."""
+		"""Clean found keywords
+
+		Delete stopwords, bad chars, two letter less word and split word1-word2
+
+		:param keywords: keywords to clean
+		:type keywords: list
+		:return: list of cleaned keywords
+
+		"""
 		if self.language == 'fr':
 			stopwords = self.STOPWORDS['fr']
 		elif self.language == 'en':
@@ -219,7 +250,7 @@ class SiteInformations:
 					continue
 
 				if not True in [letter != '' for letter in keyword.split(keyword[0])]:
-					continue# keyword = '********'
+					continue # '********'
 
 				if keyword.endswith(END_CHARS): # repeat end chars
 					keyword = keyword[:-1]

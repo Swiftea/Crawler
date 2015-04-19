@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-"""Class for manage the inverted inverted_index."""
-
 __author__ = "Seva Nathan"
 
 from time import time
@@ -13,55 +11,17 @@ from package.data import INDEXING_TIMEOUT, DIR_OUTPUT, ALPHABET
 class InvertedIndex:
 	"""Manage inverted-index for crawler
 
-inverted_index = {
-	'EN': { # language folder
-		'A': { # first letter folder
-			'ab': { # two first letter (filename)
-				'above': {1: .3, 2: .1},
-				'abort': {1: .3, 2: .1}
-			},
-			'wo': {
-				'word': {
-					1:  # id
-						.3, # idf
-					30: 
-						.4
-				}
-			}
-		},
-		'B':{}
-	},
-	'FR': {
-		'B': {
-			'ba': {
-				'bateau': {
-					1:
-						.5
-				}
-			},
-			'bo': {
-				'boule': {
-					1:
-						.25,
-					2:
-						.8
-				}
-			}
-		}
-	}
-}
+	Inverted-index is a dict, each keys are language
+		-> values are a dict, each keys are first letter
+		-> values are dict, each keys are two first letters
+		-> values are dict, each keys are word 
+		-> values are dict, each keys are id
+		-> values are int : tf
 
-Inverted-index is a dict, each keys are language
-	-> values are a dict, each keys are first letter
-	-> values are dict, each keys are two first letters
-	-> values are dict, each keys are word 
-	-> values are dict, each keys are id
-	-> values are int : tf-idf
+	example: 
+	['FR']['A']['av']['avion'][21] is tf of word 'avion' in doc 21, language is FR
 
-example: 
-['FR']['A']['av']['avion'][21] is tf-idf of word 'avion' in doc 21, language is FR
-
-"""
+	"""
 
 	def __init__(self):
 		"""Build inverted-index manager"""
@@ -73,15 +33,15 @@ example:
 		self.STOPWORDS = STOPWORDS
 
 	def setInvertedIndex(self, inverted_index):
-		"""Define inverted_index at the beginning"""
+		"""Define inverted-indexs at the beginning"""
 		self.inverted_index = inverted_index
 
 	def getInvertedIndex(self):
-		"""Return inverted inverted_index"""
+		""":return: inverted-indexs"""
 		return self.inverted_index
 
-	def append_doc(self, keywords, doc_id, language):
-		"""Add all words of a doc in inverted-index
+	def add_doc(self, keywords, doc_id, language):
+		"""Add all words of a doc in inverted-indexs
 
 		:param keywords: all word in doc_id
 		:type keywords: list
@@ -89,9 +49,11 @@ example:
 		:type doc_id: int
 		:param language: language of word
 		:type language: str
-		:return: 
+		:return: true if time out
 
 		"""
+		language = language.upper()
+		nb_words = len(keywords)
 		beginning = time()
 		new_inverted_index = list()
 		for word in keywords:
@@ -116,34 +78,15 @@ example:
 						# second char isn't a letter
 						filename = 'sp-sp'
 
-				self.inverted_index[language][first_letter][filename] = self.add_word(word, language, first_letter.lower(), filename, occurence, doc_id)
+				self.add_word(word, language, first_letter, filename, occurence, doc_id, nb_words)
 
 			else:
 				speak('Indexing too long : pass', 23)
-				return None
+				return True
 
-		#self.save_keyword(keywords) # tests
+		#self.save_index() # tests
 
-		return new_inverted_index
-
-	def get_index(self, language, first_letter, filename):
-		"""Get inverted-index corresponding to params
-
-		:param language: language of word
-		:type language: str
-		:param first_letter: first letter of word
-		:type first_letter: str
-		:param filename: two first letters of word
-		:type filename: str
-		:return: inverted-index
-
-		"""
-		folder_language = self.inverted_index[language]
-		folder_letter = folder_language[first_letter]
-		filename = folder_letter[filename]
-		inverted_index = self.inverted_index[language][first_letter][filename]
-		# if all is correct : filename = inverted_index
-		return inverted_index
+		return False
 
 	def add_word(self, word, language, first_letter, filename, occurence, doc_id, nb_words):
 		"""Add a word in inverted-index
@@ -160,33 +103,35 @@ example:
 		:type occurence: int
 		:param doc_id: id of the doc in database
 		:type doc_id: int
-		:return: inverted-index
+		:param nb_words: number of words in the doc_id
+		:type nb_words: int
 
 		"""
-		inverted_index = self.get_index(word, language, first_letter, filename)
-		tf = self.calculate_tf(occurence, nb_words)
-		if word in inverted_index.keys():
+		if language in self.inverted_index:
+			if first_letter in self.inverted_index[language]:
+				if filename in self.inverted_index[language][first_letter]:
+					inverted_index = self.inverted_index[language][first_letter]
+				else:
+					self.inverted_index[language][first_letter][filename] = inverted_index = dict()
+			else:
+				self.inverted_index[language][first_letter] = inverted_index = dict()
+				print(self.inverted_index[language])
+		else:
+			self.inverted_index[language] = inverted_index = dict()
+
+		tf = occurence / nb_words
+		if word in inverted_index:
 			# word exists
 			docs = inverted_index[word]
-			update = False
-			for key, doc in enumerate(docs):
-				if doc_id in doc[0]:
-					update = True
-					break
-			if update:
-				# word already in doc_id: update tf
-				docs[key] = [doc_id, tf]
-				inverted_index[word] = docs
-			else:
-				docs.append([doc_id, tf])
-
+			docs[doc_id] = tf
 			inverted_index[word] = docs
-
 		else:
 			# word doesn't exists
-			inverted_index[word] = [doc_id, tf]
-		return inverted_index
-		# or: self.inverted_index[language][first_letter][filename] = inverted_index
+			inverted_index[word] = {doc_id: tf}
+
+		print('après')
+		self.inverted_index[language][first_letter][filename] = inverted_index
+		print(self.inverted_index[language][first_letter][filename])
 
 	def delete_word(self, word, language, first_letter, filename):
 		"""Delete a word in inverted-index
@@ -201,7 +146,7 @@ example:
 		:type filename: str
 
 		"""
-		inverted_index = self.get_index(word, language, first_letter, filename)
+		inverted_index = self.inverted_index[language][first_letter][filename]
 		del inverted_index[word]
 
 	def delete_id_word(self, word, language, first_letter, filename, doc_id):
@@ -219,7 +164,7 @@ example:
 		:type doc_id: int
 
 		"""
-		inverted_index = self.get_index(word, language, first_letter, filename)
+		inverted_index = self.inverted_index[language][first_letter][filename]
 		docs = inverted_index[word] # list of list: [[doc_id, tf], [doc_id, tf]]
 		for key, doc in enumerate(docs):
 			if doc[0] == doc_id:
@@ -253,19 +198,6 @@ example:
 									if doc[0] == doc_id:
 										del docs[key]
 										self.inverted_index[folder_language][folder_letter][filename][inverted_index][word] = docs
-
-	def calculate_tf(self, occurence, nb_words):
-		"""Calculate tf with occurence and nb words
-
-		:param occurence: occurence of the word in webpage
-		:type occurence: int
-		:param nb_words: number of words in the doc_id
-		:type nb_words: int
-		:return: tf
-
-		"""
-		tf = occurence / nb_words
-		return tf
 
 	# for testing :
 

@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-"""Unit for file management for crawler"""
+"""Crawler use lot a files. For example to manage configurations, stuck links...
+Here is a class who manager files of crawler."""
 
 __author__ = "Seva Nathan"
 
@@ -12,20 +13,18 @@ from package.data import * # to have required data
 from package.module import speak, stats_links
 
 class FileManager:
-	"""A file managment for the crawler.
+	"""File manager for crawler
 
-	methods :
-	check_stop_crawling : check if the user want to stop
-	get_max_links : get back the maxiaml number of links in a file
-	save_meters : save meters in the config file
-	check_size_files : del file if it size is over than MAX_SIZE
-	save_links : save the list of links in the writing file
-	check_size_writing : function who test the size of the writing file
-	get_url : get the url of the next web site
+	Save and read links, read and write configuration variables, 
+	read inverted-index and later archive event and errors files.
 
 	"""
 	def __init__(self):
-		"""build the file management"""
+		"""build manager
+
+		Create configuration file if doesn't exists	or read it
+
+		"""
 		self.writing_file_number = 1 # meter of the writing file
 		self.reading_file_number = 0 # meter of the reading file
 		self.reading_line_number = 0 # meter of links in the reading file
@@ -57,17 +56,17 @@ class FileManager:
 	# sometimes :
 
 	def check_stop_crawling(self):
-		"""Check if the user want to stop program."""
+		"""Check if the user want to stop program"""
 		self.config.read_file(open(FILE_CONFIG))
 		self.run = self.config['DEFAULT']['run']
 
 	def get_max_links(self):
-		"""Get back the maximal number of links in a file."""
+		"""Get back the maximal number of links in a file from configuration file"""
 		self.config.read_file(open(FILE_CONFIG))
 		self.max_links = int(self.config['DEFAULT']['max_links'])
 
 	def save_config(self):
-		"""Save config."""
+		"""Save configurations"""
 		self.config['DEFAULT'] = {
 			'run': self.run,
 			'reading_file_number': str(self.reading_file_number),
@@ -79,6 +78,7 @@ class FileManager:
 			self.config.write(configfile)
 
 	def check_size_files(self): # not use : don't work
+		"""Don't work fine"""
 		try: size = path.getsize(FILE_NEWS) # get the size
 		except FileNotFoundError:
 			speak('Log file is not found in check_size', 1)
@@ -115,10 +115,12 @@ class FileManager:
 	# other :
 
 	def save_links(self, new_links):
-		"""Save the links
+		"""Save links
 
-		Save the link in a file without doublons,
-		and check if the file if full.
+		Save link in a file without doublons and check if the file if full
+
+		:param new_links: links to save
+		:type new_links: list
 
 		"""
 		stats_links(str(len(new_links)))
@@ -150,7 +152,11 @@ class FileManager:
 				)
 
 	def get_url(self):
-		"""Get the url of the next page."""
+		"""Get the url of the next webpage
+
+		:return: url of webpage to crawl
+
+		"""
 		# joining : /liens/(reading meter) :
 		filename = DIR_LINKS + str(self.reading_file_number)
 		try:
@@ -176,6 +182,11 @@ class FileManager:
 			return url
 
 	def get_inverted_index(self, to_read):
+		"""get inverted-index
+
+		:return: inverted-index
+
+		"""
 		speak('Indexs in local : ' + str(to_read))
 		inverted_index = dict()
 		for letter_index in to_read:

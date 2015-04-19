@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-"""Class to manage the ftp connexion for swiftea."""
-
 from os import path, listdir
 
 
@@ -12,13 +10,17 @@ from package.module import speak
 __author__ = "Seva Nathan"
 
 class FTPManager(FTPConnect):
+	"""Class to manage the ftp connexion for crawler"""
 	def __init__(self, host, user, password):
+		"""Build manager"""
 		FTPConnect.__init__(self, host, user, password)
 
 	def get_inverted_index(self, to_download):
-		"""Get back inverted-indexs
+		"""Get inverted-indexs
 
-		response is 'Transfer complete' or 'Failed'
+		:param to_download: inverted-indexs to download
+		:type to_download: list
+		:return: inverted-indexs and response: 'Transfer complete' or 'Failed' or 'No index on ftp'
 
 		"""
 		inverted_index = dict()
@@ -41,6 +43,13 @@ class FTPManager(FTPConnect):
 		return inverted_index, response
 
 	def send_inverted_index(self, inverted_indexs):
+		"""Send inverted-indexs
+
+		:param inverted_indexs: inverted-indexs to send
+		:type inverted_indexs: dict
+		:return: response of sending or None if inverted_indexs is empty
+
+		"""
 		for index_letter in inverted_indexs:
 			filename = DIR_INDEX + index_letter
 			inverted_index = inverted_indexs[index_letter]
@@ -52,6 +61,11 @@ class FTPManager(FTPConnect):
 		return None
 
 	def get_indexs_to_download(self):
+		"""Compare inverted-indexs on ftp server and in local
+
+		:return: list of inverted-indexs to download and those to read
+
+		"""
 		to_download = list() # list of files to get index in ftp
 		to_read = list() # list of files to get index in local
 		list_indexs = listdir(DIR_INDEX) # local
@@ -80,6 +94,9 @@ class FTPManager(FTPConnect):
 		- max requests per minute
 		- number of requests did
 		- the timestamp
+
+		Doesn't work
+
 		"""
 		# Look if we can send data to database.
 		# download and read the file

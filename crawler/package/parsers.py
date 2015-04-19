@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
-"""Parsers using html.parser."""
+"""Data of webpage are geted by the python html.parser.
+Here is two parser, the first one for all informations and 
+the sencond one only for encoding."""
 
 from html.parser import HTMLParser
 from html.entities import *
@@ -8,13 +10,23 @@ from html.entities import *
 __author__ = "Seva Nathan"
 
 class MyParser(HTMLParser):
-	"""My parser for extract data.
+	"""Html parser for extract data
 
 	self.objet : the type of text for title, description and keywords
 	dict(attrs).get('content') : convert attrs in a dict and retrun the value
 
+	Data could be extract:
+		title
+		language
+		description
+		links with nofollow and noindex
+		stylesheet
+		favicon
+		keywords: h1, h2, h3, strong, em
+
 	"""
 	def __init__(self):
+		"""Build parser"""
 		HTMLParser.__init__(self)
 		self.links = list() # list of links
 		self.keywords = '' # all keywords in a string
@@ -25,6 +37,14 @@ class MyParser(HTMLParser):
 		self.description = self.language = self.title = self.favicon  = ''
 
 	def handle_starttag(self, tag, attrs):
+		"""Call when parser met a starting tag
+
+		:param tag: starting tag
+		:type tag: str
+		:param attrs: attributes
+		:type attrs: str
+
+		"""
 		if tag =='html': # bigining of the source code : reset all variables
 			self.links = list()
 			self.first_title = self.keywords = self.description = ''
@@ -80,6 +100,12 @@ class MyParser(HTMLParser):
 			self.objet = 'keyword'
 
 	def handle_data(self, data):
+		"""Call when parser met data
+
+		:param tag: starting tag
+		:type tag: str
+
+		"""		
 		if self.objet == 'title':
 			self.title += data
 		elif self.objet == 'keyword':
@@ -88,6 +114,14 @@ class MyParser(HTMLParser):
 			self.first_title = data
 
 	def handle_endtag(self, tag):
+		"""Call when parser met a ending tag
+
+		:param tag: starting tag
+		:type tag: str
+		:param attrs: attributes
+		:type attrs: str
+
+		"""
 		if tag == 'title':
 			self.objet = None
 		elif tag == 'h1' or tag == 'h2' or tag == 'h3'	or tag == 'strong' or tag == 'em':
@@ -120,16 +154,25 @@ class MyParser(HTMLParser):
 			self.add_letter(letter)
 
 	def add_letter(self, letter):
+		"""Add a letter to title when met special char"""
 		self.title += letter
 
 
 class Parser_encoding(HTMLParser):
-	"""Searche encoding."""
+	"""Html parser for extract encoding from source code"""
 	def __init__(self):
 		HTMLParser.__init__(self)
 		self.encoding = str()
 
 	def handle_starttag(self, tag, attrs):
+		"""Call when parser met a starting tag
+
+		:param tag: starting tag
+		:type tag: str
+		:param attrs: attributes
+		:type attrs: str
+
+		"""
 		if tag == 'meta':
 			# <meta charset="utf-8">
 			charset = dict(attrs).get('charset')
