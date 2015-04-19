@@ -3,8 +3,8 @@ crawler/package/__pycache__/
 crawler/tests/__pycache__/
 crawler/tests/.coverage
 crawler/__pycache__/
-crawler/config/
 crawler/output/
+crawler/config/
 crawler/links/
 crawler/data/
 docs/_static

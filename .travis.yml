@@ -1,21 +1,21 @@
 language: python
 python:
   - "3.4"
-# command to install dependencies
+
 install:
     - "pip install -r requirements.txt"
-    - "pip install pytest pytest-cov"
+    - "pip install coverage"
     - "pip install coveralls"
 
-# cd to crawler folder
-before_script: cd crawler
-# command to run tests
+before_script:
+	- "export PYTHONPATH=crawler"
+
 branches:
   only:
     - master
     - develop
 script:
-    - "PYTHONPATH=. py.test"
+    - "coverage run --source=crawler setup.py test"
 
 after_success: 
     - coveralls

@@ -1,12 +1,17 @@
-import os
+import sys
 from setuptools import setup
+from setuptools.command.test import test as TestCommand
 
-# Utility function to read the README file.
-# Used for the long_description. It's nice, because now 1) we have a top level
-# README file and 2) it's easier to type in the README file than to put a raw
-# string in below ...
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = ['--strict', '--verbose', '--tb=long', 'crawler/tests']
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
 
 setup(
     name = "Crawler",
@@ -15,8 +20,9 @@ setup(
     tests_require=['pytest'],
     install_requires=['reppy>=0.3.0',
                     'PyMySQL>=0.6.6',
-                    'urllib3>=1.10.1'
+                    'urllib3>=1.10.2'
                     ],
+    cmdclass={'test': PyTest},
     description = ("Swiftea's Open Source Web Crawler"),
     license = "GNU GPL v3",
     keywords = "crawler swiftea",

@@ -2,11 +2,14 @@
 
 ## Master branch :
 [![Build Status](https://travis-ci.org/Swiftea/Swiftea-Crawler.svg?branch=master)](https://travis-ci.org/Swiftea/Swiftea-Crawler)
+[![Coverage Status](https://coveralls.io/repos/Swiftea/Swiftea-Crawler/badge.svg)](https://coveralls.io/r/Swiftea/Swiftea-Crawler)
 [![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=master)](https://crawler.readthedocs.org/en/master/)
 
 ## Develop branch :
 [![Build Status](https://travis-ci.org/Swiftea/Swiftea-Crawler.svg?branch=develop)](https://travis-ci.org/Swiftea/Swiftea-Crawler)
 [![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=develop)](https://crawler.readthedocs.org/en/develop)
+
+## Coverage
 
 Swiftea's Crawler is the crawler we used on Swiftea. Currently, it can :
 
