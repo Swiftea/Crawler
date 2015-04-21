@@ -55,7 +55,7 @@ def quit():
 	Call speak() with 'end' and exit
 
 	"""
-	speak('end\n', 0)
+	#speak('end\n', 0)
 	exit()
 
 def clean_text(text):
@@ -153,8 +153,7 @@ def start():
 			mkdir(DIR_LINKS)
 			with open(FILE_BASELINKS, 'w') as myfile:
 				myfile.write("""http://www.planet-libre.org
-http://www.jeux.fr
-http://fr.openclassrooms.com
+http://zestedesavoir.com
 http://www.01net.com
 https://www.youtube.com
 http://www.lefigaro.fr

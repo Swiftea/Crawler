@@ -18,8 +18,11 @@ class TestCrawlerBase(object):
         self.url = 'http://www.example.fr'
         self.language = 'fr'
         self.STOPWORDS = {'fr':('mot', 'pour')}
-        self.inverted_index = {'EN': {'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}, 'wo': {'word': {1: .3, 30: .4}}}, 'B': {}},
-        'FR': {'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
+        self.inverted_index = {'EN': {
+        'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}}, 
+        'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
+        'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
+
         self.alphabet = ALPHABET
         self.parser = MyParser()
         self.parser_encoding = Parser_encoding()
@@ -131,17 +134,57 @@ class TestCrawlerBasic(TestCrawlerBase):
         assert average(['20', '20', '30', '30']) == 25
 
     def test_getInvertedIndex(self):
-        assert InvertedIndex.getInvertedIndex(self) == {'EN': {'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}, 'wo': {'word': {1: .3, 30: .4}}}, 'B': {}},
-        'FR': {'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
+        assert InvertedIndex.getInvertedIndex(self) == {'EN': {
+        'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
+        'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
+        'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
 
     def test_add_word(self):
+        # add language:
         InvertedIndex.add_word(self, 'avion', 'FR', 'A', 'av', occurence=6, doc_id=9, nb_words=40)
-        #print(self.inverted_index)
-        assert self.inverted_index['FR']['A']['av']['avion'][9] == 6 / 40
-        #assert self.inverted_index['FR']['A']['av'] == {'avion': {9 :6 / 40}}
-        #assert self.inverted_index['FR']['A'] == {'av': {'avion': {9 :6 / 40}}}
-        #assert self.inverted_index == {'EN': {'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}, 'wo': {'word': {1: .3, 30: .4}}}, 'B': {}},
-        #'FR': {'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}, 'A': {'av': {'avion': {9: .15}}}}}
+        # add letter:
+        InvertedIndex.add_word(self, 'voler', 'FR', 'V', 'vo', occurence=7, doc_id=9, nb_words=40)
+        # add filename:
+        InvertedIndex.add_word(self, 'aboutir', 'FR', 'A', 'ab', occurence=7, doc_id=56, nb_words=40)
+        # add word:
+        InvertedIndex.add_word(self, 'aviation', 'FR', 'A', 'av', occurence=7, doc_id=9, nb_words=40)
+        # add sp first letter:
+        InvertedIndex.add_word(self, 'ùaviation', 'FR', 'SP', 'sp-a', occurence=7, doc_id=9, nb_words=40)
+        # add sp filename:
+        InvertedIndex.add_word(self, 'aùviation', 'FR', 'A', 'a-sp', occurence=7, doc_id=9, nb_words=40)
+        # update:
+        InvertedIndex.add_word(self, 'avion', 'FR', 'A', 'av', occurence=7, doc_id=9, nb_words=40)
 
-    def test_add_doc(self):
-        pass
+        assert self.inverted_index == {'EN': {
+        'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
+        'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
+        'V': {'vo': {'voler': {9: 7/40}}},
+        'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}},
+        'A': {'av': {'avion': {9: 7/40}, 'aviation': {9: 7/40}}, 'ab': {'aboutir': {56: 7/40}}, 'a-sp': {'aùviation': {9: 7/40}}},
+        'SP': {'sp-a': {'ùaviation': {9: 7/40}}}}}
+
+    def test_delete_word(self):
+        InvertedIndex.delete_word(self, 'above', 'EN', 'A', 'ab')
+        assert self.inverted_index == {'EN': {
+        'A': {'ab': {'abort': {1: .3, 2: .1}}},
+        'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
+        'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
+
+    def test_delete_id_word(self):
+        InvertedIndex.delete_id_word(self, 'boule', 'FR', 'B', 'bo', 2)
+        assert self.inverted_index == {'EN': {
+        'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}}, 
+        'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
+        'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25}}}}}
+
+    def test_delete_doc_id(self):
+        """
+        InvertedIndex.delete_doc_id(self, 1)
+        assert self.inverted_index == {'EN': {
+        'A': {'ab': {'above': {2: .1}, 'abort': {2: .1}}}, 
+        'W': {'wo': {'word': {30: .4}}}}, 'FR': {
+        'B': {'bo': {'boule': {2: .8}}}}}
+
+        InvertedIndex.delete_doc_id(self, 2)
+        assert self.inverted_index == {'EN': {'W': {'wo': {'word': {30: .4}}}}}
+        """

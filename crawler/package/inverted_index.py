@@ -110,28 +110,22 @@ class InvertedIndex:
 		if language in self.inverted_index:
 			if first_letter in self.inverted_index[language]:
 				if filename in self.inverted_index[language][first_letter]:
-					inverted_index = self.inverted_index[language][first_letter]
+					inverted_index = self.inverted_index[language][first_letter][filename]
 				else:
 					self.inverted_index[language][first_letter][filename] = inverted_index = dict()
 			else:
-				self.inverted_index[language][first_letter] = inverted_index = dict()
-				print(self.inverted_index[language])
+				inverted_index = dict()
+				self.inverted_index[language][first_letter] = dict()
 		else:
-			self.inverted_index[language] = inverted_index = dict()
+			inverted_index = dict()
+			self.inverted_index[language] = dict()
+			self.inverted_index[language][first_letter] = dict()
+			self.inverted_index[language][first_letter][filename] = dict()
 
-		tf = occurence / nb_words
-		if word in inverted_index:
-			# word exists
-			docs = inverted_index[word]
-			docs[doc_id] = tf
-			inverted_index[word] = docs
-		else:
-			# word doesn't exists
-			inverted_index[word] = {doc_id: tf}
+		tf = round(occurence / nb_words, 7)
+		inverted_index[word] = {doc_id: tf}
 
-		print('après')
 		self.inverted_index[language][first_letter][filename] = inverted_index
-		print(self.inverted_index[language][first_letter][filename])
 
 	def delete_word(self, word, language, first_letter, filename):
 		"""Delete a word in inverted-index
@@ -146,11 +140,13 @@ class InvertedIndex:
 		:type filename: str
 
 		"""
-		inverted_index = self.inverted_index[language][first_letter][filename]
-		del inverted_index[word]
+		if self.inverted_index[language][first_letter][filename].get(word) is not None:
+			del self.inverted_index[language][first_letter][filename][word]
 
 	def delete_id_word(self, word, language, first_letter, filename, doc_id):
 		"""Delete a id of a word in inverted-index
+
+		This method delete a word from a document.
 
 		:param word: word to delete
 		:type word: str
@@ -164,40 +160,36 @@ class InvertedIndex:
 		:type doc_id: int
 
 		"""
-		inverted_index = self.inverted_index[language][first_letter][filename]
-		docs = inverted_index[word] # list of list: [[doc_id, tf], [doc_id, tf]]
-		for key, doc in enumerate(docs):
-			if doc[0] == doc_id:
-				del docs[key]
+		if self.inverted_index[language][first_letter][filename][word].get(doc_id) is not None:
+			del self.inverted_index[language][first_letter][filename][word][doc_id]
 
 	def delete_doc_id(self, doc_id):
 		"""Delete a id in inverted-index
+
+		Doesn't work
 
 		:param doc_id: id to delete
 		:type doc_id: int
 
 		"""
-		for folder_language in self.inverted_index:
-			folder_language_ = self.inverted_index[folder_language]
-			# language
-			for folder_letter in folder_language_:
-				folder_letter_ = folder_language_[folder_letter]
-				# letter
-				for filename in folder_letter_:
-					filename_ = folder_letter_[filename]
-					# two first letters: filename
-					for inverted_index in filename_:
-						inverted_index_ = filename_[inverted_index]
-						for word in inverted_index_:
-							word_ = inverted_index_[word]
-							# word: list of docs
-							for docs in word_:
-								docs = word_[docs]
-								# docs: list of doc_id and tf
-								for key, doc in enumerate(docs):
-									if doc[0] == doc_id:
-										del docs[key]
-										self.inverted_index[folder_language][folder_letter][filename][inverted_index][word] = docs
+		for language in self.inverted_index:
+			for first_letter in self.inverted_index[language]:
+				for filename in self.inverted_index[language][first_letter]:
+					for word in self.inverted_index[language][first_letter][filename]:
+						if self.inverted_index[language][first_letter][filename][word].get(doc_id) is not None:
+							del self.inverted_index[language][first_letter][filename][word][doc_id]
+						if self.inverted_index[language][first_letter][filename][word] == {}:
+							del self.inverted_index[language][first_letter][filename][word]
+							break
+					if self.inverted_index[language][first_letter][filename] == {}:
+						del self.inverted_index[language][first_letter][filename]
+						break
+				if self.inverted_index[language][first_letter] == {}:
+					del self.inverted_index[language][first_letter]
+					break
+			if self.inverted_index[language] == {}:
+				del self.inverted_index[language]
+				break
 
 	# for testing :
 

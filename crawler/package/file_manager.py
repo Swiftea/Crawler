@@ -180,16 +180,3 @@ class FileManager:
 				# the program have read all the links : next reading_file_number
 				speak('Next reading file : ' + str(self.reading_file_number))
 			return url
-
-	def get_inverted_index(self, to_read):
-		"""get inverted-index
-
-		:return: inverted-index
-
-		"""
-		speak('Indexs in local : ' + str(to_read))
-		inverted_index = dict()
-		for letter_index in to_read:
-			with open(DIR_INDEX + letter_index, 'r') as myfile:
-				inverted_index[letter_index] = myfile.read()
-		return inverted_index

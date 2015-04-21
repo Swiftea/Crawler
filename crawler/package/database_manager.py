@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+import socket
+
+
 import pymysql # for database access
 
 from package.data import TIMEOUT
@@ -28,12 +31,12 @@ class DatabaseManager:
 		self.user = user # username
 		self.password = password # password
 		self.name = name # database name
-		self.cursor = self.connexion = None
+		self.cursor = self.conn = None
 
 	def connexion(self):
 		"""Connect to database"""
 		try:
-			self.connexion = pymysql.connect(host=self.host,
+			self.conn = pymysql.connect(host=self.host,
 				user=self.user,
 				passwd=self.password,
 				db=self.name,
@@ -45,7 +48,7 @@ class DatabaseManager:
 		except socket.timeout:
 			response = 'Connexion error (socket.timeout:)'
 		else:
-			self.cursor = self.connexion.cursor() # cursor building
+			self.cursor = self.conn.cursor() # cursor building
 			response = 'Connected to database'
 		finally:
 			return response
@@ -53,7 +56,7 @@ class DatabaseManager:
 	def close_connexion(self):
 		"""Close the database connexion"""
 		self.cursor.close()
-		self.connexion.close()
+		self.conn.close()
 
 	def send_command(self, command, data=tuple(), all=False):
 		"""Send a query to database

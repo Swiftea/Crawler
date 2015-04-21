@@ -27,7 +27,6 @@ class SiteInformations:
 		self.code = str()
 		self.new = str()
 		self.slash = int()
-		self.nb_words = int()
 		self.favicon = str()
 
 	def get_stopwords(self):
@@ -89,8 +88,7 @@ class SiteInformations:
 			if self.parser.css:
 				self.score += 0.5
 
-			self.nb_words = len(self.keywords)
-			stats_stop_words(begining_size, self.nb_words) # stats
+			stats_stop_words(begining_size, len(self.keywords)) # stats
 
 			# links :
 			if nofollow:
@@ -107,9 +105,9 @@ class SiteInformations:
 		else:
 			speak('No language or title')
 			self.title = ''
-			self.links = self.description = self.keywords = self.language = self.score = self.nb_words = self.favicon = None
+			self.links = self.description = self.keywords = self.language = self.score = self.favicon = None
 
-		return self.links, self.title, self.description, self.keywords, self.language, self.score, self.nb_words, self.favicon
+		return self.links, self.title, self.description, self.keywords, self.language, self.score, self.favicon
 
 	def detect_language(self, keywords):
 		"""Detect language of webpage if not given

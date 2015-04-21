@@ -51,7 +51,7 @@ class FTPConnect(FTP):
 		finally:
 			return response
 
-	def quit_connexion(self):
+	def disconnect(self):
 		try:
 			response = self.quit()
 		except all_errors as error:
@@ -71,22 +71,14 @@ class FTPConnect(FTP):
 		:return: response of server
 
 		"""
-		response = self.connexion()
-		if 'failed' in response:
-			return response
-		else:
-			with open(local_filename, 'br') as myfile:
-				try:
-					response = self.storbinary(
-						'STOR ' + server_filename, myfile)
-				except all_errors as error:
-					response = 'Failed to send file ' + \
-						local_filename + ' : ' + str(error)
-				else:
-					response = 'Send file : ' + response
-				finally:
-					self.quit_connexion()
-			return response
+		with open(local_filename, 'br') as myfile:
+			try:
+				response = self.storbinary('STOR ' + server_filename, myfile)
+			except all_errors as error:
+				response = 'Failed to send file ' +	local_filename + ' : ' + str(error)
+			else:
+				response = 'Send file : ' + response
+		return response
 
 	def download(self, local_filename, server_filename):
 		"""Download a file from ftp server
@@ -98,119 +90,12 @@ class FTPConnect(FTP):
 		:return: response of server
 
 		"""
-		response = self.connexion()
-		if 'failed' in response:
-			return response
-		else:
-			with open(local_filename, 'wb') as myfile:
-				try:
-					response = self.retrbinary(
-						'RETR ' + server_filename, myfile.write)
-				except all_errors as error:
-					response = 'Failed to download file ' + \
-						server_filename + ' : ' + str(error)
-				else:
-					response = 'Download file ' + server_filename + ': ' + response
-				finally:
-						self.quit_connexion()
-			return response
-
-	def list_dir(self):
-		response = self.connexion()
-		if 'failed' in response:
-			return response
-		else:
+		with open(local_filename, 'wb') as myfile:
 			try:
-				response = self.retrlines('LIST')
+				response = self.retrbinary(
+					'RETR ' + server_filename, myfile.write)
 			except all_errors as error:
-				return None, 'Error : ' + str(error)
+				response = 'Failed to download file ' +	server_filename + ' : ' + str(error)
 			else:
-				return response, 'ok'
-			finally:
-				self.quit_connexion()
-
-	def rename_file_dir(self, name1, name2):
-		response = self.connexion()
-		if 'failed' in response:
-			return response
-		else:
-			try:
-				response = self.rename(name1, name2)
-			except all_errors as error:
-				return 'Error : ' + str(error)
-			else:
-				return response
-			finally:
-				self.quit_connexion()
-
-	def delete_file(self, file_name):
-		response = self.connexion()
-		if 'failed' in response:
-			return response
-		else:
-			try:
-				response = self.delete(file_name)
-			except all_errors as error:
-				return 'Error : ' + str(error)
-			else:
-				return response
-			finally:
-				self.quit_connexion()
-
-	def make_dir(self, name_dir): # except file exist
-		response = self.connexion()
-		if 'failed' in response:
-			return response
-		else:
-			try:
-				response = self.mkd(dir_name)
-			except all_errors as error:
-				return 'Error : ' + str(error)
-			else:
-				return response
-			finally:
-				self.quit_connexion()
-
-	def del_dir(self, dir_name):
-		response = self.connexion()
-		if 'failed' in response:
-			return response
-		else:
-			try:
-				response  = self.rmd(dir_name)
-			except all_errors as error:
-				return 'Error : ' + str(error)
-			else:
-				return response
-			finally:
-				self.quit_connexion()
-
-	def send_func(self, comand):
-		response = self.connexion()
-		if 'failed' in response:
-			return response
-		else:
-			try:
-				response = self.sendcmd(comand)
-			except all_errors as error:
-				return 'Error : ' + str(error)
-			else:
-				return response
-			finally:
-				self.quit_connexion()
-
-	def stop_sending(self):
-		self.connect.abort() # mieu à faire ?
-		return 'sending stoped'
-
-	def change_dir(self, path):
-		response = self.connexion()
-		if 'failed' in response:
-			return response
-		else:
-			try:
-				response = self.cwd(path)
-			except all_errors as error:
-				return 'Error : ' + str(error)
-			finally:
-				self.quit_connexion()
+				response = 'Download file ' + server_filename + ': ' + response
+		return response

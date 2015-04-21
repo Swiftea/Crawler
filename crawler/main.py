@@ -30,7 +30,9 @@ class Crawler:
 			quit()
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPManager(HOST_FTP, USER, PASSWORD)
-		self.inverted_index = self.get_inverted_indexs()
+		self.inverted_index, error = self.ftp_manager.get_inverted_index()
+		if error and self.file_manager.reading_file_number != 0:
+			quit()
 		self.index_manager = InvertedIndex()
 		self.index_manager.setInvertedIndex(self.inverted_index)
 		self.index_manager.setStopwords(self.site_informations.STOPWORDS)
@@ -39,30 +41,6 @@ class Crawler:
 
 		self.infos = list()
 		self.crawled_websites = 0
-
-	def get_inverted_indexs(self):
-		"""Get inverted-index
-
-		:return: inverted-index
-
-		"""
-		speak("Get index")
-		to_download, to_read = self.ftp_manager.get_indexs_to_download()
-		inverted_indexs_ftp = inverted_indexs_local = inverted_index = dict()
-		if to_download != []:
-			inverted_indexs_ftp, response = self.ftp_manager.get_inverted_index(to_download)
-			if response == 'Failed' and self.file_manager.reading_file_number != 0:
-				speak("No index, quit program")
-				quit()
-			else:
-				speak(response)
-		if to_read != []:
-			inverted_indexs_local = self.file_manager.get_inverted_index(to_read)
-
-		inverted_index = inverted_indexs_ftp
-		for key in inverted_indexs_local.keys():
-			inverted_index[key] = inverted_indexs_local[key]
-		return inverted_index
 
 	def start(self):
 		"""Start the main loop of crawling"""
@@ -92,7 +70,7 @@ class Crawler:
 				self.file_manager.save_config()
 				#self.file_manager.check_size_file()
 				if self.file_manager.run == 'false':
-					speak("User wants stop  program")
+					speak('User wants stop program')
 					self.safe_quit()
 
 			# end of loop range(n)
@@ -119,8 +97,7 @@ class Crawler:
 			webpage_infos['url'] = url
 			(links, webpage_infos['title'], webpage_infos['description'],
 				webpage_infos['keywords'], webpage_infos['language'],
-				webpage_infos['score'], webpage_infos['nb_words'],
-				webpage_infos['favicon'],
+				webpage_infos['score'], webpage_infos['favicon'],
 				) = self.site_informations.get_infos(url, html_code, is_nofollow, score)
 
 			if webpage_infos['title'] != '':
@@ -143,20 +120,16 @@ class Crawler:
 			if doc_id == 'error':
 				self.safe_quit()
 			speak('Indexing : {0} {1}'.format(doc_id, webpage_infos['url']))
-			self.inverted_index = self.index_manager.append_doc(webpage_infos['keywords'], doc_id)
-			if self.inverted_index is None:
+			timeout = self.index_manager.add_doc(webpage_infos['keywords'], doc_id, webpage_infos['language'])
+			if timeout:
 				self.database.del_one_doc(webpage_infos['url'], 'index_url')
 
 	def send_inverted_index(self):
 		"""Send inverted-index generate by indexing to ftp server"""
-		speak('Send index')
-		response = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
-		if response:
-			speak("Failed to send index : " + response, 21)
-			self.file_manager.save_index()
-			self.safe_quit()
-		else:
-			speak('All transferts are completed')
+		error = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
+		if error:
+			#self.file_manager.save_index()
+			quit()
 
 	def suggestions(self):
 		"""Suggestions:

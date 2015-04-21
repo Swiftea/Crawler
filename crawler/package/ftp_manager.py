@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-from os import path, listdir
+from os import path, listdir, mkdir
+import json
 
 
 from package.FTP import FTPConnect
@@ -15,124 +16,81 @@ class FTPManager(FTPConnect):
 		"""Build manager"""
 		FTPConnect.__init__(self, host, user, password)
 
-	def get_inverted_index(self, to_download):
+	def get_inverted_index(self):
 		"""Get inverted-indexs
 
-		:param to_download: inverted-indexs to download
-		:type to_download: list
-		:return: inverted-indexs and response: 'Transfer complete' or 'Failed' or 'No index on ftp'
+		:return: inverted-indexs and True if an error occured
 
 		"""
+		speak('Get inverted-indexs')
 		inverted_index = dict()
-		self.connection()
+		self.connexion()
 		self.cwd(FTP_INDEX)
-		speak('Indexs in ftp : ' + str(to_download))
-		response = 'No index on ftp'
-		for letter_index in self.nlst():
-			if letter_index in to_download:
-				local_filename = DIR_INDEX + letter_index
-				server_filename = FTP_INDEX + letter_index
-				response = self.download(local_filename, server_filename)
-				if 'Error' in response:
-					speak('Failed to download inverted-index ' + server_filename + ', ' + response, 22)
-					return None, 'Failed', 'error'
-				else:
-					with open(local_filename, 'r', encoding='utf-8') as myfile:
-						inverted_index[letter_index] = myfile.read()
-					response = 'Transfer complete'
-		return inverted_index, response
 
-	def send_inverted_index(self, inverted_indexs):
+		for language in self.nlst():
+			self.cwd(language)
+			if not path.isdir(DIR_INDEX + language):
+				mkdir(DIR_INDEX + language)
+			inverted_index[language] = dict()
+
+			for first_letter in self.nlst():
+				self.cwd(first_letter)
+				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
+					mkdir(DIR_INDEX +  language + '/' + first_letter)
+				inverted_index[language][first_letter] = dict()
+
+				for filename in self.nlst():
+					path_index = language + '/' + first_letter + '/' + filename
+					response = self.download(DIR_INDEX + path_index, filename)
+					if 'Error' in response:
+						speak('Failed to download inverted-index ' + path_index + ', ' + response, 22)
+						return None, True
+					else:
+						with open(DIR_INDEX + path_index, 'r', encoding='utf-8') as myfile:
+							inverted_index[language][first_letter][filename] = json.load(myfile)
+				self.cwd('..')
+			self.cwd('..')
+		self.disconnect()
+		if inverted_index == dict():
+			speak('No inverted-index on ftp')
+		else:
+			speak('Transfer complete')
+		return inverted_index, False
+
+	def send_inverted_index(self, inverted_index):
 		"""Send inverted-indexs
 
-		:param inverted_indexs: inverted-indexs to send
-		:type inverted_indexs: dict
-		:return: response of sending or None if inverted_indexs is empty
+		:param inverted_index: inverted-indexs to send
+		:type inverted_index: dict
+		:return: True if an error occured
 
 		"""
-		for index_letter in inverted_indexs:
-			filename = DIR_INDEX + index_letter
-			inverted_index = inverted_indexs[index_letter]
-			with open(filename, 'w', encoding='utf-8') as myfile:
-				myfile.write(inverted_index)
-			response = self.upload(filename, FTP_INDEX + index_letter)
-			if 'Error' in response:
-				return response
-		return None
-
-	def get_indexs_to_download(self):
-		"""Compare inverted-indexs on ftp server and in local
-
-		:return: list of inverted-indexs to download and those to read
-
-		"""
-		to_download = list() # list of files to get index in ftp
-		to_read = list() # list of files to get index in local
-		list_indexs = listdir(DIR_INDEX) # local
-		self.connection()
+		speak('Send inverted-indexs')
+		self.connexion()
 		self.cwd(FTP_INDEX)
-		if len(list_indexs) == 27: # can be improve
-			self.cwd(FTP_INDEX)
-			for data in self.mlsd(facts=['size', 'type']):
-				if data[1]['type'] == 'file':
-					local_size = path.getsize(DIR_INDEX + data[0])
-					if int(data[1]['size']) > local_size:
-						# different sizes, must download
-						to_download.append(data[0])
-					else: # int(data[1]['size']) <= local_size
-						to_read.append(data[0])
-		elif len(self.nlst()) == 27:
-			to_download = ALPHABET
-			to_download.append('_')
-		self.quit_connection()
-		return to_download, to_read
-
-	def can_send(self): # not use at the moment, must be tested
-		"""Return True if the program can send to database, False if not.
-
-		On the ftp server there is a file who contains data :
-		- max requests per minute
-		- number of requests did
-		- the timestamp
-
-		Doesn't work
-
-		"""
-		# Look if we can send data to database.
-		# download and read the file
-		# content is a dict
-		# simple thing :
-		if time() - content['timestamp'] >= 60:
-			# the next minute
-			content['number request'] = 0 # reset meter
-			result = True
-		else:
-			# in the same minute
-			if content['number requests'] + nb_request > content['max request']:
-				result = False
-			else:
-				result = True
-			content['number request'] += nb_request
-		"""
-		# Thing more complexe : return the number of requests who can do
-		if time() - content['timestamp'] >= 60:
-			# the next minute
-			content['number request'] = 0 # reset meter
-			if nb_request <= content['max request']:
-				result = nb_request
-			else:
-				result = content['max request']
-		else:
-			if content['number request'] + nb_request >= content['max request']:
-				result = content['max request']
-			else:
-				result = nb_request
-			content['number request'] += nb_request
-
-		content['timestamp'] = time()
-		"""
-
-		# send the file
-
-# other things :
-
+		for language in inverted_index:
+			if language not in self.nlst():
+				self.mkd(language)
+			if not path.isdir(DIR_INDEX + language):
+				mkdir(DIR_INDEX + language)
+			self.cwd(language)
+			for first_letter in inverted_index[language]:
+				if first_letter not in self.nlst():
+					self.mkd(first_letter)
+				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
+					mkdir(DIR_INDEX + language + '/' + first_letter)
+				self.cwd(first_letter)
+				for two_letters in inverted_index[language][first_letter]:
+					index = inverted_index[language][first_letter][two_letters]
+					path_index = language + '/' + first_letter + '/' + two_letters + '.sif'
+					with open(DIR_INDEX + path_index, 'w', encoding='utf-8') as myfile:
+						json.dump(index, myfile, ensure_ascii=False)
+					response = self.upload(DIR_INDEX + path_index, two_letters + '.sif')
+					if 'Error' in response:
+						speak('Failed to send inverted-indexs ' + path_index + ', ' + response, 21)
+						return True
+				self.cwd('..')
+			self.cwd('..')
+		self.disconnect()
+		speak('Transfer complete')
+		return False
