@@ -1,21 +1,17 @@
 language: python
 python:
   - "3.4"
-
 install:
-    - "pip install -r requirements.txt"
-    - "pip install coverage"
-    - "pip install coveralls"
-
+  - "pip install -r requirements.txt"
+  - "pip install coverage"
+  - "pip install coveralls"
 before_script:
-	- "export PYTHONPATH=crawler"
-
+  - "export PYTHONPATH=crawler"
 branches:
   only:
     - master
     - develop
 script:
-    - "coverage run --source=crawler setup.py test"
-
-after_success: 
-    - coveralls
+  - "coverage run --source=crawler setup.py test"
+after_success:
+  - coveralls

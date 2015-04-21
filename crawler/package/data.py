@@ -27,7 +27,6 @@ FTP_INDEX = '/www/data/inverted-index/'
 # lists for clean up links and keywords :
 BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif',
 '.ico', '.svg', '.tiff', '.tif' '.raw', '.flv', '.mpeg', '.mpg', '.wma', '.mp4', '.mp3', '.fla', '.avi', '.gz', '.exe', '.xml')
-IMG_EXTENTIONS = ('.jpeg', '.jpg', '.png', '.gif', '.bmp', '.ico')
 START_CHARS = ('«', '\'', '"', '(', ':', '/' , '[', '{', '-', '“')
 END_CHARS = ('.', ',', ';', '!', '?', '»', '\'', '"', ')', ':', '/', ']', '}', '-', '”', '…')
 END_CHARS2 = ('...', '!!!', '???')
@@ -40,14 +39,13 @@ MAX_SIZE = 500 # max size of a error and log file (FILE_ERROR and FILE_NEWS)
 INDEXING_TIMEOUT = 30 # time in second to index a document
 MAX_LINKS = 5000 # max links in a file
 CRAWL_DELAY = timedelta(days=2) # the program don't crawl the website if it was crawled x ago
-CRAWL_IMG_DELAY = timedelta(days=15)
 TIMEOUT = 30
 
 # README :
 README = """----- Documentation -----
 
 In the first run, the crawler for swiftea ask what links start crawling.
-So you can fill a fichier named '0' without extention with 10 links max, 
+So you can fill a fichier named '0' without extention with 10 links max,
 or let program choose a list of links.
 
 --- errors code: ---
@@ -94,7 +92,7 @@ It content is:
  - reading_file_number = number, program take links in this file
  - reading_line_number = number, the line in the file where program take links
  - writing_file_number = number, program save found links in this file
- - links_number = around the number 
+ - links_number = around the number
 
 ---fichier journal.log : ---
  - copie de ce qui s'affiche dans la console

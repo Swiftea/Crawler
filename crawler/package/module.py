@@ -55,7 +55,7 @@ def quit():
 	Call speak() with 'end' and exit
 
 	"""
-	#speak('end\n', 0)
+	speak('end\n', 0)
 	exit()
 
 def clean_text(text):
@@ -128,7 +128,7 @@ def start():
 		mkdir(DIR_OUTPUT)
 	if not path.isdir(DIR_INDEX):
 		mkdir(DIR_INDEX)
-		
+
 	# create doc file if it doesn't exist :
 	if not path.exists(FILE_DOC):
 		with open(FILE_DOC, 'w') as myfile:
