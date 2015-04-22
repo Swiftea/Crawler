@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-"""Connexion to webpage are manage with requests module. 
-Thoses errors are waiting for: timeout with socket module and with urllib3 mudule 
+"""Connexion to webpage are manage with requests module.
+Thoses errors are waiting for: timeout with socket module and with urllib3 mudule
 and all RequestException errors."""
 
 __author__ = "Seva Nathan"
@@ -41,10 +41,10 @@ class WebConnexion:
 		try:
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
 		except requests.exceptions.Timeout:
-			speak('Website not responding : ' + url, 7)
+			speak('Website not responding: ' + url, 7)
 			return None, is_nofollow, 0
 		except requests.exceptions.RequestException as error:
-			speak('Failed to connect to website : {}, {}'.format(str(error), url), 8)
+			speak('Failed to connect to website: {}, {}'.format(str(error), url), 8)
 			return None, is_nofollow, 0
 		except ReadTimeoutError:
 			speak('Website not responding (2): ' + url, 7)
@@ -53,22 +53,27 @@ class WebConnexion:
 			try:
 				requests.get(get_base_url(url) + '/robots.txt', timeout=TIMEOUT)
 			except requests.exceptions.RequestException as error:
-				speak('Error robot.txt (2) : ' + str(error), 24)
+				speak('Error robot.txt: ' + str(error), 24)
 				allowed = True
 			else:
 				try:
 					allowed = self.reqrobots.allowed(url, USER_AGENT)
 				except ServerError as error:
-					speak('Error robot.txt : ' + str(error), 24)
+					speak('Error robot.txt (reppy ServerError): ' + str(error), 24)
 					allowed = True
 			finally:
-				if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
-					# search encoding of webpage :
-					request.encoding, score = self.search_encoding(request)
-					return request.text, is_nofollow, score
+				try:
+					allowed
+				except:
+					speak('error allowed', 25)
 				else:
-					speak('Info webpage : status code=' + str(request.status_code) + ', Content-Type=' + request.headers.get('Content-Type', '') + ', robots permission=' + str(allowed) + ', nofollow=' + str(is_nofollow))
-					return None, is_nofollow, 0
+					if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
+						# search encoding of webpage :
+						request.encoding, score = self.search_encoding(request)
+						return request.text, is_nofollow, score
+					else:
+						speak('Info webpage : status code=' + str(request.status_code) + ', Content-Type=' + request.headers.get('Content-Type', '') + ', robots permission=' + str(allowed) + ', nofollow=' + str(is_nofollow))
+						return None, is_nofollow, 0
 
 	def search_encoding(self, request):
 		"""Searche encoding of webpage in source code
@@ -93,5 +98,5 @@ class WebConnexion:
 			if self.parser_encoding.encoding is not None:
 				return self.parser_encoding.encoding, .5
 			else:
-				speak("No encoding", 9)
+				speak('No encoding', 9)
 				return 'utf-8', 0

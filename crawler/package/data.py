@@ -81,7 +81,7 @@ or let program choose a list of links.
 
 	24 : error robot.txt
 
-	25 : failed to update image
+	25 : error allowed
 
 --- config file : ---
 Le fichier config.txt doit être dans le dossier 'config', il est créé s'il n'existe pas.

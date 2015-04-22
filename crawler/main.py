@@ -62,7 +62,7 @@ class Crawler:
 
 				self.send_to_db()
 				self.indexing()
-				
+
 				# reset the list of dict of informations of websites :
 				self.infos.clear()
 				self.file_manager.check_stop_crawling()
