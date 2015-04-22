@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""After parse source code, data extracted must be classify and clean. 
+"""After parse source code, data extracted must be classify and clean.
 Here is a class who use the html parser and manage all results."""
 
 __author__ = "Seva Nathan"
@@ -36,7 +36,7 @@ class SiteInformations:
 
 		"""
 		self.STOPWORDS = get_stopwords()
-		if self.STOPWORDS == dict():
+		if self.STOPWORDS is None:
 			speak('No stopwords, quit program')
 			return False
 		else:

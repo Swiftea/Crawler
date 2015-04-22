@@ -106,6 +106,9 @@ class Crawler:
 				self.file_manager.save_links(links)
 			else:
 				speak('Ignore')
+		elif html_code == 'no_connexion':
+			#self.file_manager.save_index()
+			quit()
 
 	def send_to_db(self):
 		"""Send all informations about crawled webpages to database"""

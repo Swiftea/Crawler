@@ -7,7 +7,7 @@ __author__ = "Seva Nathan"
 from sys import exit # to leave the programme
 from time import strftime # to have date and time data
 from os import path, mkdir, remove
-import requests # to get back stopwords
+import requests
 from urllib.parse import urlparse
 
 
@@ -198,15 +198,9 @@ def get_stopwords():
 		r = requests.get('http://swiftea.alwaysdata.net/data/stopwords/en.stopwords.txt')
 		r.encoding = 'utf-8'
 		STOP_WORDS['en'] = r.text
-		r = requests.get('http://swiftea.alwaysdata.net/data/stopwords/es.stopwords.txt')
-		r.encoding = 'utf-8'
-		STOP_WORDS['es'] = r.text
-		r = requests.get('http://swiftea.alwaysdata.net/data/stopwords/it.stopwords.txt')
-		r.encoding = 'utf-8'
-		STOP_WORDS['it'] = r.text
 	except requests.exceptions.ConnectionError:
 		print('Failed to get stopwords', 10)
-		return dict()
+		return None
 	else:
 		return STOP_WORDS
 
@@ -221,3 +215,17 @@ def get_base_url(url):
 	infos_url = urlparse(url)
 	base_url = infos_url.scheme + '://' + infos_url.netloc
 	return base_url
+
+def no_connexion():
+	"""Check connexion
+
+	:return: True if no connexion
+
+	"""
+	try:
+		requests.get('http://swiftea.alwaysdata.net/')
+	except: requests.exceptions.RequestException:
+		speak('No connexion')
+		return True
+	else:
+		return False

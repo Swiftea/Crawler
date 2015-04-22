@@ -15,7 +15,7 @@ from reppy.exceptions import ServerError
 
 
 from package.data import USER_AGENT, HEADERS, TIMEOUT
-from package.module import speak, get_base_url
+from package.module import speak, no_connexion, check_connexion
 from package.parsers import Parser_encoding
 
 class WebConnexion:
@@ -42,7 +42,10 @@ class WebConnexion:
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
 		except requests.exceptions.RequestException as error:
 			speak('Failed to connect to website: {}, {}'.format(str(error), url), 8)
-			return None, is_nofollow, 0
+			if no_connexion():
+				return 'no_connexion', is_nofollow, 0
+			else:
+				return None, is_nofollow, 0
 		except requests.exceptions.Timeout:
 			speak('Website not responding: ' + url, 7)
 			return None, is_nofollow, 0
@@ -58,8 +61,8 @@ class WebConnexion:
 			else:
 				try:
 					allowed = self.reqrobots.allowed(url, USER_AGENT)
-				except ServerError as error:
-					speak('Error robot.txt (reppy ServerError): ' + str(error), 24)
+				except Exception as error:
+					speak('Error robot.txt: ' + str(error), 24)
 					allowed = True
 			finally:
 				try:

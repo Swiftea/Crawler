@@ -10,13 +10,23 @@
 [![Coverage Status](https://coveralls.io/repos/Swiftea/Swiftea-Crawler/badge.svg?branch=develop)](https://coveralls.io/r/Swiftea/Swiftea-Crawler?branch=develop)
 [![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=develop)](https://crawler.readthedocs.org/en/develop)
 
-## Coverage
+## Description
 
 Swiftea's Crawler is the crawler we used on Swiftea. Currently, it can :
 
   - Visit websites
+    - check robots.txt
+    - search encoding
   - Parse them
+    - extract data
+        - title
+        - description
+        - ...
+    - extract important words
+        - filter stopwords
   - Index them
+    - in database
+    - in inverted-index
 
 ## Tech
 
