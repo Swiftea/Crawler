@@ -29,8 +29,7 @@ class Crawler(object):
 			quit_program()
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPManager(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
-		#self.inverted_index, error = self.ftp_manager.get_inverted_index()
-		self.inverted_index, error = dict(), False
+		self.inverted_index, error = self.ftp_manager.get_inverted_index()
 		if error and self.file_manager.reading_file_number != 0:
 			quit_program()
 		self.index_manager = InvertedIndex()

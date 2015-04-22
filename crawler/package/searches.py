@@ -190,6 +190,8 @@ class SiteInformations(object):
 		:return: cleaned favicon
 
 		"""
+		with open(data.DIR_OUTPUT + 'favicon', 'a') as myfile:
+			myfile.write(favicon + '\n')
 		base_url = get_base_url(self.url)
 		if not favicon.startswith('http') and not favicon.startswith('www'):
 			if favicon.startswith('//'):
@@ -198,6 +200,9 @@ class SiteInformations(object):
 				favicon = base_url + favicon
 			else:
 				favicon = base_url + '/' + favicon
+
+		with open(data.DIR_OUTPUT + 'favicon', 'a') as myfile:
+			myfile.write(favicon + '\n')
 		return favicon
 
 	def clean_keywords(self, keywords):
