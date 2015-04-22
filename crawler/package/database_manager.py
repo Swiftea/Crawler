@@ -9,7 +9,7 @@ from package.data import TIMEOUT
 
 __author__ = "Seva Nathan"
 
-class DatabaseManager:
+class DatabaseManager(object):
 	"""Class to manage database\n\n
 	How to: create a subclass\n
 	result, response = self.send_comand(command, data=tuple(), all=False)\n
@@ -22,7 +22,7 @@ class DatabaseManager:
 	:param password: password to use for connexion
 	:type password: str
 	:param name: name of database
-	:type name: str		
+	:type name: str
 
 	"""
 	def __init__(self, host, user, password, name):
@@ -50,21 +50,21 @@ class DatabaseManager:
 		else:
 			self.cursor = self.conn.cursor() # cursor building
 			response = 'Connected to database'
-		finally:
-			return response
+
+		return response
 
 	def close_connexion(self):
 		"""Close the database connexion"""
 		self.cursor.close()
 		self.conn.close()
 
-	def send_command(self, command, data=tuple(), all=False):
+	def send_command(self, command, data=tuple(), fetchall=False):
 		"""Send a query to database
 
 		:param data: data attached to given query
 		:type data: tuple
-		:param all: True if return all results
-		:type all: bool
+		:param fetchall: True if return all results
+		:type fetchall: bool
 		:return: result of the query and status message.
 
 		"""
@@ -74,7 +74,7 @@ class DatabaseManager:
 		else:
 			try:
 				self.cursor.execute(command, data)
-				if all:
+				if fetchall:
 					result = self.cursor.fetchall()
 				else:
 					result = self.cursor.fetchone()
@@ -86,6 +86,6 @@ class DatabaseManager:
 				response = 'Connexion error (socket.timeout)'
 			else:
 				response = 'Send command : ok'
-			finally:
-				self.close_connexion()
-				return result, response
+
+			self.close_connexion()
+			return result, response

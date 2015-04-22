@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
-from os import path, listdir, mkdir
+from os import path, mkdir
 import json
 
 
 from package.FTP import FTPConnect
-from package.data import DIR_INDEX, FTP_INDEX, ALPHABET
+from package.data import DIR_INDEX, FTP_INDEX
 from package.module import speak
 
 __author__ = "Seva Nathan"

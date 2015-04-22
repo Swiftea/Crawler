@@ -9,13 +9,13 @@ from os import remove, path, rename # remove, rename and know size of files
 from configparser import ConfigParser
 
 
-from package.data import * # to have required data
+from package.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS
 from package.module import speak, stats_links
 
-class FileManager:
+class FileManager(object):
 	"""File manager for crawler
 
-	Save and read links, read and write configuration variables, 
+	Save and read links, read and write configuration variables,
 	read inverted-index and later archive event and errors files.
 
 	"""
@@ -76,41 +76,6 @@ class FileManager:
 		}
 		with open(FILE_CONFIG, 'w') as configfile:
 			self.config.write(configfile)
-
-	def check_size_files(self): # not use : don't work
-		"""Don't work fine"""
-		try: size = path.getsize(FILE_NEWS) # get the size
-		except FileNotFoundError:
-			speak('Log file is not found in check_size', 1)
-		else:
-			if size > MAX_SIZE:
-				with  ZipFile(FILE_ARCHIVE_NEWS, 'r') as myzip:
-					if len(myzip.namelist()) == 0:
-						nbr_file_news = 0
-					else:
-						nbr_file_news = int(myzip.namelist()[len(
-							myzip.namelist())-1])+1
-				rename(FILE_NEWS, str(nbr_file_news))
-				with ZipFile(FILE_ARCHIVE_NEWS, 'w') as myzip:
-					myzip.write(str(nbr_file_news))
-				remove(str(nbr_file_news))
-
-		try: size = path.getsize(FILE_ERROR) # get the size
-		except FileNotFoundError:
-			# no news file
-			speak('Errors file is not found in check_zize', 2)
-		else:
-			if size > MAX_SIZE:
-				with  ZipFile(FILE_ARCHIVE_ERRORS, 'r') as myzip:
-					if len(myzip.namelist()) == 0:
-						nbr_file_news = 0
-					else:
-						nbr_file_news = int(myzip.namelist()[len(
-							myzip.namelist())-1])+1
-				rename(FILE_ERROR, str(nbr_file_news))
-				with ZipFile(FILE_ARCHIVE_ERRORS, 'w') as myzip:
-					myzip.write(str(nbr_file_news))
-				remove(str(nbr_file_news))
 
 	# other :
 

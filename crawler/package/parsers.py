@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
 """Data of webpage are geted by the python html.parser.
-Here is two parser, the first one for all informations and 
+Here is two parser, the first one for all informations and
 the sencond one only for encoding."""
 
 from html.parser import HTMLParser
-from html.entities import *
+from html.entities import name2codepoint, html5
 
 __author__ = "Seva Nathan"
 
@@ -105,7 +105,7 @@ class MyParser(HTMLParser):
 		:param tag: starting tag
 		:type tag: str
 
-		"""		
+		"""
 		if self.objet == 'title':
 			self.title += data
 		elif self.objet == 'keyword':

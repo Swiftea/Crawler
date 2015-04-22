@@ -15,10 +15,10 @@ from reppy.exceptions import ServerError
 
 
 from package.data import USER_AGENT, HEADERS, TIMEOUT
-from package.module import speak, no_connexion, check_connexion
+from package.module import speak, get_base_url, no_connexion
 from package.parsers import Parser_encoding
 
-class WebConnexion:
+class WebConnexion(object):
 	"""Manage the web connexion with the page to crawl"""
 	def __init__(self):
 		"""Build manager"""

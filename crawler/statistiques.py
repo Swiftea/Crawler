@@ -2,9 +2,7 @@
 
 """Display stats"""
 
-from os import system
-
-from package.data import *
+from package.data import FILE_STATS, FILE_STATS2
 
 __author__ = "Seva Nathan"
 

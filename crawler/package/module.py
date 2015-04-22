@@ -11,7 +11,7 @@ import requests
 from urllib.parse import urlparse
 
 
-from package.data import * # to get required data
+import package.data as data
 
 def speak(message, EC=None):
 	"""Manage newspaper
@@ -26,13 +26,13 @@ def speak(message, EC=None):
 
 	"""
 	if EC:
-		print(str(EC) + ' ' + message)
-		with open(FILE_NEWS, 'a') as myfile:
-			myfile.write(str(EC) + ' ' + message + '\n')
+		print(str(data.EC) + ' ' + message)
+		with open(data.FILE_NEWS, 'a') as myfile:
+			myfile.write(str(data.EC) + ' ' + message + '\n')
 		errors(EC, message)
 	else:
 		print(message)
-		with open(FILE_NEWS, 'a') as myfile:
+		with open(data.FILE_NEWS, 'a') as myfile:
 			myfile.write(message.capitalize() + '\n')
 
 def errors(EC, message):
@@ -46,8 +46,8 @@ def errors(EC, message):
 	:type EC: int
 
 	"""
-	with open(FILE_ERROR, 'a') as myfile:
-		myfile.write(str(EC) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ' : ' + message + '\n')
+	with open(data.FILE_ERROR, 'a') as myfile:
+		myfile.write(str(data.EC) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ' : ' + message + '\n')
 
 def quit():
 	"""Function who manage end of prgoram
@@ -68,17 +68,17 @@ def clean_text(text):
 	"""
 	return ' '.join(text.split())
 
-def remove_duplicates(list):
+def remove_duplicates(old_list):
 	"""remove duplicates from a list
 
-	:param list: list to clean
-	:type list: list
-	:return: list without duplpicate
+	:param old_list: list to clean
+	:type old_list: list
+	:return: list without duplicates
 
 	"""
-	new_list = []
-	for elt in list:
-		if not elt in new_list:
+	new_list = list()
+	for elt in old_list:
+		if elt not in new_list:
 			new_list.append(elt)
 	return new_list
 
@@ -95,7 +95,7 @@ def stats_stop_words(begining, end):
 		stats = str(((begining-end) * 100) / end)
 	else:
 		stats = 0
-	with open(FILE_STATS2, 'a') as myfile:
+	with open(data.FILE_STATS2, 'a') as myfile:
 		myfile.write(str(stats) + '\n')
 
 def stats_links(stat):
@@ -105,7 +105,7 @@ def stats_links(stat):
 	:type stat: int
 
 	"""
-	with open(FILE_STATS, 'a') as myfile:
+	with open(data.FILE_STATS, 'a') as myfile:
 		myfile.write(stat + '\n') # write the number of links found
 
 def start():
@@ -120,29 +120,29 @@ def start():
 
 	"""
 	# create directories if they don't exist
-	if not path.isdir(DIR_CONFIG):
-		mkdir(DIR_CONFIG)
-	if not path.isdir(DIR_DATA):
-		mkdir(DIR_DATA)
-	if not path.isdir(DIR_OUTPUT):
-		mkdir(DIR_OUTPUT)
-	if not path.isdir(DIR_INDEX):
-		mkdir(DIR_INDEX)
+	if not path.isdir(data.DIR_CONFIG):
+		mkdir(data.DIR_CONFIG)
+	if not path.isdir(data.DIR_DATA):
+		mkdir(data.DIR_DATA)
+	if not path.isdir(data.DIR_OUTPUT):
+		mkdir(data.DIR_OUTPUT)
+	if not path.isdir(data.DIR_INDEX):
+		mkdir(data.DIR_INDEX)
 
 	# create doc file if it doesn't exist :
-	if not path.exists(FILE_DOC):
-		with open(FILE_DOC, 'w') as myfile:
-			myfile.write(README)
+	if not path.exists(data.FILE_DOC):
+		with open(data.FILE_DOC, 'w') as myfile:
+			myfile.write(data.README)
 	else:
-		with open(FILE_DOC, 'r') as myfile:
+		with open(data.FILE_DOC, 'r') as myfile:
 			content = myfile.read()
-		if content != README:
-			remove(FILE_DOC)
-		with open(FILE_DOC, 'w') as myfile:
-			myfile.write(README)
+		if content != data.README:
+			remove(data.FILE_DOC)
+		with open(data.FILE_DOC, 'w') as myfile:
+			myfile.write(data.README)
 
 	# create directory of links if it doesn't exist :
-	if not path.isdir(DIR_LINKS):
+	if not path.isdir(data.DIR_LINKS):
 		print("""No links directory,
 1: let programm choose a list...
 2: fill a file yourself...
@@ -150,8 +150,8 @@ def start():
 		rep = input("What's your choice ? (1/2) : ")
 		if rep == '1':
 			# basic links
-			mkdir(DIR_LINKS)
-			with open(FILE_BASELINKS, 'w') as myfile:
+			mkdir(data.DIR_LINKS)
+			with open(data.FILE_BASELINKS, 'w') as myfile:
 				myfile.write("""http://www.planet-libre.org
 http://zestedesavoir.com
 http://www.01net.com
@@ -171,8 +171,8 @@ http://www.lequipe.fr
 http://swiftea.alwaysdata.net
 http://trukastuss.over-blog.com""")
 		elif rep == '2':
-			mkdir(DIR_LINKS)
-			open(FILE_BASELINKS, 'x').close()
+			mkdir(data.DIR_LINKS)
+			open(data.FILE_BASELINKS, 'x').close()
 			print("""
 Create a file '0' without extention who contains a list of 20 links maximum.
 They must start with 'http://' or 'https://' and no ends with '/'.
@@ -224,7 +224,7 @@ def no_connexion():
 	"""
 	try:
 		requests.get('http://swiftea.alwaysdata.net/')
-	except: requests.exceptions.RequestException:
+	except requests.exceptions.RequestException:
 		speak('No connexion')
 		return True
 	else:

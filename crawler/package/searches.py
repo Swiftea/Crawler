@@ -8,11 +8,11 @@ __author__ = "Seva Nathan"
 from urllib.parse import urlparse
 
 
-from package.data import * # to have required data
+import package.data as data
 from package.module import speak, stats_stop_words, get_stopwords, clean_text, remove_duplicates, get_base_url
 from package.parsers import MyParser
 
-class SiteInformations:
+class SiteInformations(object):
 	"""Class to manage searches in source codes"""
 	def __init__(self):
 		"""Build searches manager"""
@@ -152,13 +152,13 @@ class SiteInformations:
 		links = remove_duplicates(links)
 		new_links = list()
 
-		for i, url in enumerate(links):
+		for url in links:
 			new = url.strip() # link to add in new list of links
-			if (not new.endswith(BAD_EXTENTIONS) and
+			if (not new.endswith(data.BAD_EXTENTIONS) and
 				new != '/' and
 				new != '#' and
 				not new.startswith('mailto:') and
-				not 'javascript:' in new and
+				'javascript:' not in new and
 				new != ''):
 				if not new.startswith('http') and not new.startswith('www'):
 					base_url = get_base_url(self.url)
@@ -214,10 +214,6 @@ class SiteInformations:
 			stopwords = self.STOPWORDS['fr']
 		elif self.language == 'en':
 			stopwords = self.STOPWORDS['en']
-		elif self.language == 'es':
-			stopwords = self.STOPWORDS['es']
-		elif self.language == 'it':
-			stopwords = self.STOPWORDS['it']
 		else:
 			stopwords = []
 		result = []
@@ -225,12 +221,12 @@ class SiteInformations:
 			# 2 chars at least and check if word is not only special chars
 			if len(keyword) > 2 and not keyword.isnumeric():
 				# remove useless chars
-				if keyword.startswith(START_CHARS):
+				if keyword.startswith(data.START_CHARS):
 					keyword = keyword[1:]
 
-				if keyword.endswith(END_CHARS):
+				if keyword.endswith(data.END_CHARS):
 					keyword = keyword[:-1]
-				if keyword.endswith(END_CHARS2):
+				if keyword.endswith(data.END_CHARS2):
 					keyword = keyword[:-3]
 
 				if len(keyword) > 1: # l', d', s'
@@ -244,13 +240,13 @@ class SiteInformations:
 				if point != -1:
 					keyword = keyword[:point]
 
-				if not True in [letter in keyword for letter in ALPHABET]:
+				if True not in [letter in keyword for letter in data.ALPHABET]:
 					continue
 
-				if not True in [letter != '' for letter in keyword.split(keyword[0])]:
+				if True not in [letter != '' for letter in keyword.split(keyword[0])]:
 					continue # '********'
 
-				if keyword.endswith(END_CHARS): # repeat end chars
+				if keyword.endswith(data.END_CHARS): # repeat end chars
 					keyword = keyword[:-1]
 
 				# word/word2

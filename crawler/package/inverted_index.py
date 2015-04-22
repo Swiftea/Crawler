@@ -8,7 +8,7 @@ from time import time
 from package.module import speak
 from package.data import INDEXING_TIMEOUT, DIR_OUTPUT, ALPHABET
 
-class InvertedIndex:
+class InvertedIndex(object):
 	"""Manage inverted-index for crawler
 
 	Inverted-index is a dict, each keys are language
@@ -55,7 +55,6 @@ class InvertedIndex:
 		language = language.upper()
 		nb_words = len(keywords)
 		beginning = time()
-		new_inverted_index = list()
 		for word in keywords:
 			if time() - beginning < INDEXING_TIMEOUT:
 				occurence = keywords.count(word)
@@ -202,7 +201,7 @@ class InvertedIndex:
 			myfile.write(str(self.inverted_index))
 			myfile.write('\n')
 
-	def save_keyword(self, words):
+	def save_keyword(self, keywords):
 		"""Save keywords in a file to check errors"""
 		with open(DIR_OUTPUT + 'save_keywords.txt', 'a', encoding='utf-8', errors='replace') as myfile:
 			myfile.write(str(keywords) + '\n\n')

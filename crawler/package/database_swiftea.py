@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import socket # for timeout error
 from datetime import datetime
 
 
@@ -23,7 +22,7 @@ class DatabaseSwiftea(DatabaseManager):
 	:type name: str
 
 	"""
-	
+
 	def __init__(self, host, user, password, name):
 		"""Build manager"""
 		DatabaseManager.__init__(self, host, user, password, name)

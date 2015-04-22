@@ -48,8 +48,8 @@ class FTPConnect(FTP):
 			# use utf-8 encoding :
 			self.sendcmd("OPTS UTF8 ON")
 			response = self.getwelcome()
-		finally:
-			return response
+
+		return response
 
 	def disconnect(self):
 		try:
@@ -58,8 +58,8 @@ class FTPConnect(FTP):
 			response = "Can't quit server : " + str(error)
 		else:
 			self.close()
-		finally:
-			return response
+
+		return response
 
 	def upload(self, local_filename, server_filename):
 		"""Upload a file into ftp server
@@ -71,7 +71,7 @@ class FTPConnect(FTP):
 		:return: response of server
 
 		"""
-		with open(local_filename, 'br') as myfile:
+		with open(local_filename, 'rb') as myfile:
 			try:
 				response = self.storbinary('STOR ' + server_filename, myfile)
 			except all_errors as error:

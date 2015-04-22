@@ -6,8 +6,7 @@ from time import strftime
 
 
 from package.module import speak, quit, start
-from package.data import *
-from package.private_data import *
+import package.private_data as pvdata
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
 from package.database_swiftea import DatabaseSwiftea
@@ -17,7 +16,7 @@ from package.ftp_manager import FTPManager
 
 __author__ = "Seva Nathan"
 
-class Crawler:
+class Crawler(object):
 	"""Crawler Class
 
 	response : a message
@@ -29,14 +28,15 @@ class Crawler:
 		if not self.site_informations.get_stopwords():
 			quit()
 		self.file_manager = FileManager()
-		self.ftp_manager = FTPManager(HOST_FTP, USER, PASSWORD)
-		self.inverted_index, error = self.ftp_manager.get_inverted_index()
+		self.ftp_manager = FTPManager(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
+		#self.inverted_index, error = self.ftp_manager.get_inverted_index()
+		self.inverted_index, error = dict(), False
 		if error and self.file_manager.reading_file_number != 0:
 			quit()
 		self.index_manager = InvertedIndex()
 		self.index_manager.setInvertedIndex(self.inverted_index)
 		self.index_manager.setStopwords(self.site_informations.STOPWORDS)
-		self.database = DatabaseSwiftea(HOST_DB, USER, PASSWORD, NAME_DB)
+		self.database = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER, pvdata.PASSWORD, pvdata.NAME_DB)
 		self.web_connexion = WebConnexion()
 
 		self.infos = list()

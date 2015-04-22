@@ -35,7 +35,6 @@ ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n'
 # others informations :
 USER_AGENT = 'Swiftea-Bot'
 HEADERS = {"User-Agent": USER_AGENT}
-MAX_SIZE = 500 # max size of a error and log file (FILE_ERROR and FILE_NEWS)
 INDEXING_TIMEOUT = 30 # time in second to index a document
 MAX_LINKS = 5000 # max links in a file
 CRAWL_DELAY = timedelta(days=2) # the program don't crawl the website if it was crawled x ago
