@@ -119,7 +119,7 @@ class SiteInformations(object):
 		"""
 		total_stopwords = 0
 
-	    # Nb stopwords
+		# Nb stopwords
 		nb_stopwords = dict()
 		for lang in self.STOPWORDS:
 			nb_stopwords[lang] = 0

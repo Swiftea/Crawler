@@ -5,7 +5,7 @@
 from time import strftime
 
 
-from package.module import speak, quit, start
+from package.module import speak, quit_program, start
 import package.private_data as pvdata
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
@@ -26,13 +26,13 @@ class Crawler(object):
 	def __init__(self):
 		self.site_informations = SiteInformations()
 		if not self.site_informations.get_stopwords():
-			quit()
+			quit_program()
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPManager(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
 		#self.inverted_index, error = self.ftp_manager.get_inverted_index()
 		self.inverted_index, error = dict(), False
 		if error and self.file_manager.reading_file_number != 0:
-			quit()
+			quit_program()
 		self.index_manager = InvertedIndex()
 		self.index_manager.setInvertedIndex(self.inverted_index)
 		self.index_manager.setStopwords(self.site_informations.STOPWORDS)
@@ -108,7 +108,7 @@ class Crawler(object):
 				speak('Ignore')
 		elif html_code == 'no_connexion':
 			#self.file_manager.save_index()
-			quit()
+			quit_program()
 
 	def send_to_db(self):
 		"""Send all informations about crawled webpages to database"""
@@ -132,7 +132,7 @@ class Crawler(object):
 		error = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		if error:
 			#self.file_manager.save_index()
-			quit()
+			quit_program()
 
 	def suggestions(self):
 		"""Suggestions:
@@ -160,7 +160,7 @@ class Crawler(object):
 		"""Send inverted-index and quit"""
 		self.send_inverted_index()
 		speak('Programm will quit')
-		quit()
+		quit_program()
 
 if __name__ == '__main__':
 	start()

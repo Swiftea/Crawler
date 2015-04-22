@@ -5,7 +5,7 @@ Here is a class who manager files of crawler."""
 
 __author__ = "Seva Nathan"
 
-from os import remove, path, rename # remove, rename and know size of files
+from os import path, rename # remove, rename and know size of files
 from configparser import ConfigParser
 
 

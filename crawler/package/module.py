@@ -4,7 +4,7 @@
 
 __author__ = "Seva Nathan"
 
-from sys import exit # to leave the programme
+import sys # to leave the programme
 from time import strftime # to have date and time data
 from os import path, mkdir, remove
 import requests
@@ -26,9 +26,9 @@ def speak(message, EC=None):
 
 	"""
 	if EC:
-		print(str(data.EC) + ' ' + message)
+		print(str(EC) + ' ' + message)
 		with open(data.FILE_NEWS, 'a') as myfile:
-			myfile.write(str(data.EC) + ' ' + message + '\n')
+			myfile.write(str(EC) + ' ' + message + '\n')
 		errors(EC, message)
 	else:
 		print(message)
@@ -47,16 +47,16 @@ def errors(EC, message):
 
 	"""
 	with open(data.FILE_ERROR, 'a') as myfile:
-		myfile.write(str(data.EC) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ' : ' + message + '\n')
+		myfile.write(str(EC) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ' : ' + message + '\n')
 
-def quit():
+def quit_program():
 	"""Function who manage end of prgoram
 
 	Call speak() with 'end' and exit
 
 	"""
 	speak('end\n', 0)
-	exit()
+	sys.exit()
 
 def clean_text(text):
 	"""Clean up text (\\n\\r\\t)
@@ -172,7 +172,7 @@ http://swiftea.alwaysdata.net
 http://trukastuss.over-blog.com""")
 		elif rep == '2':
 			mkdir(data.DIR_LINKS)
-			open(data.FILE_BASELINKS, 'x').close()
+			open(data.FILE_BASELINKS, 'w').close()
 			print("""
 Create a file '0' without extention who contains a list of 20 links maximum.
 They must start with 'http://' or 'https://' and no ends with '/'.

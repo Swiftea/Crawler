@@ -11,7 +11,7 @@ from urllib3.exceptions import ReadTimeoutError
 
 
 from reppy.cache import RobotsCache
-from reppy.exceptions import ServerError
+#from reppy.exceptions import ServerError
 
 
 from package.data import USER_AGENT, HEADERS, TIMEOUT
@@ -40,18 +40,18 @@ class WebConnexion(object):
 			is_nofollow = False
 		try:
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+		except ReadTimeoutError:
+			speak('Website not responding (urllib3): ' + url, 7)
+			return None, is_nofollow, 0
+		except requests.exceptions.Timeout:
+			speak('Website not responding: ' + url, 7)
+			return None, is_nofollow, 0
 		except requests.exceptions.RequestException as error:
 			speak('Failed to connect to website: {}, {}'.format(str(error), url), 8)
 			if no_connexion():
 				return 'no_connexion', is_nofollow, 0
 			else:
 				return None, is_nofollow, 0
-		except requests.exceptions.Timeout:
-			speak('Website not responding: ' + url, 7)
-			return None, is_nofollow, 0
-		except ReadTimeoutError:
-			speak('Website not responding (2): ' + url, 7)
-			return None, is_nofollow, 0
 		else:
 			try:
 				requests.get(get_base_url(url) + '/robots.txt', timeout=TIMEOUT)

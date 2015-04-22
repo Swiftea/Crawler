@@ -16,7 +16,7 @@ def average(content=list):
 	"""
 	total = 0
 	for value in content:
-	    total += int(value)
+		total += float(value)
 	moy = total / len(content)
 	return moy
 
