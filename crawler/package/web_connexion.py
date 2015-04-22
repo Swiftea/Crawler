@@ -40,11 +40,11 @@ class WebConnexion:
 			is_nofollow = False
 		try:
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-		except requests.exceptions.Timeout:
-			speak('Website not responding: ' + url, 7)
-			return None, is_nofollow, 0
 		except requests.exceptions.RequestException as error:
 			speak('Failed to connect to website: {}, {}'.format(str(error), url), 8)
+			return None, is_nofollow, 0
+		except requests.exceptions.Timeout:
+			speak('Website not responding: ' + url, 7)
 			return None, is_nofollow, 0
 		except ReadTimeoutError:
 			speak('Website not responding (2): ' + url, 7)

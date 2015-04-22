@@ -19,7 +19,7 @@ class TestCrawlerBase(object):
         self.language = 'fr'
         self.STOPWORDS = {'fr':('mot', 'pour')}
         self.inverted_index = {'EN': {
-        'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}}, 
+        'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
 
@@ -61,7 +61,7 @@ class TestCrawlerBase(object):
     <body>
     </body>
 </html>"""
-    
+
         self.code3 = """<!DOCTYPE html>
 <html>
     <head>
@@ -148,6 +148,8 @@ class TestCrawlerBasic(TestCrawlerBase):
         InvertedIndex.add_word(self, 'aboutir', 'FR', 'A', 'ab', occurence=7, doc_id=56, nb_words=40)
         # add word:
         InvertedIndex.add_word(self, 'aviation', 'FR', 'A', 'av', occurence=7, doc_id=9, nb_words=40)
+        # add doc_id:
+        InvertedIndex.add_word(self, 'aviation', 'FR', 'A', 'av', occurence=4, doc_id=10, nb_words=30)
         # add sp first letter:
         InvertedIndex.add_word(self, 'ùaviation', 'FR', 'SP', 'sp-a', occurence=7, doc_id=9, nb_words=40)
         # add sp filename:
@@ -155,12 +157,13 @@ class TestCrawlerBasic(TestCrawlerBase):
         # update:
         InvertedIndex.add_word(self, 'avion', 'FR', 'A', 'av', occurence=7, doc_id=9, nb_words=40)
 
+        print(self.inverted_index['FR']['A'])
         assert self.inverted_index == {'EN': {
         'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'V': {'vo': {'voler': {9: 7/40}}},
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}},
-        'A': {'av': {'avion': {9: 7/40}, 'aviation': {9: 7/40}}, 'ab': {'aboutir': {56: 7/40}}, 'a-sp': {'aùviation': {9: 7/40}}},
+        'A': {'av': {'avion': {9: 7/40}, 'aviation': {9: 7/40, 10: 0.1333333}}, 'ab': {'aboutir': {56: 7/40}}, 'a-sp': {'aùviation': {9: 7/40}}},
         'SP': {'sp-a': {'ùaviation': {9: 7/40}}}}}
 
     def test_delete_word(self):
@@ -173,7 +176,7 @@ class TestCrawlerBasic(TestCrawlerBase):
     def test_delete_id_word(self):
         InvertedIndex.delete_id_word(self, 'boule', 'FR', 'B', 'bo', 2)
         assert self.inverted_index == {'EN': {
-        'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}}, 
+        'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25}}}}}
 
@@ -181,7 +184,7 @@ class TestCrawlerBasic(TestCrawlerBase):
         """
         InvertedIndex.delete_doc_id(self, 1)
         assert self.inverted_index == {'EN': {
-        'A': {'ab': {'above': {2: .1}, 'abort': {2: .1}}}, 
+        'A': {'ab': {'above': {2: .1}, 'abort': {2: .1}}},
         'W': {'wo': {'word': {30: .4}}}}, 'FR': {
         'B': {'bo': {'boule': {2: .8}}}}}
 

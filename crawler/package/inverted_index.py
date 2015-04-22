@@ -14,11 +14,11 @@ class InvertedIndex:
 	Inverted-index is a dict, each keys are language
 		-> values are a dict, each keys are first letter
 		-> values are dict, each keys are two first letters
-		-> values are dict, each keys are word 
+		-> values are dict, each keys are word
 		-> values are dict, each keys are id
 		-> values are int : tf
 
-	example: 
+	example:
 	['FR']['A']['av']['avion'][21] is tf of word 'avion' in doc 21, language is FR
 
 	"""
@@ -123,7 +123,10 @@ class InvertedIndex:
 			self.inverted_index[language][first_letter][filename] = dict()
 
 		tf = round(occurence / nb_words, 7)
-		inverted_index[word] = {doc_id: tf}
+		if word in inverted_index:
+			inverted_index[word][doc_id] = tf
+		else:
+			inverted_index[word] = {doc_id: tf}
 
 		self.inverted_index[language][first_letter][filename] = inverted_index
 
