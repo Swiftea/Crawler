@@ -29,7 +29,10 @@ class Crawler(object):
 			quit_program()
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPManager(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
-		self.inverted_index, error = self.ftp_manager.get_inverted_index()
+		if self.ftp_manager.compare_indexs():
+			self.inverted_index, error = self.ftp_manager.get_inverted_index()
+		else:
+			self.inverted_index, error = self.file_manager.get_inverted_index()
 		if error and self.file_manager.reading_file_number != 0:
 			quit_program()
 		self.index_manager = InvertedIndex()
@@ -106,7 +109,7 @@ class Crawler(object):
 			else:
 				speak('Ignore')
 		elif html_code == 'no_connexion':
-			#self.file_manager.save_index()
+			self.file_manager.save_inverted_index()
 			quit_program()
 		else:
 			speak('Ignore')
@@ -132,7 +135,7 @@ class Crawler(object):
 		"""Send inverted-index generate by indexing to ftp server"""
 		error = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		if error:
-			#self.file_manager.save_index()
+			self.file_manager.save_inverted_index()
 			quit_program()
 
 	def suggestions(self):

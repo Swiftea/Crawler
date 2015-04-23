@@ -20,6 +20,7 @@ FILE_ERROR = DIR_CONFIG + 'errors.log'
 FILE_CONFIG = DIR_CONFIG + 'config.ini'
 FILE_DOC = DIR_CONFIG + 'Readme'
 FILE_BASELINKS = DIR_LINKS + '0'
+FILE_INDEX = DIR_DATA + 'inverted_index.json'
 
 # strings for ftp location
 FTP_INDEX = '/www/data/inverted-index/'

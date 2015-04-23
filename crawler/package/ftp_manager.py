@@ -22,7 +22,7 @@ class FTPManager(FTPConnect):
 		:return: inverted-indexs and True if an error occured
 
 		"""
-		speak('Get inverted-indexs')
+		speak('Get inverted-indexs from server')
 		inverted_index = dict()
 		self.connexion()
 		self.cwd(FTP_INDEX)
@@ -94,3 +94,30 @@ class FTPManager(FTPConnect):
 		self.disconnect()
 		speak('Transfer complete')
 		return False
+
+	def compare_indexs(self):
+		"""Compare inverted-index in local and in server
+
+		:return: true if must dowload from server
+
+		"""
+		local_file = DIR_INDEX + 'FR/' + 'C/' + 'co.sif'
+		if path.exists(local_file):
+			local_size = path.getsize(local_file)
+			self.connexion()
+			self.cwd(FTP_INDEX)
+			server_size = 0
+			if 'FR' in self.nlst():
+				self.cwd('FR')
+				if 'C' in nlst():
+					self.cwd('C')
+					for data in self.mlsd(fact=['type', 'size']):
+						if data[0] == 'co.sif':
+							server_size = data[1]['size']
+			self.disconnect()
+			if local_size <= server_size:
+				return True
+			else:
+				return False
+		else:
+			return True

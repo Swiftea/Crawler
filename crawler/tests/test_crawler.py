@@ -2,6 +2,7 @@
 
 import requests
 from reppy.cache import RobotsCache
+from reppy.exceptions import ServerError
 
 
 from package.module import *
@@ -23,7 +24,7 @@ class TestCrawlerBase(object):
         'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
-        
+
         self.parser = MyParser()
         self.parser_encoding = Parser_encoding()
         self.code1 = """<!DOCTYPE html>
@@ -114,8 +115,10 @@ class TestCrawlerBasic(TestCrawlerBase):
         assert encoding[0] == 'utf-8'
 
     def test_check_robots_perm(self):
-        assert WebConnexion.check_robots_perm(self, 'https://www.facebook.com') == False
-        assert WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com') == True
+        perm = WebConnexion.check_robots_perm(self, 'https://www.facebook.com')
+        assert perm == False
+        perm = WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com')
+        assert perm == True
 
     def test_is_nofollow(self):
         nofollow, url = WebConnexion.is_nofollow(self, self.url + '!nofollow!')

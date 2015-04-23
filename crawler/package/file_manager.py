@@ -7,9 +7,10 @@ __author__ = "Seva Nathan"
 
 from os import path, remove
 from configparser import ConfigParser
+import json
 
 
-from package.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS
+from package.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX
 from package.module import speak, stats_links
 
 class FileManager(object):
@@ -145,3 +146,23 @@ class FileManager(object):
 				# the program have read all the links : next reading_file_number
 				speak('Next reading file : ' + str(self.reading_file_number))
 			return url
+
+	def save_inverted_index(self, inverted_index):
+		"""Save inverted-index in local
+
+		:param inverted_index: inverted-index
+		:type inverted_index: dict
+
+		"""
+		with open(FILE_INDEX, 'w') as myfile:
+			json.dump(inverted_index, myfile, ensure_ascii=False)
+
+	def get_inverted_index(self):
+		"""Get inverted-index from local
+
+		:return: inverted-index
+
+		"""
+		with open(FILE_INDEX, 'r') as myfile:
+			inverted_index = json.load(myfile)
+		return inverted_index
