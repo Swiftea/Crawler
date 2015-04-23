@@ -3,22 +3,9 @@
 """Display stats"""
 
 from package.data import FILE_STATS, FILE_STATS2
+from package.module import average
 
 __author__ = "Seva Nathan"
-
-def average(content=list):
-	"""Calculate average
-
-	:param content: values
-	:type content: list
-	:return: average
-
-	"""
-	total = 0
-	for value in content:
-		total += float(value)
-	moy = total / len(content)
-	return moy
 
 if __name__ == '__main__':
 	try:
@@ -27,13 +14,11 @@ if __name__ == '__main__':
 	except FileNotFoundError:
 		print('File ' + FILE_STATS + ' not found.')
 	else:
-		moy = average(content)
-		print('Average percentage of removed words : ' + str(moy))
+		print('Average percentage of removed words : ' + str(average(content)))
 	try:
 		with open(FILE_STATS2, 'r') as myfile:
 			content = myfile.read().split()
 	except FileNotFoundError:
 		print('File ' +  FILE_STATS2 + ' not found.')
 	else:
-		moy = average(content)
-		print('Average links in webpage : ' + str(moy))
+		print('Average links in webpage : ' + str(average(content)))

@@ -25,7 +25,8 @@ class Crawler(object):
 	"""
 	def __init__(self):
 		self.site_informations = SiteInformations()
-		if not self.site_informations.get_stopwords():
+		if site_informations.STOPWORDS is None:
+			speak('No stopwords, quit program')
 			quit_program()
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPManager(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
@@ -109,7 +110,7 @@ class Crawler(object):
 			else:
 				speak('Ignore')
 		elif html_code == 'no_connexion':
-			self.file_manager.save_inverted_index()
+			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 			quit_program()
 		else:
 			speak('Ignore')
@@ -135,7 +136,7 @@ class Crawler(object):
 		"""Send inverted-index generate by indexing to ftp server"""
 		error = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		if error:
-			self.file_manager.save_inverted_index()
+			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 			quit_program()
 
 	def suggestions(self):

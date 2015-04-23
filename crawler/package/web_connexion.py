@@ -15,7 +15,7 @@ from reppy.exceptions import ServerError
 
 
 from package.data import USER_AGENT, HEADERS, TIMEOUT
-from package.module import speak, get_base_url, no_connexion
+from package.module import speak, no_connexion
 from package.parsers import Parser_encoding
 
 class WebConnexion(object):
@@ -56,7 +56,8 @@ class WebConnexion(object):
 				request.encoding, score = self.search_encoding(request)
 				return request.text, is_nofollow, score
 			else:
-				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + request.headers.get('Content-Type', '') + ', robots permission=' + str(allowed) + ', nofollow=' + str(is_nofollow))
+				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
+					request.headers.get('Content-Type', '') + ', robots permission=' + str(allowed) + ', nofollow=' + str(is_nofollow))
 				return None, False, 0
 
 	def search_encoding(self, request):

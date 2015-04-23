@@ -5,13 +5,13 @@ from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
 
 
-from package.module import *
+import package.module as module
 from package.data import *
 from package.searches import SiteInformations
 from package.inverted_index import InvertedIndex
 from package.parsers import Parser_encoding, MyParser
 from package.web_connexion import WebConnexion
-from statistiques import average
+from package.file_manager import FileManager
 
 class TestCrawlerBase(object):
     """Base class for all crawler test classes"""
@@ -25,6 +25,10 @@ class TestCrawlerBase(object):
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
 
+        self.max_links = 3
+        self.writing_file_number = 5
+        self.reading_file_number = 0
+        self.reading_line_number = 1
         self.parser = MyParser()
         self.parser_encoding = Parser_encoding()
         self.code1 = """<!DOCTYPE html>
@@ -76,11 +80,11 @@ class TestCrawlerBase(object):
 
 class TestCrawlerBasic(TestCrawlerBase):
     def test_clean_text(self):
-        text = clean_text('Sample text with non-desired \r whitespaces \t chars \n')
+        text = module.clean_text('Sample text with non-desired \r whitespaces \t chars \n')
         assert not '\n' in text and not '\r' in text and not '\t' in text
 
     def test_get_base_url(self):
-        assert get_base_url(self.url + '/page1.php') == self.url
+        assert module.get_base_url(self.url + '/page1.php') == self.url
 
     def test_clean_links(self):
         links = ['page.php', 'http://www.example.fr/', 'mailto:test@test.fr']
@@ -95,7 +99,7 @@ class TestCrawlerBasic(TestCrawlerBase):
         assert keywords == ['bureau', 'word', 'example', 'oiseau', 'jean', 'pierre', 'quoi', 'fichier', 'epee']
 
     def test_remove_duplicates(self):
-        assert remove_duplicates(['mot', 'mot']) == ['mot']
+        assert module.remove_duplicates(['mot', 'mot']) == ['mot']
 
     def test_detect_language(self):
         keywords = 'un texte d\'exemple pour tester la fonction'.split()
@@ -115,10 +119,10 @@ class TestCrawlerBasic(TestCrawlerBase):
         assert encoding[0] == 'utf-8'
 
     def test_check_robots_perm(self):
-        perm = WebConnexion.check_robots_perm(self, 'https://www.facebook.com')
-        assert perm == False
         perm = WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com')
         assert perm == True
+        perm = WebConnexion.check_robots_perm(self, 'https://www.facebook.com')
+        assert perm == False
 
     def test_is_nofollow(self):
         nofollow, url = WebConnexion.is_nofollow(self, self.url + '!nofollow!')
@@ -132,8 +136,8 @@ class TestCrawlerBasic(TestCrawlerBase):
         parser = MyParser()
         parser.feed(self.code1)
         assert parser.links == ['demo', 'index', 'about/nf.php!nofollow!']
-        assert clean_text(parser.first_title) == 'Gros titre'
-        assert clean_text(parser.keywords) == "Gros titre Moyen titre petit titre strong em"
+        assert module.clean_text(parser.first_title) == 'Gros titre'
+        assert module.clean_text(parser.keywords) == "Gros titre Moyen titre petit titre strong em"
         assert parser.css == True
         assert parser.description == 'Moteur de recherche'
         assert parser.language == 'en'
@@ -147,8 +151,8 @@ class TestCrawlerBasic(TestCrawlerBase):
         parser.feed(self.code3)
         assert parser.language == 'fr'
 
-    def test_stats_links(self):
-        assert average(['20', '20', '30', '30']) == 25
+    def test_average(self):
+        assert module.average(['20', '20', '30', '30']) == 25
 
     def test_getInvertedIndex(self):
         assert InvertedIndex.getInvertedIndex(self) == {'EN': {
@@ -158,23 +162,30 @@ class TestCrawlerBasic(TestCrawlerBase):
 
     def test_add_word(self):
         # add language:
-        InvertedIndex.add_word(self, 'avion', 'FR', 'A', 'av', occurence=6, doc_id=9, nb_words=40)
+        word_infos = {'word': 'avion', 'language': 'FR', 'first_letter': 'A', 'filename': 'av', 'occurence': 6}
+        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
         # add letter:
-        InvertedIndex.add_word(self, 'voler', 'FR', 'V', 'vo', occurence=7, doc_id=9, nb_words=40)
+        word_infos = {'word': 'voler', 'language': 'FR', 'first_letter': 'V', 'filename': 'vo', 'occurence': 7}
+        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
         # add filename:
-        InvertedIndex.add_word(self, 'aboutir', 'FR', 'A', 'ab', occurence=7, doc_id=56, nb_words=40)
+        word_infos = {'word': 'aboutir', 'language': 'FR', 'first_letter': 'A', 'filename': 'ab', 'occurence': 7}
+        InvertedIndex.add_word(self, word_infos, doc_id=56, nb_words=40)
         # add word:
-        InvertedIndex.add_word(self, 'aviation', 'FR', 'A', 'av', occurence=7, doc_id=9, nb_words=40)
+        word_infos = {'word': 'aviation', 'language': 'FR', 'first_letter': 'A', 'filename': 'av', 'occurence': 7}
+        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
         # add doc_id:
-        InvertedIndex.add_word(self, 'aviation', 'FR', 'A', 'av', occurence=4, doc_id=10, nb_words=30)
+        word_infos = {'word': 'aviation', 'language': 'FR', 'first_letter': 'A', 'filename': 'av', 'occurence': 4}
+        InvertedIndex.add_word(self, word_infos, doc_id=10, nb_words=30)
         # add sp first letter:
-        InvertedIndex.add_word(self, 'ùaviation', 'FR', 'SP', 'sp-a', occurence=7, doc_id=9, nb_words=40)
+        word_infos = {'word': 'ùaviation', 'language': 'FR', 'first_letter': 'SP', 'filename': 'sp-a', 'occurence': 7}
+        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
         # add sp filename:
-        InvertedIndex.add_word(self, 'aùviation', 'FR', 'A', 'a-sp', occurence=7, doc_id=9, nb_words=40)
+        word_infos = {'word': 'aùviation', 'language': 'FR', 'first_letter': 'A', 'filename': 'a-sp', 'occurence': 7}
+        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
         # update:
-        InvertedIndex.add_word(self, 'avion', 'FR', 'A', 'av', occurence=7, doc_id=9, nb_words=40)
+        word_infos = {'word': 'avion', 'language': 'FR', 'first_letter': 'A', 'filename': 'av', 'occurence': 7}
+        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
 
-        print(self.inverted_index['FR']['A'])
         assert self.inverted_index == {'EN': {
         'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
@@ -191,20 +202,36 @@ class TestCrawlerBasic(TestCrawlerBase):
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
 
     def test_delete_id_word(self):
-        InvertedIndex.delete_id_word(self, 'boule', 'FR', 'B', 'bo', 2)
+        word_infos = {'word': 'boule', 'language': 'FR', 'first_letter': 'B', 'filename': 'bo'}
+        InvertedIndex.delete_id_word(self, word_infos, 2)
         assert self.inverted_index == {'EN': {
         'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25}}}}}
 
-    def test_delete_doc_id(self):
-        """
-        InvertedIndex.delete_doc_id(self, 1)
-        assert self.inverted_index == {'EN': {
-        'A': {'ab': {'above': {2: .1}, 'abort': {2: .1}}},
-        'W': {'wo': {'word': {30: .4}}}}, 'FR': {
-        'B': {'bo': {'boule': {2: .8}}}}}
+    def test_rebuild_links(self):
+        old_links = "http://www.exemple.fr\nhttp://www.exemple/page1.fr\nhttp://www.exemple/page1/page2.fr"
+        new_links = ['http://www.exemple.fr', 'http://www.exemple/page2/page3.fr', 'http://www.exemple/page1/page2.fr']
+        links_to_add = FileManager.rebuild_links(self, old_links, new_links)
+        print(links_to_add)
+        assert links_to_add == "http://www.exemple.fr\nhttp://www.exemple/page1.fr\nhttp://www.exemple/page1/page2.fr\nhttp://www.exemple/page2/page3.fr"
 
-        InvertedIndex.delete_doc_id(self, 2)
-        assert self.inverted_index == {'EN': {'W': {'wo': {'word': {30: .4}}}}}
-        """
+    def test_check_size_links(self):
+        links_to_add = ['http://www.exemple.fr', 'http://www.exemple/page1.fr',
+            'http://www.exemple/page1/page2.fr', 'http://www.exemple/page2/page3.fr']
+        assert FileManager.check_size_links(self, links_to_add) == True
+
+        assert self.writing_file_number == 6
+
+        links_to_add = ['http://www.exemple.fr', 'http://www.exemple/page1.fr']
+        assert FileManager.check_size_links(self, links_to_add) == False
+
+    def test_check_line_reading(self):
+        links = ['http://www.exemple.fr', 'http://www.exemple/page2/page3.fr', 'http://www.exemple/page1/page2.fr']
+        assert FileManager.check_line_reading(self, links) == False
+        assert self.reading_line_number == 2
+        assert self.reading_file_number == 0
+
+        assert FileManager.check_line_reading(self, links) == True
+        assert self.reading_line_number == 0
+        assert self.reading_file_number == 1

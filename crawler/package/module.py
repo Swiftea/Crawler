@@ -229,3 +229,17 @@ def no_connexion():
 		return True
 	else:
 		return False
+
+def average(content=list):
+	"""Calculate average
+
+	:param content: values
+	:type content: list
+	:return: average
+
+	"""
+	total = 0
+	for value in content:
+		total += float(value)
+	moy = total / len(content)
+	return moy

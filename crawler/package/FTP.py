@@ -48,7 +48,6 @@ class FTPConnect(FTP):
 			# use utf-8 encoding :
 			self.sendcmd("OPTS UTF8 ON")
 			response = self.getwelcome()
-
 		return response
 
 	def disconnect(self):
@@ -58,7 +57,6 @@ class FTPConnect(FTP):
 			response = "Can't quit server : " + str(error)
 		else:
 			self.close()
-
 		return response
 
 	def upload(self, local_filename, server_filename):

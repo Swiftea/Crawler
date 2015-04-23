@@ -28,19 +28,7 @@ class SiteInformations(object):
 		self.new = str()
 		self.slash = int()
 		self.favicon = str()
-
-	def get_stopwords(self):
-		"""Define stopwords for clean keywords
-
-		:return: true if stopwords are found
-
-		"""
 		self.STOPWORDS = get_stopwords()
-		if self.STOPWORDS is None:
-			speak('No stopwords, quit program')
-			return False
-		else:
-			return True
 
 	def get_infos(self, url, code, nofollow, score):
 		"""Manager all searches of webpage's informations

@@ -32,7 +32,7 @@ class DatabaseSwiftea(DatabaseManager):
 
 		:param infos: informations to send to database
 		:type infos: list
-		:return: True if an error occured
+		:return: true if an error occured
 
 		"""
 		for key, value in enumerate(infos):
@@ -45,30 +45,59 @@ class DatabaseSwiftea(DatabaseManager):
 				last_crawl = result[0][1] # datetime.datetime object
 				if (datetime.now() - last_crawl) > CRAWL_DELAY:
 					# the program already crawled this website
-					popularity = result[0][0]+1
-					speak('Updating : ' + infos[key]['url'])
-					result, response = self.send_command(
-"""UPDATE index_url
-SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, score=%s, favicon=%s
-WHERE url = %s """, (infos[key]['title'], infos[key]['description'], infos[key]['language'], popularity, infos[key]['score'], infos[key]['favicon'], infos[key]['url']))
-					if response != 'Send command : ok':
-						speak('Failed to update : ' + response, 16) # update failed
+					response = self.update(infos[key], result[0][0]+1)
+					if response:
 						return True
 				else:
 					# already crawled
 					speak('No updates, already crawled recently')
 			else:
 				# url not found in database, the url don't exists in the database, we add it :
-				speak('Adding : ' + infos[key]['url'])
-				result, response = self.send_command(
-"""INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, favicon)
-VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
-(infos[key]['title'], infos[key]['description'], infos[key]['url'],	infos[key]['language'], infos[key]['score'], infos[key]['favicon']))
-				if response != 'Send command : ok':
-					speak("Failed to add : " + response, 16)
+				response = self.insert(infos[key])
+				if response:
 					return True
 		# end loop
 		return False # all is correct
+
+	def update(self, infos, popularity):
+		"""Update a doc in database
+
+		:param infos: doc infos
+		:type infos: dict()
+		:param popularity: new doc popularity
+		:type popularity: int
+		:return: true is an arror occured
+
+		"""
+		speak('Updating : ' + infos['url'])
+		result, response = self.send_command(
+"""UPDATE index_url
+SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, score=%s, favicon=%s
+WHERE url = %s """, (infos['title'], infos['description'], infos['language'], popularity, infos['score'], infos['favicon'], infos['url']))
+		if response != 'Send command : ok':
+			speak('Failed to update : ' + response, 16)
+			return True
+		else:
+			return False
+
+	def insert(self, infos):
+		"""Update a doc in database
+
+		:param infos: doc infos
+		:type infos: dict()
+		:return: true is an arror occured
+
+		"""
+		speak('Adding : ' + infos[key]['url'])
+		result, response = self.send_command(
+"""INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, favicon)
+VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
+(infos['title'], infos['description'], infos['url'], infos['language'], infos['score'], infos['favicon']))
+		if response != 'Send command : ok':
+			speak("Failed to add : " + response, 16)
+			return True
+		else:
+			return False
 
 	def get_doc_id(self, url):
 		"""Get id of a webpage in database

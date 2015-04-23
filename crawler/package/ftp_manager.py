@@ -109,7 +109,7 @@ class FTPManager(FTPConnect):
 			server_size = 0
 			if 'FR' in self.nlst():
 				self.cwd('FR')
-				if 'C' in nlst():
+				if 'C' in self.nlst():
 					self.cwd('C')
 					for data in self.mlsd(fact=['type', 'size']):
 						if data[0] == 'co.sif':

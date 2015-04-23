@@ -57,27 +57,27 @@ class InvertedIndex(object):
 		beginning = time()
 		for word in keywords:
 			if time() - beginning < INDEXING_TIMEOUT:
-				occurence = keywords.count(word)
+				word_infos = {'word': word, 'language': language, 'occurence': keywords.count(word)}
 				if word[0] in ALPHABET:
-					first_letter = word[0].upper()
+					word_infos['first_letter'] = word[0].upper()
 					# first char is a letter
 					if word[1] in ALPHABET:
 						# second char is a letter
-						filename = word[:2]
+						word_infos['filename'] = word[:2]
 					else:
 						# second char isn't a letter
-						filename = first_letter.lower() + '-sp'
+						word_infos['filename'] = word_infos['first_letter'].lower() + '-sp'
 				else:
 					# first char isn't a letter
-					first_letter = 'SP'
+					word_infos['first_letter'] = 'SP'
 					if word[1] in ALPHABET:
 						# second char is a letter
-						filename = 'sp-' + word[1]
+						word_infos['filename'] = 'sp-' + word[1]
 					else:
 						# second char isn't a letter
-						filename = 'sp-sp'
+						word_infos['filename'] = 'sp-sp'
 
-				self.add_word(word, language, first_letter, filename, occurence, doc_id, nb_words)
+				self.add_word(word_infos, doc_id, nb_words)
 
 			else:
 				speak('Indexing too long : pass', 23)
@@ -87,25 +87,20 @@ class InvertedIndex(object):
 
 		return False
 
-	def add_word(self, word, language, first_letter, filename, occurence, doc_id, nb_words):
+	def add_word(self, word_infos, doc_id, nb_words):
 		"""Add a word in inverted-index
 
-		:param word: word to delete
-		:type word: str
-		:param language: language of word
-		:type language: str
-		:param first_letter: first letter of word
-		:type first_letter: str
-		:param filename: two first letters of word
-		:type filename: str
-		:param occurence: occurence of the word in webpage
-		:type occurence: int
+		:param word_infos: word infos: word, language, occurence,
+			first letter and two first letters
+		:type word_infos: dict
 		:param doc_id: id of the doc in database
 		:type doc_id: int
 		:param nb_words: number of words in the doc_id
 		:type nb_words: int
 
 		"""
+		word, language, first_letter, filename = word_infos['word'], word_infos['language'], \
+			word_infos['first_letter'], word_infos['filename']
 		if language in self.inverted_index:
 			if first_letter in self.inverted_index[language]:
 				if filename in self.inverted_index[language][first_letter]:
@@ -121,7 +116,7 @@ class InvertedIndex(object):
 			self.inverted_index[language][first_letter] = dict()
 			self.inverted_index[language][first_letter][filename] = dict()
 
-		tf = round(occurence / nb_words, 7)
+		tf = round(word_infos['occurence'] / nb_words, 7)
 		if word in inverted_index:
 			inverted_index[word][doc_id] = tf
 		else:
@@ -145,23 +140,19 @@ class InvertedIndex(object):
 		if self.inverted_index[language][first_letter][filename].get(word) is not None:
 			del self.inverted_index[language][first_letter][filename][word]
 
-	def delete_id_word(self, word, language, first_letter, filename, doc_id):
+	def delete_id_word(self, word_infos, doc_id):
 		"""Delete a id of a word in inverted-index
 
 		This method delete a word from a document.
 
-		:param word: word to delete
-		:type word: str
-		:param language: language of word
-		:type language: str
-		:param first_letter: first letter of word
-		:type first_letter: str
-		:param filename: two first letters of word
-		:type filename: str
+		:param word_infos: word infos: word, language, first letter and two first letters
+		:type word_infos: dict
 		:param doc_id: id of the doc in database
 		:type doc_id: int
 
 		"""
+		word, language, first_letter, filename = word_infos['word'], word_infos['language'], \
+			word_infos['first_letter'], word_infos['filename']
 		if self.inverted_index[language][first_letter][filename][word].get(doc_id) is not None:
 			del self.inverted_index[language][first_letter][filename][word][doc_id]
 
