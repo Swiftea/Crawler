@@ -108,6 +108,8 @@ class Crawler(object):
 		elif html_code == 'no_connexion':
 			#self.file_manager.save_index()
 			quit_program()
+		else:
+			speak('Ignore')
 
 	def send_to_db(self):
 		"""Send all informations about crawled webpages to database"""

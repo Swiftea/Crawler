@@ -101,7 +101,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
 
 	def suggestions(self):
 		""":return: list of url in Suggestions table and delete them"""
-		result, response = self.send_command("SELECT url FROM suggestions LIMIT 5", all=True)
+		result, response = self.send_command("SELECT url FROM suggestions LIMIT 5", fetchall=True)
 		if response != 'Send command : ok':
 			speak("Failed to get url : " + response, 16)
 			return None

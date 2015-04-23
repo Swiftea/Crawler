@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import requests
+from reppy.cache import RobotsCache
 
 
 from package.module import *
@@ -22,8 +23,7 @@ class TestCrawlerBase(object):
         'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
-
-        self.alphabet = ALPHABET
+        
         self.parser = MyParser()
         self.parser_encoding = Parser_encoding()
         self.code1 = """<!DOCTYPE html>
@@ -71,6 +71,8 @@ class TestCrawlerBase(object):
     </body>
 </html>"""
 
+        self.reqrobots = RobotsCache()
+
 class TestCrawlerBasic(TestCrawlerBase):
     def test_clean_text(self):
         text = clean_text('Sample text with non-desired \r whitespaces \t chars \n')
@@ -110,6 +112,18 @@ class TestCrawlerBasic(TestCrawlerBase):
         request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
         encoding = WebConnexion.search_encoding(self, request)
         assert encoding[0] == 'utf-8'
+
+    def test_check_robots_perm(self):
+        assert WebConnexion.check_robots_perm(self, 'https://www.facebook.com') == False
+        assert WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com') == True
+
+    def test_is_nofollow(self):
+        nofollow, url = WebConnexion.is_nofollow(self, self.url + '!nofollow!')
+        assert nofollow == True
+        assert url == self.url
+        nofollow, url = WebConnexion.is_nofollow(self, self.url)
+        assert nofollow == False
+        assert url == self.url
 
     def test_parser(self):
         parser = MyParser()

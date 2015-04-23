@@ -11,7 +11,7 @@ from urllib3.exceptions import ReadTimeoutError
 
 
 from reppy.cache import RobotsCache
-#from reppy.exceptions import ServerError
+from reppy.exceptions import ServerError
 
 
 from package.data import USER_AGENT, HEADERS, TIMEOUT
@@ -33,50 +33,31 @@ class WebConnexion(object):
 		:return: source code, True if no take links and score
 
 		"""
-		if url.endswith('!nofollow!'):
-			url = url[:-10]
-			is_nofollow = True
-		else:
-			is_nofollow = False
+		is_nofollow, url = self.is_nofollow(url)
+
 		try:
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
 		except ReadTimeoutError:
 			speak('Website not responding (urllib3): ' + url, 7)
-			return None, is_nofollow, 0
+			return None, False, 0
 		except requests.exceptions.Timeout:
 			speak('Website not responding: ' + url, 7)
-			return None, is_nofollow, 0
+			return None, False, 0
 		except requests.exceptions.RequestException as error:
 			speak('Failed to connect to website: {}, {}'.format(str(error), url), 8)
 			if no_connexion():
 				return 'no_connexion', is_nofollow, 0
 			else:
-				return None, is_nofollow, 0
+				return None, False, 0
 		else:
-			try:
-				requests.get(get_base_url(url) + '/robots.txt', timeout=TIMEOUT)
-			except requests.exceptions.RequestException as error:
-				speak('Error robot.txt: ' + str(error), 24)
-				allowed = True
+			allowed = self.check_robots_perm(url)
+			if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
+				# search encoding of webpage :
+				request.encoding, score = self.search_encoding(request)
+				return request.text, is_nofollow, score
 			else:
-				try:
-					allowed = self.reqrobots.allowed(url, USER_AGENT)
-				except Exception as error:
-					speak('Error robot.txt: ' + str(error), 24)
-					allowed = True
-			finally:
-				try:
-					allowed
-				except:
-					speak('error allowed', 25)
-				else:
-					if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
-						# search encoding of webpage :
-						request.encoding, score = self.search_encoding(request)
-						return request.text, is_nofollow, score
-					else:
-						speak('Info webpage : status code=' + str(request.status_code) + ', Content-Type=' + request.headers.get('Content-Type', '') + ', robots permission=' + str(allowed) + ', nofollow=' + str(is_nofollow))
-						return None, is_nofollow, 0
+				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + request.headers.get('Content-Type', '') + ', robots permission=' + str(allowed) + ', nofollow=' + str(is_nofollow))
+				return None, False, 0
 
 	def search_encoding(self, request):
 		"""Searche encoding of webpage in source code
@@ -103,3 +84,40 @@ class WebConnexion(object):
 			else:
 				speak('No encoding', 9)
 				return 'utf-8', 0
+
+	def is_nofollow(self, url):
+		"""Check if take links
+
+		:param url: webpage url
+		:type url: str
+		:return: true if nofollow and url
+
+		"""
+		if url.endswith('!nofollow!'):
+			return True, url[:-10]
+		else:
+			return False, url
+
+	def check_robots_perm(self, url):
+		"""Check robots.txt for permission
+
+		:param url: webpage url
+		:type url: str
+		:return: true if can crawl
+
+		"""
+		try:
+			allowed = self.reqrobots.allowed(url, USER_AGENT)
+		except requests.exceptions.RequestException as error:
+			speak('Error robots.txt (requests): ' + str(error), 24)
+			allowed = True
+		except requests.exceptions.Timeout:
+			speak('Error robots.txt (timeout)')
+			allowed = True
+		except ServerError as error:
+			speak('Error robots.txt (reppy): ' + str(error), 24)
+			allowed = True
+		except Exception as error:
+			speak('Unknow robots.txt error: ' + str(error))
+			allowed = True
+		return allowed

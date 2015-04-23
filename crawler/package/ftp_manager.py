@@ -47,7 +47,7 @@ class FTPManager(FTPConnect):
 						return None, True
 					else:
 						with open(DIR_INDEX + path_index, 'r', encoding='utf-8') as myfile:
-							inverted_index[language][first_letter][filename] = json.load(myfile)
+							inverted_index[language][first_letter][filename[:2]] = json.load(myfile)
 				self.cwd('..')
 			self.cwd('..')
 		self.disconnect()
