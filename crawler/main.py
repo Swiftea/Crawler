@@ -1,12 +1,14 @@
-#!/usr/bin/python3
+#!/usr/bin/python3try:
 
 """Crawler for Swiftea : http://swiftea.alwaysdata.net"""
 
 from time import strftime
 
-
+try:
+	import package.private_data as pvdata
+except ImportError:
+	pass
 from package.module import speak, quit_program, start
-import package.private_data as pvdata
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
 from package.database_swiftea import DatabaseSwiftea
@@ -25,7 +27,7 @@ class Crawler(object):
 	"""
 	def __init__(self):
 		self.site_informations = SiteInformations()
-		if site_informations.STOPWORDS is None:
+		if self.site_informations.STOPWORDS is None:
 			speak('No stopwords, quit program')
 			quit_program()
 		self.file_manager = FileManager()

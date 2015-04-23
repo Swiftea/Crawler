@@ -110,15 +110,15 @@ class WebConnexion(object):
 		try:
 			allowed = self.reqrobots.allowed(url, USER_AGENT)
 		except requests.exceptions.RequestException as error:
-			speak('Error robots.txt (requests): ' + str(error), 24)
+			speak('Error robots.txt (requests): ' + str(error) + ' ' + url, 24)
 			allowed = True
 		except requests.exceptions.Timeout:
-			speak('Error robots.txt (timeout)')
+			speak('Error robots.txt (timeout): ' + url)
 			allowed = True
 		except ServerError as error:
-			speak('Error robots.txt (reppy): ' + str(error), 24)
+			speak('Error robots.txt (reppy): ' + str(error) + ' ' + url, 24)
 			allowed = True
 		except Exception as error:
-			speak('Unknow robots.txt error: ' + str(error))
+			speak('Unknow robots.txt error: ' + str(error) + ' ' + url, 24)
 			allowed = True
 		return allowed

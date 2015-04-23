@@ -99,52 +99,22 @@ class FileManager(object):
 		else:
 			with open(filename, 'r+', errors='replace',
 				encoding='utf8') as myfile:
-				old_links = myfile.read()
+				old_links = myfile.read().split('\n')
 				myfile.seek(0)
-				myfile.write(self.rebuild_links(old_links, new_links))
+				links = old_links + new_links
+				links_to_add = list()
+				for link in links:
+					if link not in links_to_add:
+						links_to_add.append(link)
+				myfile.write('\n'.join(links_to_add))
 
-		if self.check_size_links(links_to_add):
-			speak(
-				'More {0} links : {1} : writing file {2}.'.format(
-				str(self.max_links), str(len(links_to_add)),
-				str(self.writing_file_number))
-			)
-
-	def rebuild_links(self, old_links, new_links):
-		"""Rebuild list of links to put in link file
-
-		:param old_links: old links
-		:type old_links: list
-		:param new_links: new links
-		:type new_links: list
-		:return: links to add
-
-		"""
-		old_links = old_links.split('\n')
-		links = old_links + new_links
-		links_to_add = list()
-		print(links)
-		for link in links:
-			if link not in links_to_add:
-				links_to_add.append(link)
-		print(links_to_add)
-		return '\n'.join(links_to_add)
-
-	def check_size_links(self, links_in_file):
-		"""Check size of curent links File
-
-		Increment writing_file_number if file is full.
-
-		:param links_in_file: links
-		:type links_in_file:
-		:return: true if file is full
-
-		"""
-		if len(links_in_file) > self.max_links: # check the size
-			self.writing_file_number += 1
-			return True
-		else:
-			return False
+			if len(links_to_add) > self.max_links: # check the size
+				self.writing_file_number += 1
+				speak(
+					'More {0} links : {1} : writing file {2}.'.format(
+					str(self.max_links), str(len(links_to_add)),
+					str(self.writing_file_number))
+				)
 
 	def get_url(self):
 		"""Get the url of the next webpage
@@ -159,33 +129,22 @@ class FileManager(object):
 				encoding='utf8') as myfile:
 				list_links = myfile.read().splitlines() # list of urls
 		except FileNotFoundError:
+			# no link file
 			speak('Reading file is not found in get_url : ' + filename, 4)
 			return 'stop'
 		else:
 			url = list_links[self.reading_line_number]
+			self.reading_line_number += 1
 			# if is the last links of the file :
-			if self.check_line_reading(list_links):
-				speak('Next reading file : ' + str(self.reading_file_number))
+			if len(list_links) == (self.reading_line_number):
+				self.reading_line_number = 0
 				if self.reading_file_number != 0: # or > 0 ? wich is better ?
 					remove(filename)
-					speak('file ' + filename + ' is remove')
+					speak('file "' + filename + '" is remove')
+				self.reading_file_number += 1
+				# the program have read all the links : next reading_file_number
+				speak('Next reading file : ' + str(self.reading_file_number))
 			return url
-
-	def check_line_reading(self, links):
-		"""Check if all links are read
-
-		:param links: list of links
-		:type links: list
-		:return: true if all links are read
-
-		"""
-		self.reading_line_number += 1
-		if len(links) == (self.reading_line_number):
-			self.reading_line_number = 0
-			self.reading_file_number += 1
-			return True
-		else:
-			return False
 
 	def save_inverted_index(self, inverted_index):
 		"""Save inverted-index in local

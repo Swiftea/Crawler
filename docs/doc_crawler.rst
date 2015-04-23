@@ -11,7 +11,7 @@ crawler main module
 
 statistiques module
 -------------------
-.. automodule:: statistiques
+.. automodule:: stats
     :members:
     :undoc-members:
     :show-inheritance:

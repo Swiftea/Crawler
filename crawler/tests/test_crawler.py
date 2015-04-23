@@ -208,30 +208,3 @@ class TestCrawlerBasic(TestCrawlerBase):
         'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25}}}}}
-
-    def test_rebuild_links(self):
-        old_links = "http://www.exemple.fr\nhttp://www.exemple/page1.fr\nhttp://www.exemple/page1/page2.fr"
-        new_links = ['http://www.exemple.fr', 'http://www.exemple/page2/page3.fr', 'http://www.exemple/page1/page2.fr']
-        links_to_add = FileManager.rebuild_links(self, old_links, new_links)
-        print(links_to_add)
-        assert links_to_add == "http://www.exemple.fr\nhttp://www.exemple/page1.fr\nhttp://www.exemple/page1/page2.fr\nhttp://www.exemple/page2/page3.fr"
-
-    def test_check_size_links(self):
-        links_to_add = ['http://www.exemple.fr', 'http://www.exemple/page1.fr',
-            'http://www.exemple/page1/page2.fr', 'http://www.exemple/page2/page3.fr']
-        assert FileManager.check_size_links(self, links_to_add) == True
-
-        assert self.writing_file_number == 6
-
-        links_to_add = ['http://www.exemple.fr', 'http://www.exemple/page1.fr']
-        assert FileManager.check_size_links(self, links_to_add) == False
-
-    def test_check_line_reading(self):
-        links = ['http://www.exemple.fr', 'http://www.exemple/page2/page3.fr', 'http://www.exemple/page1/page2.fr']
-        assert FileManager.check_line_reading(self, links) == False
-        assert self.reading_line_number == 2
-        assert self.reading_file_number == 0
-
-        assert FileManager.check_line_reading(self, links) == True
-        assert self.reading_line_number == 0
-        assert self.reading_file_number == 1

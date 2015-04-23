@@ -1,7 +1,7 @@
 Package
 -------
 
-This package is the only package for Swiftea-Crawler and 
+This package is the only package for Swiftea-Crawler and
 provide all functions and class that crawler need.
 
 package.FTP module
@@ -59,19 +59,12 @@ package.module module
     :members:
     :undoc-members:
 
-
 package.parsers module
 ----------------------
 .. automodule:: package.parsers
     :members:
     :undoc-members:
     :show-inheritance:
-
-
-package.private_data module
----------------------------
-.. automodule:: package.private_data
-
 
 package.searches module
 -----------------------

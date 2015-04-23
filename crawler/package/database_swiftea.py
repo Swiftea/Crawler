@@ -88,7 +88,7 @@ WHERE url = %s """, (infos['title'], infos['description'], infos['language'], po
 		:return: true is an arror occured
 
 		"""
-		speak('Adding : ' + infos[key]['url'])
+		speak('Adding : ' + infos['url'])
 		result, response = self.send_command(
 """INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, favicon)
 VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
