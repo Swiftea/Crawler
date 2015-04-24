@@ -35,7 +35,8 @@ class Crawler(object):
 		if self.ftp_manager.compare_indexs():
 			self.inverted_index, error = self.ftp_manager.get_inverted_index()
 		else:
-			self.inverted_index, error = self.file_manager.get_inverted_index()
+			self.inverted_index = self.file_manager.read_inverted_index()
+			error = False
 		if error and self.file_manager.reading_file_number != 0:
 			quit_program()
 		self.index_manager = InvertedIndex()

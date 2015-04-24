@@ -243,3 +243,20 @@ def average(content=list):
 		total += float(value)
 	moy = total / len(content)
 	return moy
+
+def rebuild_links(old_links, new_links):
+	"""Rebuild list of links
+
+	:param old_links: links already in file
+	:type old_links: list
+	:param new_links: links to add
+	:type new_links: list
+	:return: links to write in file
+
+	"""
+	links = old_links + new_links
+	links_to_add = list()
+	for link in links:
+		if link not in links_to_add:
+			links_to_add.append(link)
+	return '\n'.join(links_to_add)

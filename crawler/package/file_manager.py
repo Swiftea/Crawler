@@ -5,13 +5,13 @@ Here is a class who manager files of crawler."""
 
 __author__ = "Seva Nathan"
 
-from os import path, remove
+from os import path, remove, listdir
 from configparser import ConfigParser
 import json
 
 
-from package.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX
-from package.module import speak, stats_links
+from package.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX
+from package.module import speak, stats_links, rebuild_links
 
 class FileManager(object):
 	"""File manager for crawler
@@ -80,41 +80,43 @@ class FileManager(object):
 
 	# other :
 
-	def save_links(self, new_links):
+	def save_links(self, links):
 		"""Save links
 
 		Save link in a file without doublons and check if the file if full
 
-		:param new_links: links to save
-		:type new_links: list
+		:param links: links to save
+		:type links: list
 
 		"""
-		stats_links(str(len(new_links)))
+		stats_links(str(len(links)))
 		filename = DIR_LINKS + str(self.writing_file_number)
 		if not path.exists(filename):
-			links_to_add = new_links
-			with open(filename, 'w', errors='replace',
-				encoding='utf8') as myfile:
-				myfile.write('\n'.join(links_to_add))
+			with open(filename, 'w', errors='replace', encoding='utf8') as myfile:
+				myfile.write('\n'.join(links))
 		else:
-			with open(filename, 'r+', errors='replace',
-				encoding='utf8') as myfile:
+			with open(filename, 'r+', errors='replace', encoding='utf8') as myfile:
 				old_links = myfile.read().split('\n')
 				myfile.seek(0)
-				links = old_links + new_links
-				links_to_add = list()
-				for link in links:
-					if link not in links_to_add:
-						links_to_add.append(link)
-				myfile.write('\n'.join(links_to_add))
+				links = rebuild_links(old_links, links)
+				myfile.write(links)
 
-			if len(links_to_add) > self.max_links: # check the size
-				self.writing_file_number += 1
-				speak(
-					'More {0} links : {1} : writing file {2}.'.format(
-					str(self.max_links), str(len(links_to_add)),
-					str(self.writing_file_number))
-				)
+		self.ckeck_size_links(links)
+
+	def ckeck_size_links(self, links):
+		"""Check number of links in file
+
+		:param links: links saved in file
+		:type links: str
+
+		"""
+		if len(links.split('\n')) > self.max_links: # check the size
+			self.writing_file_number += 1
+			speak(
+				'More {0} links : {1} : writing file {2}.'.format(
+				str(self.max_links), str(len(links)),
+				str(self.writing_file_number))
+			)
 
 	def get_url(self):
 		"""Get the url of the next webpage
@@ -149,19 +151,42 @@ class FileManager(object):
 	def save_inverted_index(self, inverted_index):
 		"""Save inverted-index in local
 
+		Call after a connxion error.
+
 		:param inverted_index: inverted-index
 		:type inverted_index: dict
 
 		"""
+		speak('Save inverted-indexs in save file')
 		with open(FILE_INDEX, 'w') as myfile:
 			json.dump(inverted_index, myfile, ensure_ascii=False)
 
 	def get_inverted_index(self):
 		"""Get inverted-index from local
 
+		Work only after a connxion error.
+
 		:return: inverted-index
 
 		"""
+		speak('Get inverted-indexs in save file')
 		with open(FILE_INDEX, 'r') as myfile:
 			inverted_index = json.load(myfile)
+		return inverted_index
+
+	def read_inverted_index(self):
+		"""Read inverted-indexs in local after safe quit
+
+		:return: inverted-index
+
+		"""
+		speak('Get inverted-indexs in local')
+		inverted_index = dict()
+		for language in listdir(DIR_INDEX):
+			inverted_index[language] = dict()
+			for first_letter in listdir(DIR_INDEX + language):
+				inverted_index[language][first_letter] = dict()
+				for filename in listdir(DIR_INDEX + language + '/' + first_letter):
+					with open(DIR_INDEX + language + '/' + first_letter + '/' + filename, 'r', encoding='utf-8') as myfile:
+						inverted_index[language][first_letter][filename[:2]] = json.load(myfile)
 		return inverted_index

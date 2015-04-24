@@ -111,11 +111,11 @@ class FTPManager(FTPConnect):
 				self.cwd('FR')
 				if 'C' in self.nlst():
 					self.cwd('C')
-					for data in self.mlsd(fact=['type', 'size']):
+					for data in self.mlsd(facts=['type', 'size']):
 						if data[0] == 'co.sif':
-							server_size = data[1]['size']
+							server_size = int(data[1]['size'])
 			self.disconnect()
-			if local_size <= server_size:
+			if local_size < server_size:
 				return True
 			else:
 				return False

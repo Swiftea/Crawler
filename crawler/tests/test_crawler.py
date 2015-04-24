@@ -208,3 +208,9 @@ class TestCrawlerBasic(TestCrawlerBase):
         'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25}}}}}
+
+    def test_rebuild_links(self):
+        old_links = ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2']
+        new_links = ['http://example.fr/page2', 'http://example.fr/page3']
+        links_to_add = module.rebuild_links(old_links, new_links)
+        assert links_to_add == 'http://example.fr\nhttp://example.fr/page1\nhttp://example.fr/page2\nhttp://example.fr/page3'
