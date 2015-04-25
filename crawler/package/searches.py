@@ -202,8 +202,6 @@ class SiteInformations(object):
 		stopwords = self.STOPWORDS[self.language]
 		new_keywords = []
 		for keyword in keywords:
-			with open('output/keywords', 'a') as myfile:
-				myfile.write(keyword + ' --> ')
 			if module.check_size_keyword(keyword):
 				if module.letter_repeat(keyword):
 					continue
@@ -219,6 +217,4 @@ class SiteInformations(object):
 
 				if keyword not in stopwords:
 					new_keywords.append(keyword)
-					with open('output/keywords', 'a') as myfile:
-						myfile.write(keyword + '\n')
 		return new_keywords

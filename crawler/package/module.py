@@ -278,7 +278,8 @@ def remove_useless_chars(keyword):
 	:return: keyword or None
 
 	"""
-	while keyword.startswith(data.START_CHARS) or keyword.endswith(data.END_CHARS) or keyword[1] == '\'' or keyword[1] == data.MIDLE_CHARS or keyword[-2] == '\'' or keyword[-2] == data.MIDLE_CHARS:
+	while (keyword.startswith(data.START_CHARS) or keyword.endswith(data.END_CHARS) or keyword[1] == '\'' or
+		keyword[1] == data.MIDLE_CHARS or keyword[-2] == '\'' or keyword[-2] == data.MIDLE_CHARS):
 		if keyword.startswith(data.START_CHARS):
 			keyword = keyword[1:]
 		if keyword.endswith(data.END_CHARS):
