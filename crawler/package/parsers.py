@@ -41,8 +41,8 @@ class MyParser(HTMLParser):
 
 		:param tag: starting tag
 		:type tag: str
-		:param attrs: attributes
-		:type attrs: str
+		:param attrs: attributes: [('name', 'language'), ('content', 'fr')]
+		:type attrs: list
 
 		"""
 		if tag =='html': # bigining of the source code : reset all variables
@@ -78,20 +78,13 @@ class MyParser(HTMLParser):
 				self.favicon = dict(attrs).get('href', '')
 
 		elif tag == 'meta':
-			name = dict(attrs).get('name', '').lower()
-			content = dict(attrs).get('content')
-			if content:
-				if name == 'description':
-					self.description = content
-					self.objet = 'description'
-				elif name == 'language':
-					self.language = content.lower().strip()[:2]
-
-			httpequiv = dict(attrs).get('http-equiv')
-			contentlanguage = dict(attrs).get('content')
-			if httpequiv and contentlanguage:
-				if httpequiv.lower() == 'content-language':
-					self.language = contentlanguage.lower().strip()[:2]
+			language, description, objet = meta(attrs)
+			if language != str():
+				self.language = language
+			if description != str():
+				self.description = description
+			if objet != str():
+				self.objet = objet
 
 		elif tag == 'h1' and self.first_title == '':
 			self.h1 = True # it's about a h1
@@ -119,7 +112,7 @@ class MyParser(HTMLParser):
 		:param tag: starting tag
 		:type tag: str
 		:param attrs: attributes
-		:type attrs: str
+		:type attrs: list
 
 		"""
 		if tag == 'title':
@@ -157,6 +150,31 @@ class MyParser(HTMLParser):
 		"""Add a letter to title when met special char"""
 		self.title += letter
 
+def meta(attrs):
+	"""Manager searches in meat tag
+
+	:apram attrs: attributes of meta tag
+	:type attrs: list
+	:return: language, description, objet
+
+	"""
+	objet = description = language = str()
+	name = dict(attrs).get('name', '').lower()
+	content = dict(attrs).get('content')
+	if content:
+		if name == 'description':
+			description = content
+			objet = 'description'
+		elif name == 'language':
+			language = content.lower().strip()[:2]
+
+	httpequiv = dict(attrs).get('http-equiv')
+	contentlanguage = dict(attrs).get('content')
+	if httpequiv and contentlanguage:
+		if httpequiv.lower() == 'content-language':
+			language = contentlanguage.lower().strip()[:2]
+
+	return language, description, objet
 
 class Parser_encoding(HTMLParser):
 	"""Html parser for extract encoding from source code"""
@@ -170,7 +188,7 @@ class Parser_encoding(HTMLParser):
 		:param tag: starting tag
 		:type tag: str
 		:param attrs: attributes
-		:type attrs: str
+		:type attrs: list
 
 		"""
 		if tag == 'meta':

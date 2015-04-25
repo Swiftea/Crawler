@@ -58,56 +58,6 @@ def quit_program():
 	speak('end\n', 0)
 	sys.exit()
 
-def clean_text(text):
-	"""Clean up text (\\n\\r\\t)
-
-	:param text: text to clean_text
-	:type text: str
-	:return: cleaned text
-
-	"""
-	return ' '.join(text.split())
-
-def remove_duplicates(old_list):
-	"""remove duplicates from a list
-
-	:param old_list: list to clean
-	:type old_list: list
-	:return: list without duplicates
-
-	"""
-	new_list = list()
-	for elt in old_list:
-		if elt not in new_list:
-			new_list.append(elt)
-	return new_list
-
-def stats_stop_words(begining, end):
-	"""Percentage of deleted word with stopwords for statistics
-
-	:param begining: size of keywords list before cleaning
-	:type begining: int
-	:param end: size of keywords list after cleaning
-	:type end: int
-
-	"""
-	if end != 0:
-		stats = str(((begining-end) * 100) / end)
-	else:
-		stats = 0
-	with open(data.FILE_STATS2, 'a') as myfile:
-		myfile.write(str(stats) + '\n')
-
-def stats_links(stat):
-	"""Number of links for statistics
-
-	:param stat: number of list in a webpage
-	:type stat: int
-
-	"""
-	with open(data.FILE_STATS, 'a') as myfile:
-		myfile.write(stat + '\n') # write the number of links found
-
 def start():
 	"""Manage crawler's runing
 
@@ -184,7 +134,57 @@ Press enter when done.""")
 			print('Please enter 1 or 2.')
 			quit()
 
-def get_stopwords():
+def clean_text(text): # search
+	"""Clean up text (\\n\\r\\t)
+
+	:param text: text to clean_text
+	:type text: str
+	:return: cleaned text
+
+	"""
+	return ' '.join(text.split())
+
+def remove_duplicates(old_list): # search
+	"""remove duplicates from a list
+
+	:param old_list: list to clean
+	:type old_list: list
+	:return: list without duplicates
+
+	"""
+	new_list = list()
+	for elt in old_list:
+		if elt not in new_list:
+			new_list.append(elt)
+	return new_list
+
+def stats_stop_words(begining, end):
+	"""Percentage of deleted word with stopwords for statistics
+
+	:param begining: size of keywords list before cleaning
+	:type begining: int
+	:param end: size of keywords list after cleaning
+	:type end: int
+
+	"""
+	if end != 0:
+		stats = str(((begining-end) * 100) / end)
+	else:
+		stats = 0
+	with open(data.FILE_STATS2, 'a') as myfile:
+		myfile.write(str(stats) + '\n')
+
+def stats_links(stat):
+	"""Number of links for statistics
+
+	:param stat: number of list in a webpage
+	:type stat: int
+
+	"""
+	with open(data.FILE_STATS, 'a') as myfile:
+		myfile.write(stat + '\n') # write the number of links found
+
+def get_stopwords(): # search
 	"""Get stopwords from swiftea website
 
 	:return: a dict: keys are languages and values are stopwords
@@ -204,7 +204,7 @@ def get_stopwords():
 	else:
 		return STOP_WORDS
 
-def get_base_url(url):
+def get_base_url(url): # search
 	"""Get base url using urlparse
 
 	:param url: url
@@ -216,7 +216,7 @@ def get_base_url(url):
 	base_url = infos_url.scheme + '://' + infos_url.netloc
 	return base_url
 
-def no_connexion():
+def no_connexion(): # web connexion
 	"""Check connexion
 
 	:return: True if no connexion
@@ -230,7 +230,7 @@ def no_connexion():
 	else:
 		return False
 
-def average(content=list):
+def average(content=list): # stats
 	"""Calculate average
 
 	:param content: values
@@ -244,7 +244,7 @@ def average(content=list):
 	moy = total / len(content)
 	return moy
 
-def rebuild_links(old_links, new_links):
+def rebuild_links(old_links, new_links): # file manager
 	"""Rebuild list of links
 
 	:param old_links: links already in file
@@ -260,3 +260,65 @@ def rebuild_links(old_links, new_links):
 		if link not in links_to_add:
 			links_to_add.append(link)
 	return '\n'.join(links_to_add)
+
+def check_size_keyword(keyword):
+	if len(keyword) > 2:
+		return True
+	else:
+		return False
+
+def remove_useless_chars(keyword):
+	"""Remove useless chars in keyword
+
+	See data for all could be remove chars
+	Return None is keyword size is under two letters
+
+	:param keyword: keyword
+	:type keyword: str
+	:return: keyword or None
+
+	"""
+	while keyword[0] not in data.ALPHABET or keyword[-1] not in data.ALPHABET or '\'' in keyword or data.MIDLE_CHARS in keyword:
+		if keyword.startswith(data.START_CHARS):
+			keyword = keyword[1:]
+		if keyword.endswith(data.END_CHARS):
+			keyword = keyword[:-1]
+		if check_size_keyword(keyword):
+			if keyword[1] == '\'' or keyword[1] == data.MIDLE_CHARS:
+				keyword = keyword[2:]
+			if keyword[-2] == '\'' or keyword[-2] == data.MIDLE_CHARS:
+				keyword = keyword[:-2]
+		else:
+			return None
+
+		if keyword.isnumeric():
+			return None
+
+	if check_size_keyword(keyword):
+		return keyword
+	else:
+		return None
+
+def is_letters(keyword):
+	if True not in [letter in keyword for letter in data.ALPHABET]:
+		return True
+	else:
+		return False
+
+def letter_repeat(keyword):
+	"""Return True if the first letter isn't repeat eatch times"""
+	if True not in [letter != '' for letter in keyword.split(keyword[0])]:
+		return True # '********'
+	else:
+		return False
+
+def split_keywords(keyword):
+	is_list = False
+	point = keyword.find('.')
+	if point != -1:
+		keyword = keyword.split('.')
+		is_list = True
+	if '/' in keyword:
+		keyword = keyword.split('/') # str -> list
+		is_list = True
+	return is_list, keyword

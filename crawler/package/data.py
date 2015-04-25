@@ -30,7 +30,7 @@ BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp
 '.ico', '.svg', '.tiff', '.tif' '.raw', '.flv', '.mpeg', '.mpg', '.wma', '.mp4', '.mp3', '.fla', '.avi', '.gz', '.exe', '.xml')
 START_CHARS = ('«', '\'', '"', '(', ':', '/' , '[', '{', '-', '“')
 END_CHARS = ('.', ',', ';', '!', '?', '»', '\'', '"', ')', ':', '/', ']', '}', '-', '”', '…')
-END_CHARS2 = ('...', '!!!', '???')
+MIDLE_CHARS = '’'
 ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 # others informations :

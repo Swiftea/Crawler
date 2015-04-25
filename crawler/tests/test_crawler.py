@@ -6,10 +6,12 @@ from reppy.exceptions import ServerError
 
 
 import package.module as module
+import package.data as data
 from package.data import *
+from package.module import *
 from package.searches import SiteInformations
 from package.inverted_index import InvertedIndex
-from package.parsers import Parser_encoding, MyParser
+from package.parsers import Parser_encoding, MyParser, meta
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
 
@@ -61,6 +63,7 @@ class TestCrawlerBase(object):
 <html>
     <head>
         <meta http-equiv="content-language" content="en">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-16 LE" />
         <link rel="shortcut icon" href="public/favicon2.ico" type="image/x-icon">
     </head>
     <body>
@@ -77,6 +80,7 @@ class TestCrawlerBase(object):
 </html>"""
 
         self.reqrobots = RobotsCache()
+        self.headers = {'status': '200 OK', 'content-type': 'text/html; charset=utf-8', 'vary': 'X-PJAX, Accept-Encoding'}
 
 class TestCrawlerBasic(TestCrawlerBase):
     def test_clean_text(self):
@@ -89,14 +93,14 @@ class TestCrawlerBasic(TestCrawlerBase):
     def test_clean_links(self):
         links = ['page.php', 'http://www.example.fr/', 'mailto:test@test.fr']
         links = SiteInformations.clean_links(self, links)
-
         assert links == ['http://www.example.fr/page.php', 'http://www.example.fr']
 
     def test_clean_keywords(self):
         keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
-        'jean/pierre', 'quoi...', '*****', 'fichier.ext', 'epee,...']
+        'quoi...', '*****', 'epee,...'] # 'jean/pierre', 'fichier.ext'
         keywords = SiteInformations.clean_keywords(self, keywords)
-        assert keywords == ['bureau', 'word', 'example', 'oiseau', 'jean', 'pierre', 'quoi', 'fichier', 'epee']
+        print(keywords)
+        assert keywords == ['bureau', 'word', 'example', 'oiseau', 'quoi', 'epee']
 
     def test_remove_duplicates(self):
         assert module.remove_duplicates(['mot', 'mot']) == ['mot']
@@ -112,10 +116,9 @@ class TestCrawlerBasic(TestCrawlerBase):
         assert favicon == 'http://www.example.fr/icon.ico'
 
     def test_search_encoding(self):
-        # don't test all ways
-        url = 'https://github.com/topdelir1'
-        request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-        encoding = WebConnexion.search_encoding(self, request)
+        encoding = WebConnexion.search_encoding(self, self.headers, self.code3)
+        assert encoding[0] == 'utf-8'
+        encoding = WebConnexion.search_encoding(self, {}, self.code1)
         assert encoding[0] == 'utf-8'
 
     def test_check_robots_perm(self):
@@ -150,6 +153,24 @@ class TestCrawlerBasic(TestCrawlerBase):
 
         parser.feed(self.code3)
         assert parser.language == 'fr'
+
+    def test_meta(self):
+        language, description, objet = meta([('name', 'description'), ('content', 'Communauté du Libre partage')])
+        assert description == 'Communauté du Libre partage'
+        assert objet == 'description'
+
+        language, description, objet = meta([('name', 'language'), ('content', 'fr')])
+        assert language == 'fr'
+
+        language, description, objet = meta([('http-equiv', 'content-language'), ('content', 'en')])
+        assert language == 'en'
+
+    def test_parser_encoding(self):
+        parser = Parser_encoding()
+        parser.feed(self.code1)
+        assert parser.encoding == 'utf-8'
+        parser.feed(self.code2)
+        assert parser.encoding == 'UTF-16 LE'
 
     def test_average(self):
         assert module.average(['20', '20', '30', '30']) == 25
@@ -214,3 +235,32 @@ class TestCrawlerBasic(TestCrawlerBase):
         new_links = ['http://example.fr/page2', 'http://example.fr/page3']
         links_to_add = module.rebuild_links(old_links, new_links)
         assert links_to_add == 'http://example.fr\nhttp://example.fr/page1\nhttp://example.fr/page2\nhttp://example.fr/page3'
+
+    def test_split_keywords(self):
+        is_list, keywords = module.split_keywords('jean/pierre')
+        assert is_list == True
+        assert keywords == ['jean', 'pierre']
+        is_list, keywords = module.split_keywords('fichier.ext')
+        assert keywords == ['fichier', 'ext']
+        is_list, keywords = module.split_keywords('fichier')
+        assert is_list == False
+        assert keywords == 'fichier'
+
+    def test_letter_repeat(self):
+        assert letter_repeat('file') == False
+        assert letter_repeat('*****') == True
+
+    def test_is_letters(self):
+        assert is_letters('file') == False
+        assert is_letters('****') == True
+        assert is_letters('fi*le') == False
+        assert is_letters('2015') == True
+
+    def test_remove_useless_chars(self):
+        keyword = remove_useless_chars('(file’s)...')
+        assert keyword == 'file'
+
+    def test_check_size_keyword(self):
+        assert check_size_keyword('keyword') == True
+        assert check_size_keyword('ke') == False
+        assert check_size_keyword('key') == True

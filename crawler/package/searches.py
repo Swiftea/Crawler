@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 
 import package.data as data
-from package.module import speak, stats_stop_words, get_stopwords, clean_text, remove_duplicates, get_base_url
+import package.module as module
 from package.parsers import MyParser
 
 class SiteInformations(object):
@@ -28,7 +28,7 @@ class SiteInformations(object):
 		self.new = str()
 		self.slash = int()
 		self.favicon = str()
-		self.STOPWORDS = get_stopwords()
+		self.STOPWORDS = module.get_stopwords()
 
 	def get_infos(self, url, code, nofollow, score):
 		"""Manager all searches of webpage's informations
@@ -50,9 +50,9 @@ class SiteInformations(object):
 
 		self.parser.feed(code)
 
-		self.title = clean_text(self.parser.title) # find title and clean it
+		self.title = module.clean_text(self.parser.title) # find title and clean it
 
-		keywords = clean_text(self.parser.keywords.lower()).split()
+		keywords = module.clean_text(self.parser.keywords.lower()).split()
 		begining_size = len(keywords) # stats
 
 		# language :
@@ -68,15 +68,15 @@ class SiteInformations(object):
 
 			# description :
 			if self.parser.description == '':
-				self.description = clean_text(self.parser.first_title)
+				self.description = module.clean_text(self.parser.first_title)
 			else:
-				self.description = clean_text(self.parser.description)
+				self.description = module.clean_text(self.parser.description)
 
 			# css :
 			if self.parser.css:
 				self.score += 0.5
 
-			stats_stop_words(begining_size, len(self.keywords)) # stats
+			module.stats_stop_words(begining_size, len(self.keywords)) # stats
 
 			# links :
 			if nofollow:
@@ -137,7 +137,7 @@ class SiteInformations(object):
 		:return: cleanen links without duplicate
 
 		"""
-		links = remove_duplicates(links)
+		links = module.remove_duplicates(links)
 		new_links = list()
 
 		for url in links:
@@ -149,7 +149,7 @@ class SiteInformations(object):
 				'javascript:' not in new and
 				new != ''):
 				if not new.startswith('http') and not new.startswith('www'):
-					base_url = get_base_url(self.url)
+					base_url = module.get_base_url(self.url)
 					if new.startswith('//'):
 						new = 'http:' + new
 					elif new.startswith('/'):
@@ -168,7 +168,7 @@ class SiteInformations(object):
 					new += '?' + infos_url.query
 				new_links.append(new)
 
-		return remove_duplicates(new_links)
+		return module.remove_duplicates(new_links)
 
 	def clean_favicon(self, favicon):
 		"""Clean favicon
@@ -178,7 +178,7 @@ class SiteInformations(object):
 		:return: cleaned favicon
 
 		"""
-		base_url = get_base_url(self.url)
+		base_url = module.get_base_url(self.url)
 		if not favicon.startswith('http') and not favicon.startswith('www'):
 			if favicon.startswith('//'):
 				favicon = 'http:' + favicon
@@ -199,52 +199,24 @@ class SiteInformations(object):
 		:return: list of cleaned keywords
 
 		"""
-		if self.language == 'fr':
-			stopwords = self.STOPWORDS['fr']
-		elif self.language == 'en':
-			stopwords = self.STOPWORDS['en']
-		else:
-			stopwords = []
-		result = []
+		stopwords = self.STOPWORDS[self.language]
+		new_keywords = []
 		for keyword in keywords:
 			# 2 chars at least and check if word is not only special chars
-			if len(keyword) > 2 and not keyword.isnumeric():
-				# remove useless chars
-				if keyword.startswith(data.START_CHARS):
-					keyword = keyword[1:]
-
-				if keyword.endswith(data.END_CHARS):
-					keyword = keyword[:-1]
-				if keyword.endswith(data.END_CHARS2):
-					keyword = keyword[:-3]
-
-				if len(keyword) > 1: # l', d', s'
-					if keyword[1] == '\'' or keyword[1] == '’':
-						keyword = keyword[2:]
-				if len(keyword) > 2:
-					if keyword[-2] == '\'': # word's
-						keyword = keyword[:-2]
-
-				point = keyword.find('.')
-				if point != -1:
-					keyword = keyword[:point]
-
-				if True not in [letter in keyword for letter in data.ALPHABET]:
+			if module.check_size_keyword(keyword):
+				if module.letter_repeat(keyword):
+					continue
+				keyword = module.remove_useless_chars(keyword)
+				if keyword is None:
+					continue
+				if module.is_letters(keyword):
 					continue
 
-				if True not in [letter != '' for letter in keyword.split(keyword[0])]:
-					continue # '********'
+				is_list, keywords = module.split_keywords(keyword)
+				if is_list:
+					keywords = self.clean_keywords(keywords)
 
-				if keyword.endswith(data.END_CHARS): # repeat end chars
-					keyword = keyword[:-1]
+				if keyword not in stopwords:
+					new_keywords.append(keyword)
 
-				# word/word2
-				if '/' in keyword:
-					keyword = keyword.split('/') # str -> list
-					for word in keyword:
-						if len(word) > 2  and word not in stopwords:
-							result.append(word)
-				else:
-					if len(keyword) > 2  and keyword not in stopwords:
-						result.append(keyword)
-		return result
+		return new_keywords

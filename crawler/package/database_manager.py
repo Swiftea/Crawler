@@ -43,10 +43,10 @@ class DatabaseManager(object):
 				use_unicode=True,
 				charset='utf8',
 				connect_timeout=TIMEOUT)
-		except pymysql.err.OperationalError as error:
-			response = 'Connexion error : ' + str(error)
 		except socket.timeout:
 			response = 'Connexion error (socket.timeout:)'
+		except pymysql.err.OperationalError as error:
+			response = 'Connexion error : ' + str(error)
 		else:
 			self.cursor = self.conn.cursor() # cursor building
 			response = 'Connected to database'
@@ -78,12 +78,12 @@ class DatabaseManager(object):
 					result = self.cursor.fetchall()
 				else:
 					result = self.cursor.fetchone()
-			except pymysql.err.OperationalError:
-				result = None
-				response = 'Connexion error (err.OperationalError)'
 			except socket.timeout:
 				result = None
 				response = 'Connexion error (socket.timeout)'
+			except pymysql.err.OperationalError:
+				result = None
+				response = 'Connexion error (err.OperationalError)'
 			else:
 				response = 'Send command : ok'
 

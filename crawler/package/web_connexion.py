@@ -34,7 +34,6 @@ class WebConnexion(object):
 
 		"""
 		is_nofollow, url = self.is_nofollow(url)
-
 		try:
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
 		except ReadTimeoutError:
@@ -53,33 +52,35 @@ class WebConnexion(object):
 			allowed = self.check_robots_perm(url)
 			if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
 				# search encoding of webpage :
-				request.encoding, score = self.search_encoding(request)
+				request.encoding, score = self.search_encoding(request.headers, request.text)
 				return request.text, is_nofollow, score
 			else:
 				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots permission=' + str(allowed) + ', nofollow=' + str(is_nofollow))
 				return None, False, 0
 
-	def search_encoding(self, request):
+	def search_encoding(self, headers, code):
 		"""Searche encoding of webpage in source code
 
 		If an encoding is found in source code, score is .5, but if not
 		score is 0 and encoding is utf-8.
 
-		:param request: request connected to webpage
-		:type request: requests.models.Response
+		:param headers: hearders of requests
+		:type headers: dict
+		:param code: source code
+		:type code: str
 		:return: encoding of webpage and it score
 
 		"""
 		# search in headers :
-		headers = str(request.headers).lower()
+		headers = str(headers).lower()
 		charset = headers.find('charset')
 		end_charset = headers.find('\'', charset)
 		if charset != -1 and end_charset != -1:
 			return headers[charset+8:end_charset], .5
 		else:
 			# search in source code:
-			self.parser_encoding.feed(request.text)
+			self.parser_encoding.feed(code)
 			if self.parser_encoding.encoding is not None:
 				return self.parser_encoding.encoding, .5
 			else:
@@ -109,14 +110,14 @@ class WebConnexion(object):
 		"""
 		try:
 			allowed = self.reqrobots.allowed(url, USER_AGENT)
-		except requests.exceptions.RequestException as error:
-			speak('Error robots.txt (requests): ' + str(error) + ' ' + url, 24)
+		except ServerError as error:
+			speak('Error robots.txt (reppy): ' + str(error) + ' ' + url, 24)
 			allowed = True
 		except requests.exceptions.Timeout:
 			speak('Error robots.txt (timeout): ' + url)
 			allowed = True
-		except ServerError as error:
-			speak('Error robots.txt (reppy): ' + str(error) + ' ' + url, 24)
+		except requests.exceptions.RequestException as error:
+			speak('Error robots.txt (requests): ' + str(error) + ' ' + url, 24)
 			allowed = True
 		except Exception as error:
 			speak('Unknow robots.txt error: ' + str(error) + ' ' + url, 24)

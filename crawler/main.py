@@ -1,4 +1,4 @@
-#!/usr/bin/python3try:
+#!/usr/bin/python3
 
 """Crawler for Swiftea : http://swiftea.alwaysdata.net"""
 

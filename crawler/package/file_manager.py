@@ -124,7 +124,6 @@ class FileManager(object):
 		:return: url of webpage to crawl
 
 		"""
-		# joining : /liens/(reading meter) :
 		filename = DIR_LINKS + str(self.reading_file_number)
 		try:
 			with open(filename, 'r', errors='replace',

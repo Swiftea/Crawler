@@ -35,8 +35,8 @@ class DatabaseSwiftea(DatabaseManager):
 		:return: true if an error occured
 
 		"""
-		for key, value in enumerate(infos):
-			result, response = self.send_command("SELECT popularity, last_crawl FROM index_url WHERE url = %s", (infos[key]['url'],), True)
+		for webpage_infos in infos:
+			result, response = self.send_command("SELECT popularity, last_crawl FROM index_url WHERE url = %s", (webpage_infos['url'],), True)
 			if response != 'Send command : ok':
 				speak('Popularity and last_crawl query failed : ' + response, 16)
 				return True
@@ -45,7 +45,7 @@ class DatabaseSwiftea(DatabaseManager):
 				last_crawl = result[0][1] # datetime.datetime object
 				if (datetime.now() - last_crawl) > CRAWL_DELAY:
 					# the program already crawled this website
-					response = self.update(infos[key], result[0][0]+1)
+					response = self.update(webpage_infos, result[0][0]+1)
 					if response:
 						return True
 				else:
@@ -53,7 +53,7 @@ class DatabaseSwiftea(DatabaseManager):
 					speak('No updates, already crawled recently')
 			else:
 				# url not found in database, the url don't exists in the database, we add it :
-				response = self.insert(infos[key])
+				response = self.insert(webpage_infos)
 				if response:
 					return True
 		# end loop
@@ -70,12 +70,12 @@ class DatabaseSwiftea(DatabaseManager):
 
 		"""
 		speak('Updating : ' + infos['url'])
-		result, response = self.send_command(
+		response = self.send_command(
 """UPDATE index_url
 SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, score=%s, favicon=%s
 WHERE url = %s """, (infos['title'], infos['description'], infos['language'], popularity, infos['score'], infos['favicon'], infos['url']))
-		if response != 'Send command : ok':
-			speak('Failed to update : ' + response, 16)
+		if response[1] != 'Send command : ok':
+			speak('Failed to update : ' + response[1], 16)
 			return True
 		else:
 			return False
@@ -89,12 +89,12 @@ WHERE url = %s """, (infos['title'], infos['description'], infos['language'], po
 
 		"""
 		speak('Adding : ' + infos['url'])
-		result, response = self.send_command(
+		response = self.send_command(
 """INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, favicon)
 VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
 (infos['title'], infos['description'], infos['url'], infos['language'], infos['score'], infos['favicon']))
-		if response != 'Send command : ok':
-			speak("Failed to add : " + response, 16)
+		if response[1] != 'Send command : ok':
+			speak("Failed to add : " + response[1], 16)
 			return True
 		else:
 			return False
@@ -124,9 +124,9 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
 
 		"""
 		speak('suppression du document : ' + url)
-		result, response = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url,))
-		if response != 'Send command : ok':
-			speak("Doc not removed : {0}, {1}".format(url, response), 17)
+		response = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url,))
+		if response[1] != 'Send command : ok':
+			speak("Doc not removed : {0}, {1}".format(url, response[1]), 17)
 
 	def suggestions(self):
 		""":return: list of url in Suggestions table and delete them"""
