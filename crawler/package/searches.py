@@ -81,7 +81,7 @@ class SiteInformations(object):
 			# links :
 			if nofollow:
 				self.links = list()
-				speak('No take links') # why ?
+				module.speak('No take links') # why ?
 			else:
 				self.links = self.clean_links(self.parser.links)
 
@@ -91,7 +91,7 @@ class SiteInformations(object):
 			else:
 				self.favicon = ''
 		else:
-			speak('No language or title')
+			module.speak('No language or title')
 			self.title = ''
 			self.links = self.description = self.keywords = self.language = self.score = self.favicon = None
 
@@ -202,7 +202,8 @@ class SiteInformations(object):
 		stopwords = self.STOPWORDS[self.language]
 		new_keywords = []
 		for keyword in keywords:
-			# 2 chars at least and check if word is not only special chars
+			with open('output/keywords', 'a') as myfile:
+				myfile.write(keyword + ' --> ')
 			if module.check_size_keyword(keyword):
 				if module.letter_repeat(keyword):
 					continue
@@ -218,5 +219,6 @@ class SiteInformations(object):
 
 				if keyword not in stopwords:
 					new_keywords.append(keyword)
-
+					with open('output/keywords', 'a') as myfile:
+						myfile.write(keyword + '\n')
 		return new_keywords

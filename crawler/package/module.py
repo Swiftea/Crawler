@@ -259,7 +259,7 @@ def rebuild_links(old_links, new_links): # file manager
 	for link in links:
 		if link not in links_to_add:
 			links_to_add.append(link)
-	return '\n'.join(links_to_add)
+	return links_to_add
 
 def check_size_keyword(keyword):
 	if len(keyword) > 2:
@@ -278,7 +278,7 @@ def remove_useless_chars(keyword):
 	:return: keyword or None
 
 	"""
-	while keyword[0] not in data.ALPHABET or keyword[-1] not in data.ALPHABET or '\'' in keyword or data.MIDLE_CHARS in keyword:
+	while keyword.startswith(data.START_CHARS) or keyword.endswith(data.END_CHARS) or keyword[1] == '\'' or keyword[1] == data.MIDLE_CHARS or keyword[-2] == '\'' or keyword[-2] == data.MIDLE_CHARS:
 		if keyword.startswith(data.START_CHARS):
 			keyword = keyword[1:]
 		if keyword.endswith(data.END_CHARS):
@@ -286,12 +286,10 @@ def remove_useless_chars(keyword):
 		if check_size_keyword(keyword):
 			if keyword[1] == '\'' or keyword[1] == data.MIDLE_CHARS:
 				keyword = keyword[2:]
+		if check_size_keyword(keyword):
 			if keyword[-2] == '\'' or keyword[-2] == data.MIDLE_CHARS:
 				keyword = keyword[:-2]
 		else:
-			return None
-
-		if keyword.isnumeric():
 			return None
 
 	if check_size_keyword(keyword):
@@ -314,11 +312,67 @@ def letter_repeat(keyword):
 
 def split_keywords(keyword):
 	is_list = False
-	point = keyword.find('.')
-	if point != -1:
+	if '.' in keyword:
 		keyword = keyword.split('.')
 		is_list = True
 	if '/' in keyword:
 		keyword = keyword.split('/') # str -> list
 		is_list = True
 	return is_list, keyword
+
+def meta(attrs):
+	"""Manager searches in meat tag
+
+	:apram attrs: attributes of meta tag
+	:type attrs: list
+	:return: language, description, objet
+
+	"""
+	objet = description = language = str()
+	name = dict(attrs).get('name', '').lower()
+	content = dict(attrs).get('content')
+	if content:
+		if name == 'description':
+			description = content
+			objet = 'description'
+		elif name == 'language':
+			language = content.lower().strip()[:2]
+
+	httpequiv = dict(attrs).get('http-equiv')
+	contentlanguage = dict(attrs).get('content')
+	if httpequiv and contentlanguage:
+		if httpequiv.lower() == 'content-language':
+			language = contentlanguage.lower().strip()[:2]
+
+	return language, description, objet
+
+def can_append(url, rel):
+	"""Check rel attrs
+
+	:param url: url to add
+	:type url: str
+	:param rel: rel attrs in a tag
+	:type rel: str
+	:return: url or None if can't add it
+
+	"""
+	if url:
+		if 'noindex' not in rel:
+			if 'nofollow' in rel:
+				url += '!nofollow!'
+			return url
+		else:
+			return None
+	else:
+		return None
+
+def is_index():
+	"""Check if there is a saved inverted-index file
+
+	:return: True if there is the file
+
+	"""
+	if path.exists(data.FILE_INDEX):
+		return True
+	else:
+		return False

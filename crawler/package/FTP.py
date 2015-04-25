@@ -15,7 +15,7 @@ class MyFtpError(Exception):
 		return repr(self.value)
 
 class FTPConnect(FTP):
-	"""Class to connect to a ftp server
+	"""Class to connect to a ftp server more easily.
 
 	:param host: hostname of the ftp server
 	:type host: str
@@ -23,10 +23,6 @@ class FTPConnect(FTP):
 	:type user: str
 	:param password: password to use for connexion
 	:type password: str
-
-	ideas:
-	return the result if there is one
-	return a tuple of string who describes all steps of the connexion and of transferts
 
 	"""
 	def __init__(self, host, user='', password=''):
@@ -37,8 +33,9 @@ class FTPConnect(FTP):
 		self.password = password
 
 	def connexion(self):
+		"""Connect to ftp server."""
 		try:
-			# connexion to the ftp server :
+			# connexion to ftp server :
 			self.connect(self.host)
 			# login :
 			self.login(self.user, self.password)
@@ -51,6 +48,7 @@ class FTPConnect(FTP):
 		return response
 
 	def disconnect(self):
+		"""Quit connexion to ftp server or close it if an error occured while quit it."""
 		try:
 			response = self.quit()
 		except all_errors as error:
@@ -60,7 +58,7 @@ class FTPConnect(FTP):
 		return response
 
 	def upload(self, local_filename, server_filename):
-		"""Upload a file into ftp server
+		"""Upload a file into ftp server.
 
 		:param local_filename: local filename to upload
 		:type local_filename: str
@@ -79,7 +77,7 @@ class FTPConnect(FTP):
 		return response
 
 	def download(self, local_filename, server_filename):
-		"""Download a file from ftp server
+		"""Download a file from ftp server.
 
 		:param local_filename: local filename to download
 		:type local_filename: str

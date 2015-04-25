@@ -10,7 +10,7 @@ from package.data import CRAWL_DELAY
 __author__ = "Seva Nathan"
 
 class DatabaseSwiftea(DatabaseManager):
-	"""Class to manage Swiftea database
+	"""Class to manage Swiftea database.
 
 	:param host: hostname of the ftp server
 	:type host: str
@@ -24,11 +24,10 @@ class DatabaseSwiftea(DatabaseManager):
 	"""
 
 	def __init__(self, host, user, password, name):
-		"""Build manager"""
 		DatabaseManager.__init__(self, host, user, password, name)
 
 	def send_infos(self, infos):
-		"""send informations in database
+		"""send documents informations to database.
 
 		:param infos: informations to send to database
 		:type infos: list
@@ -50,7 +49,7 @@ class DatabaseSwiftea(DatabaseManager):
 						return True
 				else:
 					# already crawled
-					speak('No updates, already crawled recently')
+					speak('No updates, recently crawled')
 			else:
 				# url not found in database, the url don't exists in the database, we add it :
 				response = self.insert(webpage_infos)
@@ -60,7 +59,7 @@ class DatabaseSwiftea(DatabaseManager):
 		return False # all is correct
 
 	def update(self, infos, popularity):
-		"""Update a doc in database
+		"""Update a document in database.
 
 		:param infos: doc infos
 		:type infos: dict()
@@ -81,7 +80,7 @@ WHERE url = %s """, (infos['title'], infos['description'], infos['language'], po
 			return False
 
 	def insert(self, infos):
-		"""Update a doc in database
+		"""Insert a document in database.
 
 		:param infos: doc infos
 		:type infos: dict()
@@ -100,7 +99,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
 			return False
 
 	def get_doc_id(self, url):
-		"""Get id of a webpage in database
+		"""Get id of a document in database.
 
 		:param url: url of webpage
 		:type url: str
@@ -115,21 +114,27 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
 			return str(result[0])
 
 	def del_one_doc(self, url, table):
-		"""Delete document corresponding to url from table
+		"""Delete document corresponding to url from the given table.
 
 		:param url: url of webpage
 		:type url: str
 		:param table: table where given url is
 		:type table: str
+		:return: status message
 
 		"""
 		speak('suppression du document : ' + url)
 		response = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url,))
 		if response[1] != 'Send command : ok':
 			speak("Doc not removed : {0}, {1}".format(url, response[1]), 17)
+		return response[1]
 
 	def suggestions(self):
-		""":return: list of url in Suggestions table and delete them"""
+		"""Get the five first url from Suggestions table and delete them.
+
+		:return: list of url in Suggestions table and delete them
+
+		"""
 		result, response = self.send_command("SELECT url FROM suggestions LIMIT 5", fetchall=True)
 		if response != 'Send command : ok':
 			speak("Failed to get url : " + response, 16)

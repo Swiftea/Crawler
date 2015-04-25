@@ -13,7 +13,7 @@ class DatabaseManager(object):
 	"""Class to manage database\n\n
 	How to: create a subclass\n
 	result, response = self.send_comand(command, data=tuple(), all=False)\n
-	where result are data asked
+	where result are data asked and response a message.
 
 	:param host: hostname of the ftp server
 	:type host: str
@@ -26,7 +26,6 @@ class DatabaseManager(object):
 
 	"""
 	def __init__(self, host, user, password, name):
-		"""Build database manager"""
 		self.host = host # hostname
 		self.user = user # username
 		self.password = password # password
@@ -34,7 +33,7 @@ class DatabaseManager(object):
 		self.cursor = self.conn = None
 
 	def connexion(self):
-		"""Connect to database"""
+		"""Connect to database."""
 		try:
 			self.conn = pymysql.connect(host=self.host,
 				user=self.user,
@@ -54,18 +53,18 @@ class DatabaseManager(object):
 		return response
 
 	def close_connexion(self):
-		"""Close the database connexion"""
+		"""Close database connexion."""
 		self.cursor.close()
 		self.conn.close()
 
 	def send_command(self, command, data=tuple(), fetchall=False):
-		"""Send a query to database
+		"""Send a query to database.
 
-		:param data: data attached to given query
+		:param data: data attached to query
 		:type data: tuple
 		:param fetchall: True if return all results
 		:type fetchall: bool
-		:return: result of the query and status message.
+		:return: result of the query and status message
 
 		"""
 		response = self.connexion()

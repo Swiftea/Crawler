@@ -374,3 +374,5 @@ epub_exclude_files = ['search.html']
 # -- My options -----------------------------------------------------------
 
 sys.path.append('../crawler')
+
+autodoc_member_order = 'bysource'

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""Define data for crawler"""
+"""Define required data for crawler."""
 
 from datetime import timedelta
 

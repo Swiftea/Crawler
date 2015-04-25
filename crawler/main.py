@@ -1,14 +1,13 @@
 #!/usr/bin/python3
 
-"""Crawler for Swiftea : http://swiftea.alwaysdata.net"""
-
 from time import strftime
+
 
 try:
 	import package.private_data as pvdata
 except ImportError:
 	pass
-from package.module import speak, quit_program, start
+from package.module import speak, quit_program, start, is_index
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
 from package.database_swiftea import DatabaseSwiftea
@@ -19,12 +18,7 @@ from package.ftp_manager import FTPManager
 __author__ = "Seva Nathan"
 
 class Crawler(object):
-	"""Crawler Class
-
-	response : a message
-	result : data asked
-
-	"""
+	"""Crawler main class."""
 	def __init__(self):
 		self.site_informations = SiteInformations()
 		if self.site_informations.STOPWORDS is None:
@@ -32,13 +26,7 @@ class Crawler(object):
 			quit_program()
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPManager(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
-		if self.ftp_manager.compare_indexs():
-			self.inverted_index, error = self.ftp_manager.get_inverted_index()
-		else:
-			self.inverted_index = self.file_manager.read_inverted_index()
-			error = False
-		if error and self.file_manager.reading_file_number != 0:
-			quit_program()
+		self.get_inverted_index()
 		self.index_manager = InvertedIndex()
 		self.index_manager.setInvertedIndex(self.inverted_index)
 		self.index_manager.setStopwords(self.site_informations.STOPWORDS)
@@ -48,8 +36,21 @@ class Crawler(object):
 		self.infos = list()
 		self.crawled_websites = 0
 
+	def get_inverted_index(self):
+		"""Manage all operations to get inverted-index."""
+		if is_index():
+			self.inverted_index = self.file_manager.get_inverted_index()
+		else:
+			if self.ftp_manager.compare_indexs():
+				self.inverted_index, error = self.ftp_manager.get_inverted_index()
+			else:
+				self.inverted_index = self.file_manager.read_inverted_index()
+				error = False
+			if error and self.file_manager.reading_file_number != 0:
+				quit_program()
+
 	def start(self):
-		"""Start the main loop of crawling"""
+		"""Start main loop of crawling."""
 		speak(strftime("%d/%m/%y %H:%M:%S")) # speak time
 		while True:
 			for k in range(50):
@@ -85,9 +86,10 @@ class Crawler(object):
 			self.suggestions()
 
 	def crawl_webpage(self, url):
-		"""Crawl the given url
+		"""Crawl the given url.
 
-		Score of webpage is define here: .5 encondig, .5 css, .5 language
+		Webpage score is define here: 0.5 for giving encondig,
+		0.5 for have css style file and 0.5 for specified language.
 
 		:param url: url of webpage
 		:type url: str
@@ -96,7 +98,12 @@ class Crawler(object):
 		speak('Crawling url : ' + url)
 		# get the webpage's html code :
 		html_code, is_nofollow, score = self.web_connexion.get_code(url)
-		if html_code is not None:
+		if html_code is None:
+			speak('Ignore')
+		elif html_code == 'no_connexion':
+			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
+			quit_program()
+		else:
 			if is_nofollow:
 				url = url = url[:-10]
 			webpage_infos = {}
@@ -112,23 +119,18 @@ class Crawler(object):
 				self.file_manager.save_links(links)
 			else:
 				speak('Ignore')
-		elif html_code == 'no_connexion':
-			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
-			quit_program()
-		else:
-			speak('Ignore')
 
 	def send_to_db(self):
-		"""Send all informations about crawled webpages to database"""
+		"""Send all informations about crawled webpages to database."""
 		response_url = self.database.send_infos(self.infos)
 		if response_url:
 			self.safe_quit()
 
 	def indexing(self):
-		"""Index crawled webpages"""
+		"""Index crawled webpages."""
 		for webpage_infos in self.infos:
 			doc_id = self.database.get_doc_id(webpage_infos['url'])
-			if doc_id == 'error':
+			if doc_id is None:
 				self.safe_quit()
 			speak('Indexing : {0} {1}'.format(doc_id, webpage_infos['url']))
 			timeout = self.index_manager.add_doc(webpage_infos['keywords'], doc_id, webpage_infos['language'])
@@ -136,7 +138,7 @@ class Crawler(object):
 				self.database.del_one_doc(webpage_infos['url'], 'index_url')
 
 	def send_inverted_index(self):
-		"""Send inverted-index generate by indexing to ftp server"""
+		"""Send inverted-index generate by indexing to ftp server."""
 		error = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		if error:
 			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
@@ -146,7 +148,7 @@ class Crawler(object):
 		"""Suggestions:
 
 		Get 5 urls from database, delete them, crawl them,
-		send all informations about them, index them and return to main loop
+		send all informations about them, index them and return to main loop.
 
 		"""
 		suggestions = self.database.suggestions()
@@ -165,7 +167,7 @@ class Crawler(object):
 			self.infos.clear() # reset the list of dict of informations of websites :
 
 	def safe_quit(self):
-		"""Send inverted-index and quit"""
+		"""Send inverted-index and quit."""
 		self.send_inverted_index()
 		speak('Programm will quit')
 		quit_program()

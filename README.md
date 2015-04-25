@@ -16,8 +16,9 @@
 
 ## Description
 
-Swiftea's Crawler is the crawler we used on Swiftea. Currently, it can :
+Swiftea-Crawler is an open source web crawler for Swiftea: http://swiftea.alwaysdata.net.
 
+Currently, it can :
   - Visit websites
     - check robots.txt
     - search encoding

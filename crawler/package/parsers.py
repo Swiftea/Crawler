@@ -7,6 +7,9 @@ the sencond one only for encoding."""
 from html.parser import HTMLParser
 from html.entities import name2codepoint, html5
 
+
+from package.module import meta, can_append
+
 __author__ = "Seva Nathan"
 
 class MyParser(HTMLParser):
@@ -36,6 +39,13 @@ class MyParser(HTMLParser):
 		self.first_title = '' # the first title (h1) of the web site
 		self.description = self.language = self.title = self.favicon  = ''
 
+	def re_init(self):
+		self.links = list()
+		self.first_title = self.keywords = self.description = ''
+		self.language = self.title = self.favicon  = ''
+		self.css = self.h1 = False
+		self.objet = None
+
 	def handle_starttag(self, tag, attrs):
 		"""Call when parser met a starting tag
 
@@ -46,35 +56,25 @@ class MyParser(HTMLParser):
 
 		"""
 		if tag =='html': # bigining of the source code : reset all variables
-			self.links = list()
-			self.first_title = self.keywords = self.description = ''
-			self.language = self.title = self.favicon  = ''
-			self.css = self.h1 = False
-			self.objet = None
-
+			self.re_init()
 			if len(dict(attrs).get('lang', '')) >= 2:
 				self.language = dict(attrs).get('lang').lower().strip()[:2]
 
 		elif tag == 'a':
-			url = dict(attrs).get('href')
-			rel = dict(attrs).get('rel', '')
+			url = can_append(dict(attrs).get('href'), dict(attrs).get('rel', ''))
 			if url:
-				if 'noindex' not in rel:
-					if 'nofollow' in rel:
-						url += "!nofollow!"
-						self.links.append(url)
-					else:
-						self.links.append(url)
+				self.links.append(url)
 
 		elif tag == 'title':
 			self.objet = 'title' # it's about title
 
-		elif tag == 'link': # LINK REL="STYLESHEET" TYPE="text/css"
+		elif tag == 'link':
 			rel = dict(attrs).get('rel', '')
 			if rel == 'stylesheet':
+				# LINK REL="STYLESHEET" TYPE="text/css"
 				self.css = True
-				# LINK REL="ICON" HREF="FAVICON.ICO"
 			elif rel == 'icon' or rel == 'shortcut icon':
+				# LINK REL="ICON" HREF="FAVICON.ICO"
 				self.favicon = dict(attrs).get('href', '')
 
 		elif tag == 'meta':
@@ -136,7 +136,7 @@ class MyParser(HTMLParser):
 				pass
 		else:
 			if self.objet == 'title':
-				self.add_letter(letter)
+				self.title += letter
 
 	def handle_charref(self, name):
 		if name.startswith('x'):
@@ -144,37 +144,7 @@ class MyParser(HTMLParser):
 		else:
 			letter = chr(int(name))
 		if self.objet == 'title':
-			self.add_letter(letter)
-
-	def add_letter(self, letter):
-		"""Add a letter to title when met special char"""
-		self.title += letter
-
-def meta(attrs):
-	"""Manager searches in meat tag
-
-	:apram attrs: attributes of meta tag
-	:type attrs: list
-	:return: language, description, objet
-
-	"""
-	objet = description = language = str()
-	name = dict(attrs).get('name', '').lower()
-	content = dict(attrs).get('content')
-	if content:
-		if name == 'description':
-			description = content
-			objet = 'description'
-		elif name == 'language':
-			language = content.lower().strip()[:2]
-
-	httpequiv = dict(attrs).get('http-equiv')
-	contentlanguage = dict(attrs).get('content')
-	if httpequiv and contentlanguage:
-		if httpequiv.lower() == 'content-language':
-			language = contentlanguage.lower().strip()[:2]
-
-	return language, description, objet
+			self.title += letter
 
 class Parser_encoding(HTMLParser):
 	"""Html parser for extract encoding from source code"""

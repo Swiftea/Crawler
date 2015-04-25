@@ -14,18 +14,15 @@ from package.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDE
 from package.module import speak, stats_links, rebuild_links
 
 class FileManager(object):
-	"""File manager for crawler
+	"""File manager for crawler.
 
 	Save and read links, read and write configuration variables,
-	read inverted-index and later archive event and errors files.
+	read inverted-index from json file saved and from file using when send it.
+
+	Create configuration file if doesn't exists	or read it.
 
 	"""
 	def __init__(self):
-		"""build manager
-
-		Create configuration file if doesn't exists	or read it
-
-		"""
 		self.writing_file_number = 1 # meter of the writing file
 		self.reading_file_number = 0 # meter of the reading file
 		self.reading_line_number = 0 # meter of links in the reading file
@@ -57,7 +54,7 @@ class FileManager(object):
 	# sometimes :
 
 	def check_stop_crawling(self):
-		"""Check if the user want to stop program"""
+		"""Check if the user want to stop program."""
 		self.config.read_file(open(FILE_CONFIG))
 		self.run = self.config['DEFAULT']['run']
 
@@ -67,7 +64,7 @@ class FileManager(object):
 		self.max_links = int(self.config['DEFAULT']['max_links'])
 
 	def save_config(self):
-		"""Save configurations"""
+		"""Save all configurations in config file."""
 		self.config['DEFAULT'] = {
 			'run': self.run,
 			'reading_file_number': str(self.reading_file_number),
@@ -81,9 +78,9 @@ class FileManager(object):
 	# other :
 
 	def save_links(self, links):
-		"""Save links
+		"""Save found links in file.
 
-		Save link in a file without doublons and check if the file if full
+		Save link in a file without doublons and check if the file if full.
 
 		:param links: links to save
 		:type links: list
@@ -99,18 +96,18 @@ class FileManager(object):
 				old_links = myfile.read().split('\n')
 				myfile.seek(0)
 				links = rebuild_links(old_links, links)
-				myfile.write(links)
+				myfile.write('\n'.join(links))
 
 		self.ckeck_size_links(links)
 
 	def ckeck_size_links(self, links):
-		"""Check number of links in file
+		"""Check number of links in file.
 
 		:param links: links saved in file
 		:type links: str
 
 		"""
-		if len(links.split('\n')) > self.max_links: # check the size
+		if len(links) > self.max_links: # check the size
 			self.writing_file_number += 1
 			speak(
 				'More {0} links : {1} : writing file {2}.'.format(
@@ -119,7 +116,9 @@ class FileManager(object):
 			)
 
 	def get_url(self):
-		"""Get the url of the next webpage
+		"""Get url of next webpage.
+
+		Check the size of curent reading links and increment it if over.
 
 		:return: url of webpage to crawl
 
@@ -148,38 +147,43 @@ class FileManager(object):
 			return url
 
 	def save_inverted_index(self, inverted_index):
-		"""Save inverted-index in local
+		"""Save inverted-index in local.
 
-		Call after a connxion error.
+		Save it in a .json file when can't send.
 
 		:param inverted_index: inverted-index
 		:type inverted_index: dict
 
 		"""
-		speak('Save inverted-indexs in save file')
+		speak('Save inverted-index in save file')
 		with open(FILE_INDEX, 'w') as myfile:
 			json.dump(inverted_index, myfile, ensure_ascii=False)
 
 	def get_inverted_index(self):
-		"""Get inverted-index from local
+		"""Get inverted-index in local.
 
-		Work only after a connxion error.
+		Call after a connxion error. Read a .json file conatin inverted-index.
+		Delete this file after reading.
 
 		:return: inverted-index
 
 		"""
-		speak('Get inverted-indexs in save file')
+		speak('Get inverted-index form save file')
 		with open(FILE_INDEX, 'r') as myfile:
 			inverted_index = json.load(myfile)
+		remove(FILE_INDEX)
 		return inverted_index
 
 	def read_inverted_index(self):
-		"""Read inverted-indexs in local after safe quit
+		"""Get inverted-index in local.
+
+		Call after sending inverted-index without error.
+		Read all files using for sending inverted-index.
 
 		:return: inverted-index
 
 		"""
-		speak('Get inverted-indexs in local')
+		speak('Get inverted-index in local')
 		inverted_index = dict()
 		for language in listdir(DIR_INDEX):
 			inverted_index[language] = dict()

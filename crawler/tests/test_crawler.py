@@ -11,12 +11,12 @@ from package.data import *
 from package.module import *
 from package.searches import SiteInformations
 from package.inverted_index import InvertedIndex
-from package.parsers import Parser_encoding, MyParser, meta
+from package.parsers import Parser_encoding, MyParser
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
 
 class TestCrawlerBase(object):
-    """Base class for all crawler test classes"""
+    """Base class for all crawler test classes."""
     def setup_method(self, _):
         """Configure the app."""
         self.url = 'http://www.example.fr'
@@ -97,9 +97,8 @@ class TestCrawlerBasic(TestCrawlerBase):
 
     def test_clean_keywords(self):
         keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
-        'quoi...', '*****', 'epee,...'] # 'jean/pierre', 'fichier.ext'
+        'quoi...', '*****', 'epee,...', '2.0'] # 'jean/pierre', 'fichier.ext'
         keywords = SiteInformations.clean_keywords(self, keywords)
-        print(keywords)
         assert keywords == ['bureau', 'word', 'example', 'oiseau', 'quoi', 'epee']
 
     def test_remove_duplicates(self):
@@ -234,7 +233,7 @@ class TestCrawlerBasic(TestCrawlerBase):
         old_links = ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2']
         new_links = ['http://example.fr/page2', 'http://example.fr/page3']
         links_to_add = module.rebuild_links(old_links, new_links)
-        assert links_to_add == 'http://example.fr\nhttp://example.fr/page1\nhttp://example.fr/page2\nhttp://example.fr/page3'
+        assert links_to_add == ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2', 'http://example.fr/page3']
 
     def test_split_keywords(self):
         is_list, keywords = module.split_keywords('jean/pierre')
@@ -259,8 +258,15 @@ class TestCrawlerBasic(TestCrawlerBase):
     def test_remove_useless_chars(self):
         keyword = remove_useless_chars('(file’s)...')
         assert keyword == 'file'
+        keyword = remove_useless_chars('2.0')
+        assert keyword == '2.0'
 
     def test_check_size_keyword(self):
         assert check_size_keyword('keyword') == True
         assert check_size_keyword('ke') == False
         assert check_size_keyword('key') == True
+
+    def test_can_append(self):
+        assert can_append('about/ninf.php', 'noindex, nofollow') == None
+        assert can_append('about/ninf.php', 'nofollow') == 'about/ninf.php!nofollow!'
+        assert can_append('about/ninf.php', '') == 'about/ninf.php'

@@ -6,13 +6,16 @@
 Welcome to Swiftea-Crawler's documentation!
 ===========================================
 
-Here is the documenttation of Swiftea-Crawler.
-
+Swiftea-Crawler is an open source web crawler for Swiftea: http://swiftea.alwaysdata.net.\n
+It can't be run by contributors because it needs private_data.py wich is not upload for obvious reason.
 
 .. toctree::
    :maxdepth: 4
+   :numbered:
 
-   doc_crawler
+   doc_modules
+   doc_package
+   doc_tests
 
 
 Indices and tables
@@ -21,4 +24,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

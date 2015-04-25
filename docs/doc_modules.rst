@@ -1,12 +1,13 @@
 Modules
 =======
 
+Here are described the two executables of Swiftea-Crawler.
+
 crawler main module
 -------------------
 .. automodule:: main
     :members:
     :undoc-members:
-    :show-inheritance:
 
 
 statistiques module
@@ -14,10 +15,3 @@ statistiques module
 .. automodule:: stats
     :members:
     :undoc-members:
-    :show-inheritance:
-
-
-Package
-=======
-.. toctree::
-    doc_package
