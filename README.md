@@ -24,11 +24,11 @@ Currently, it can :
     - search encoding
   - Parse them
     - extract data
-        - title
-        - description
-        - ...
+      - title
+      - description
+      - ...
     - extract important words
-        - filter stopwords
+      - filter stopwords
   - Index them
     - in database
     - in inverted-index
@@ -37,7 +37,11 @@ Currently, it can :
 
 Swiftea's Crawler uses a number of open source projects to work properly:
 
-* [Python 3]
+- [Python 3](https://www.python.org/)
+  - [Reppy](https://github.com/seomoz/reppy)
+  - [PyMySQL](https://github.com/PyMySQL/PyMySQL/)
+  - [Requests](https://github.com/kennethreitz/requests)
+
 
 ## Contributing
 
@@ -76,5 +80,3 @@ License
 GNU GENERAL PUBLIC LICENSE (v3)
 
 **Free Software, Hell Yeah!**
-
-[Python 3]:https://www.python.org/

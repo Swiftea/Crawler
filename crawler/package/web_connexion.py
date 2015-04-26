@@ -6,8 +6,7 @@ and all RequestException errors."""
 
 __author__ = "Seva Nathan"
 
-import requests # to get back the source code
-from urllib3.exceptions import ReadTimeoutError
+import requests
 
 
 from reppy.cache import RobotsCache
@@ -36,7 +35,7 @@ class WebConnexion(object):
 		is_nofollow, url = self.is_nofollow(url)
 		try:
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-		except ReadTimeoutError:
+		except resuests.packages.urllib3.exceptions.ReadTimeoutError:
 			speak('Website not responding (urllib3): ' + url, 7)
 			return None, False, 0
 		except requests.exceptions.Timeout:
