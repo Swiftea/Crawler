@@ -12,6 +12,6 @@ branches:
     - master
     - develop
 script:
-  - "coverage run --source=crawler setup.py test"
+  - "coverage run setup.py test"
 after_success:
   - coveralls

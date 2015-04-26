@@ -13,15 +13,16 @@ class PyTest(TestCommand):
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
+def read(filename):
+    with open(filename, 'r') as myfile:
+        return myfile.read().split()
+
 setup(
     name = "Crawler",
     version = "0.1",
     author = "Thykof",
     tests_require=['pytest'],
-    install_requires=['reppy>=0.3.0',
-                    'PyMySQL>=0.6.6',
-                    'urllib3>=1.10.2'
-                    ],
+    install_requires=read('requirements.txt'),
     cmdclass={'test': PyTest},
     description = ("Swiftea's Open Source Web Crawler"),
     license = "GNU GPL v3",

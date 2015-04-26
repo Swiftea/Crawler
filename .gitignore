@@ -1,3 +1,5 @@
+crawler/tests/coverage_html_report/
+Crawler.egg-info/
 crawler/package/private_data.py
 crawler/package/__pycache__/
 crawler/tests/__pycache__/
@@ -9,5 +11,6 @@ crawler/links/
 crawler/data/
 docs/_static
 docs/_build
+.coverage
 notes.txt
 *~

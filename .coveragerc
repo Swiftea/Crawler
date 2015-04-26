@@ -1,0 +1,15 @@
+[run]
+omit =
+    crawler/package/FTP.py
+    crawler/package/ftp_manager.py
+    crawler/package/database_manager.py
+    crawler/package/database_swiftea.py
+
+source = crawler
+
+[report]
+    exclude_lines =
+        pragma: no cover
+
+[html]
+directory = crawler/tests/coverage_html_report
