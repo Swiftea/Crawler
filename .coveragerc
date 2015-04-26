@@ -1,7 +1,7 @@
 [run]
 omit =
-    crawler/package/FTP.py
     crawler/package/ftp_manager.py
+    crawler/package/ftp_swiftea.py
     crawler/package/database_manager.py
     crawler/package/database_swiftea.py
 

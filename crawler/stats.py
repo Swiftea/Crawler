@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 
-"""Display stats"""
+"""Display stats."""
 
 from package.data import FILE_STATS, FILE_STATS2
 from package.module import average
 
-__author__ = "Seva Nathan"
 
 if __name__ == '__main__':
 	try:

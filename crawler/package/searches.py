@@ -3,17 +3,14 @@
 """After parse source code, data extracted must be classify and clean.
 Here is a class who use the html parser and manage all results."""
 
-__author__ = "Seva Nathan"
-
 from urllib.parse import urlparse
-
 
 import package.data as data
 import package.module as module
 from package.parsers import MyParser
 
 class SiteInformations(object):
-	"""Class to manage searches in source codes"""
+	"""Class to manage searches in source codes."""
 	def __init__(self):
 		"""Build searches manager"""
 		self.parser = MyParser()
@@ -30,8 +27,9 @@ class SiteInformations(object):
 		self.favicon = str()
 		self.STOPWORDS = module.get_stopwords()
 
+
 	def get_infos(self, url, code, nofollow, score):
-		"""Manager all searches of webpage's informations
+		"""Manager all searches of webpage's informations.
 
 		:param url: url of webpage
 		:type url: str
@@ -50,12 +48,12 @@ class SiteInformations(object):
 
 		self.parser.feed(code)
 
-		self.title = module.clean_text(self.parser.title) # find title and clean it
+		self.title = module.clean_text(self.parser.title)  # Find title and clean it
 
 		keywords = module.clean_text(self.parser.keywords.lower()).split()
-		begining_size = len(keywords) # stats
+		begining_size = len(keywords)  # Stats
 
-		# language :
+		# Language:
 		if self.parser.language != '':
 			self.language = self.parser.language
 			self.score += 0.5
@@ -66,26 +64,26 @@ class SiteInformations(object):
 			self.keywords = self.clean_keywords(keywords)
 			self.keywords.extend(self.clean_keywords(self.title.lower().split()))
 
-			# description :
+			# Description:
 			if self.parser.description == '':
 				self.description = module.clean_text(self.parser.first_title)
 			else:
 				self.description = module.clean_text(self.parser.description)
 
-			# css :
+			# Css:
 			if self.parser.css:
 				self.score += 0.5
 
-			module.stats_stop_words(begining_size, len(self.keywords)) # stats
+			module.stats_stop_words(begining_size, len(self.keywords))  # stats
 
-			# links :
+			# Links:
 			if nofollow:
 				self.links = list()
-				module.speak('No take links') # why ?
+				module.speak('No take links')  # why ?
 			else:
 				self.links = self.clean_links(self.parser.links)
 
-			# favicon :
+			# Favicon:
 			if self.parser.favicon != '':
 				self.favicon = self.clean_favicon(self.parser.favicon)
 			else:
@@ -97,8 +95,9 @@ class SiteInformations(object):
 
 		return self.links, self.title, self.description, self.keywords, self.language, self.score, self.favicon
 
+
 	def detect_language(self, keywords):
-		"""Detect language of webpage if not given
+		"""Detect language of webpage if not given.
 
 		:param keywords: keywords of webpage used for detecting
 		:type keywords: list
@@ -107,7 +106,7 @@ class SiteInformations(object):
 		"""
 		total_stopwords = 0
 
-		# Nb stopwords
+		# Number stopwords
 		nb_stopwords = dict()
 		for lang in self.STOPWORDS:
 			nb_stopwords[lang] = 0
@@ -128,6 +127,7 @@ class SiteInformations(object):
 
 		return language
 
+
 	def clean_links(self, links):
 		"""Clean webpage's links: rebuild urls with base url and
 		remove anchors, mailto, javascript, .index.
@@ -141,7 +141,7 @@ class SiteInformations(object):
 		new_links = list()
 
 		for url in links:
-			new = url.strip() # link to add in new list of links
+			new = url.strip()  # Link to add in new list of links
 			if (not new.endswith(data.BAD_EXTENTIONS) and
 				new != '/' and
 				new != '#' and
@@ -156,7 +156,7 @@ class SiteInformations(object):
 						new = base_url + new
 					else:
 						new = base_url + '/' + new
-				# delete anchors :
+				# Delete anchors:
 				infos_url = urlparse(new)
 				new = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
 				if new.endswith('/'):
@@ -170,8 +170,9 @@ class SiteInformations(object):
 
 		return module.remove_duplicates(new_links)
 
+
 	def clean_favicon(self, favicon):
-		"""Clean favicon
+		"""Clean favicon.
 
 		:param favicon: favicon url to clean
 		:type favicon: str
@@ -189,8 +190,9 @@ class SiteInformations(object):
 
 		return favicon
 
+
 	def clean_keywords(self, keywords):
-		"""Clean found keywords
+		"""Clean found keywords.
 
 		Delete stopwords, bad chars, two letter less word and split word1-word2
 

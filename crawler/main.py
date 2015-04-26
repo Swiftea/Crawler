@@ -15,7 +15,6 @@ from package.searches import SiteInformations
 from package.inverted_index import InvertedIndex
 from package.ftp_manager import FTPManager
 
-__author__ = "Seva Nathan"
 
 class Crawler(object):
 	"""Crawler main class."""
@@ -51,26 +50,26 @@ class Crawler(object):
 
 	def start(self):
 		"""Start main loop of crawling."""
-		speak(strftime("%d/%m/%y %H:%M:%S")) # speak time
+		speak(strftime("%d/%m/%y %H:%M:%S"))  # Speak time
 		while True:
 			for k in range(50):
 				while len(self.infos) < 10:
 					speak('Reading {0}, link {1}'.format(
 						str(self.file_manager.reading_file_number),
 						str(self.file_manager.reading_line_number+1)))
-					# get the url of the website :
+					# Get the url of the website :
 					url = self.file_manager.get_url()
 					if url == 'stop':
 						self.safe_quit()
 					self.crawl_webpage(url)
 
-				# end of crawling loop
+				# End of crawling loop
 				speak('{} new documents ! '.format(self.crawled_websites))
 
 				self.send_to_db()
 				self.indexing()
 
-				# reset the list of dict of informations of websites :
+				# Reset the list of dict of informations of websites :
 				self.infos.clear()
 				self.file_manager.check_stop_crawling()
 				self.file_manager.get_max_links()
@@ -80,7 +79,7 @@ class Crawler(object):
 					speak('User wants stop program')
 					self.safe_quit()
 
-			# end of loop range(n)
+			# End of loop range(n)
 
 			self.send_inverted_index()
 			self.suggestions()
@@ -93,10 +92,9 @@ class Crawler(object):
 
 		:param url: url of webpage
 		:type url: str
-
 		"""
 		speak('Crawling url : ' + url)
-		# get the webpage's html code :
+		# Get webpage's html code :
 		html_code, is_nofollow, score = self.web_connexion.get_code(url)
 		if html_code is None:
 			speak('Ignore')
@@ -149,7 +147,6 @@ class Crawler(object):
 
 		Get 5 urls from database, delete them, crawl them,
 		send all informations about them, index them and return to main loop.
-
 		"""
 		suggestions = self.database.suggestions()
 		if suggestions is not None:
@@ -164,7 +161,7 @@ class Crawler(object):
 				self.crawl_website(url)
 			self.send_to_db()
 			self.indexing()
-			self.infos.clear() # reset the list of dict of informations of websites :
+			self.infos.clear()  # Reset the list of dict of informations of websites :
 
 	def safe_quit(self):
 		"""Send inverted-index and quit."""

@@ -2,12 +2,9 @@
 
 from datetime import datetime
 
-
 from package.module import speak
 from package.database_manager import DatabaseManager
 from package.data import CRAWL_DELAY
-
-__author__ = "Seva Nathan"
 
 class DatabaseSwiftea(DatabaseManager):
 	"""Class to manage Swiftea database.
@@ -20,11 +17,10 @@ class DatabaseSwiftea(DatabaseManager):
 	:type password: str
 	:param name: name of database
 	:type name: str
-
 	"""
-
 	def __init__(self, host, user, password, name):
 		DatabaseManager.__init__(self, host, user, password, name)
+
 
 	def send_infos(self, infos):
 		"""send documents informations to database.
@@ -32,7 +28,6 @@ class DatabaseSwiftea(DatabaseManager):
 		:param infos: informations to send to database
 		:type infos: list
 		:return: true if an error occured
-
 		"""
 		for webpage_infos in infos:
 			result, response = self.send_command("SELECT popularity, last_crawl FROM index_url WHERE url = %s", (webpage_infos['url'],), True)
@@ -40,23 +35,23 @@ class DatabaseSwiftea(DatabaseManager):
 				speak('Popularity and last_crawl query failed : ' + response, 16)
 				return True
 			if result != ():
-				# url found in database, there is a answer :
-				last_crawl = result[0][1] # datetime.datetime object
+				# Url found in database, there is a answer :
+				last_crawl = result[0][1]  # datetime.datetime object
 				if (datetime.now() - last_crawl) > CRAWL_DELAY:
-					# the program already crawled this website
+					# The program already crawled this website
 					response = self.update(webpage_infos, result[0][0]+1)
 					if response:
 						return True
 				else:
-					# already crawled
 					speak('No updates, recently crawled')
 			else:
-				# url not found in database, the url don't exists in the database, we add it :
+				# Url not found in database, the url don't exists in the database, we add it:
 				response = self.insert(webpage_infos)
 				if response:
 					return True
-		# end loop
-		return False # all is correct
+		# End of loop
+		return False  # All is correct
+
 
 	def update(self, infos, popularity):
 		"""Update a document in database.
@@ -66,7 +61,6 @@ class DatabaseSwiftea(DatabaseManager):
 		:param popularity: new doc popularity
 		:type popularity: int
 		:return: true is an arror occured
-
 		"""
 		speak('Updating : ' + infos['url'])
 		response = self.send_command(
@@ -79,13 +73,13 @@ WHERE url = %s """, (infos['title'], infos['description'], infos['language'], po
 		else:
 			return False
 
+
 	def insert(self, infos):
-		"""Insert a document in database.
+		"""Insert a new document in database.
 
 		:param infos: doc infos
 		:type infos: dict()
 		:return: true is an arror occured
-
 		"""
 		speak('Adding : ' + infos['url'])
 		response = self.send_command(
@@ -98,13 +92,13 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
 		else:
 			return False
 
+
 	def get_doc_id(self, url):
 		"""Get id of a document in database.
 
 		:param url: url of webpage
 		:type url: str
-		:return: id of webpage
-
+		:return: id of webpage or None if not found
 		"""
 		result, response = self.send_command("SELECT id FROM index_url WHERE url = %s", (url,))
 		if response != 'Send command : ok':
@@ -112,6 +106,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
 			return None
 		else:
 			return str(result[0])
+
 
 	def del_one_doc(self, url, table):
 		"""Delete document corresponding to url from the given table.
@@ -121,7 +116,6 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
 		:param table: table where given url is
 		:type table: str
 		:return: status message
-
 		"""
 		speak('suppression du document : ' + url)
 		response = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url,))
@@ -129,11 +123,11 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
 			speak("Doc not removed : {0}, {1}".format(url, response[1]), 17)
 		return response[1]
 
+
 	def suggestions(self):
 		"""Get the five first url from Suggestions table and delete them.
 
 		:return: list of url in Suggestions table and delete them
-
 		"""
 		result, response = self.send_command("SELECT url FROM suggestions LIMIT 5", fetchall=True)
 		if response != 'Send command : ok':

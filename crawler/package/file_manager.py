@@ -1,37 +1,34 @@
 #!/usr/bin/python3
 
-"""Crawler use lot a files. For example to manage configurations, stuck links...
-Here is a class who manager files of crawler."""
-
-__author__ = "Seva Nathan"
+"""Swiftea-Crawler use lot a files. For example to manage configurations, stuck links...
+Here is a class who manager files of crawler.
+"""
 
 from os import path, remove, listdir
 from configparser import ConfigParser
 import json
 
-
 from package.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX
 from package.module import speak, stats_links, rebuild_links
 
 class FileManager(object):
-	"""File manager for crawler.
+	"""File manager for Swiftea-Crawler.
 
 	Save and read links, read and write configuration variables,
 	read inverted-index from json file saved and from file using when send it.
 
 	Create configuration file if doesn't exists	or read it.
-
 	"""
 	def __init__(self):
-		self.writing_file_number = 1 # meter of the writing file
-		self.reading_file_number = 0 # meter of the reading file
-		self.reading_line_number = 0 # meter of links in the reading file
-		self.max_links = MAX_LINKS # number of maximum links in a file
-		self.run = 'true' # run program bool
+		self.writing_file_number = 1  # Meter of the writing file
+		self.reading_file_number = 0  # Meter of the reading file
+		self.reading_line_number = 0  # Meter of links in the reading file
+		self.max_links = MAX_LINKS  # Number of maximum links in a file
+		self.run = 'true'  # Run program bool
 		self.config = ConfigParser()
 
 		if not path.exists(FILE_CONFIG):
-			# create the config file :
+			# Create the config file:
 			self.config['DEFAULT'] = {
 				'run': 'true',
 				'reading_file_number': '0',
@@ -43,7 +40,7 @@ class FileManager(object):
 			with open(FILE_CONFIG, 'w') as configfile:
 				self.config.write(configfile)
 		else:
-			# read the config file :
+			# Read the config file:
 			self.config.read_file(open(FILE_CONFIG))
 			self.run = self.config['DEFAULT']['run']
 			self.reading_file_number = int(self.config['DEFAULT']['reading_file_number'])
@@ -51,17 +48,18 @@ class FileManager(object):
 			self.reading_line_number = int(self.config['DEFAULT']['reading_line_number'])
 			self.max_links = int(self.config['DEFAULT']['max_links'])
 
-	# sometimes :
 
 	def check_stop_crawling(self):
 		"""Check if the user want to stop program."""
 		self.config.read_file(open(FILE_CONFIG))
 		self.run = self.config['DEFAULT']['run']
 
+
 	def get_max_links(self):
-		"""Get back the maximal number of links in a file from configuration file"""
+		"""Get back the maximal number of links in a file from configuration file."""
 		self.config.read_file(open(FILE_CONFIG))
 		self.max_links = int(self.config['DEFAULT']['max_links'])
+
 
 	def save_config(self):
 		"""Save all configurations in config file."""
@@ -75,7 +73,6 @@ class FileManager(object):
 		with open(FILE_CONFIG, 'w') as configfile:
 			self.config.write(configfile)
 
-	# other :
 
 	def save_links(self, links):
 		"""Save found links in file.
@@ -84,7 +81,6 @@ class FileManager(object):
 
 		:param links: links to save
 		:type links: list
-
 		"""
 		stats_links(str(len(links)))
 		filename = DIR_LINKS + str(self.writing_file_number)
@@ -100,14 +96,14 @@ class FileManager(object):
 
 		self.ckeck_size_links(links)
 
+
 	def ckeck_size_links(self, links):
 		"""Check number of links in file.
 
 		:param links: links saved in file
 		:type links: str
-
 		"""
-		if len(links) > self.max_links: # check the size
+		if len(links) > self.max_links:  # Check the size
 			self.writing_file_number += 1
 			speak(
 				'More {0} links : {1} : writing file {2}.'.format(
@@ -115,36 +111,37 @@ class FileManager(object):
 				str(self.writing_file_number))
 			)
 
+
 	def get_url(self):
 		"""Get url of next webpage.
 
 		Check the size of curent reading links and increment it if over.
 
 		:return: url of webpage to crawl
-
 		"""
 		filename = DIR_LINKS + str(self.reading_file_number)
 		try:
 			with open(filename, 'r', errors='replace',
 				encoding='utf8') as myfile:
-				list_links = myfile.read().splitlines() # list of urls
+				list_links = myfile.read().splitlines()  # List of urls
 		except FileNotFoundError:
-			# no link file
+			# No link file
 			speak('Reading file is not found in get_url : ' + filename, 4)
 			return 'stop'
 		else:
 			url = list_links[self.reading_line_number]
 			self.reading_line_number += 1
-			# if is the last links of the file :
+			# If is the last links of the file:
 			if len(list_links) == (self.reading_line_number):
 				self.reading_line_number = 0
-				if self.reading_file_number != 0: # or > 0 ? wich is better ?
+				if self.reading_file_number != 0:  # Or > 0 ? wich is better ?
 					remove(filename)
 					speak('file "' + filename + '" is remove')
 				self.reading_file_number += 1
-				# the program have read all the links : next reading_file_number
+				# The program have read all the links: next reading_file_number
 				speak('Next reading file : ' + str(self.reading_file_number))
 			return url
+
 
 	def save_inverted_index(self, inverted_index):
 		"""Save inverted-index in local.
@@ -153,11 +150,11 @@ class FileManager(object):
 
 		:param inverted_index: inverted-index
 		:type inverted_index: dict
-
 		"""
 		speak('Save inverted-index in save file')
 		with open(FILE_INDEX, 'w') as myfile:
 			json.dump(inverted_index, myfile, ensure_ascii=False)
+
 
 	def get_inverted_index(self):
 		"""Get inverted-index in local.
@@ -166,7 +163,6 @@ class FileManager(object):
 		Delete this file after reading.
 
 		:return: inverted-index
-
 		"""
 		speak('Get inverted-index form save file')
 		with open(FILE_INDEX, 'r') as myfile:
@@ -174,14 +170,14 @@ class FileManager(object):
 		remove(FILE_INDEX)
 		return inverted_index
 
+
 	def read_inverted_index(self):
 		"""Get inverted-index in local.
 
 		Call after sending inverted-index without error.
-		Read all files using for sending inverted-index.
+		Read all files created for sending inverted-index.
 
 		:return: inverted-index
-
 		"""
 		speak('Get inverted-index in local')
 		inverted_index = dict()

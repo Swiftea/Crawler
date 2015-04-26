@@ -1,123 +1,114 @@
 #!/usr/bin/python3
 
-from os import path, mkdir
-import json
+from ftplib import FTP, all_errors
+
+from package.data import TIMEOUT
+
+class MyFtpError(Exception):
+	"""How to use it: raise MyFtpError('my error message')"""
+	def __init__(self, value):
+		self.value = value
+	def __str__(self):
+		return repr(self.value)
 
 
-from package.FTP import FTPConnect
-from package.data import DIR_INDEX, FTP_INDEX
-from package.module import speak
+class FTPConnect(FTP):
+	"""Class to connect to a ftp server more easily.
 
-__author__ = "Seva Nathan"
 
-class FTPManager(FTPConnect):
-	"""Class to manage the ftp connexion for crawler"""
-	def __init__(self, host, user, password):
-		"""Build manager"""
-		FTPConnect.__init__(self, host, user, password)
 
-	def get_inverted_index(self):
-		"""Get inverted-indexs
+	:param host: hostname of the ftp server
+	:type host: str
+	:param user: username to use for connexion
+	:type user: str
+	:param password: password to use for connexion
+	:type password: str
+	"""
+	def __init__(self, host, user='', password=''):
+		"""Build ftp manager"""
+		FTP.__init__(self, timeout=TIMEOUT)
+		self.host = host
+		self.user = user
+		self.password = password
 
-		:return: inverted-indexs and True if an error occured
 
+	def connexion(self):
+		"""Connect to ftp server.
+
+		Catch all_errors of ftplib. Use utf-8 encoding.
+
+		:return: server welcome message
 		"""
-		speak('Get inverted-indexs from server')
-		inverted_index = dict()
-		self.connexion()
-		self.cwd(FTP_INDEX)
-
-		for language in self.nlst():
-			self.cwd(language)
-			if not path.isdir(DIR_INDEX + language):
-				mkdir(DIR_INDEX + language)
-			inverted_index[language] = dict()
-
-			for first_letter in self.nlst():
-				self.cwd(first_letter)
-				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
-					mkdir(DIR_INDEX +  language + '/' + first_letter)
-				inverted_index[language][first_letter] = dict()
-
-				for filename in self.nlst():
-					path_index = language + '/' + first_letter + '/' + filename
-					response = self.download(DIR_INDEX + path_index, filename)
-					if 'Error' in response:
-						speak('Failed to download inverted-index ' + path_index + ', ' + response, 22)
-						return None, True
-					else:
-						with open(DIR_INDEX + path_index, 'r', encoding='utf-8') as myfile:
-							inverted_index[language][first_letter][filename[:2]] = json.load(myfile)
-				self.cwd('..')
-			self.cwd('..')
-		self.disconnect()
-		if inverted_index == dict():
-			speak('No inverted-index on ftp')
+		try:
+			# Connexion to ftp server:
+			self.connect(self.host)
+			# Login:
+			self.login(self.user, self.password)
+		except all_errors as error:
+			response = 'Failed to connect to server : ' + str(error)
 		else:
-			speak('Transfer complete')
-		return inverted_index, False
+			# Use utf-8 encoding:
+			self.sendcmd("OPTS UTF8 ON")
+			response = self.getwelcome()
+		return response
 
-	def send_inverted_index(self, inverted_index):
-		"""Send inverted-indexs
 
-		:param inverted_index: inverted-indexs to send
-		:type inverted_index: dict
-		:return: True if an error occured
+	def disconnect(self):
+		"""Quit connexion to ftp server.
 
+		Close it if an error occured while trying to quit it.
+
+		:return: server goodbye message or error message
 		"""
-		speak('Send inverted-indexs')
-		self.connexion()
-		self.cwd(FTP_INDEX)
-		for language in inverted_index:
-			if language not in self.nlst():
-				self.mkd(language)
-			if not path.isdir(DIR_INDEX + language):
-				mkdir(DIR_INDEX + language)
-			self.cwd(language)
-			for first_letter in inverted_index[language]:
-				if first_letter not in self.nlst():
-					self.mkd(first_letter)
-				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
-					mkdir(DIR_INDEX + language + '/' + first_letter)
-				self.cwd(first_letter)
-				for two_letters in inverted_index[language][first_letter]:
-					index = inverted_index[language][first_letter][two_letters]
-					path_index = language + '/' + first_letter + '/' + two_letters + '.sif'
-					with open(DIR_INDEX + path_index, 'w', encoding='utf-8') as myfile:
-						json.dump(index, myfile, ensure_ascii=False)
-					response = self.upload(DIR_INDEX + path_index, two_letters + '.sif')
-					if 'Error' in response:
-						speak('Failed to send inverted-indexs ' + path_index + ', ' + response, 21)
-						return True
-				self.cwd('..')
-			self.cwd('..')
-		self.disconnect()
-		speak('Transfer complete')
-		return False
+		try:
+			response = self.quit()
+		except all_errors as error:
+			response = "Can't quit server : " + str(error)
+		except AttributeError:
+			response = "Connexion already exited."
+		else:
+			self.close()
+		return response
 
-	def compare_indexs(self):
-		"""Compare inverted-index in local and in server
 
-		:return: true if must dowload from server
+	def upload(self, local_filename, server_filename):
+		"""Upload a file into ftp server.
 
+		The file to upload must exists.
+
+		:param local_filename: local filename to upload
+		:type local_filename: str
+		:param server_filename: server filename to upload
+		:type server_filename: str
+		:return: response of server
 		"""
-		local_file = DIR_INDEX + 'FR/' + 'C/' + 'co.sif'
-		if path.exists(local_file):
-			local_size = path.getsize(local_file)
-			self.connexion()
-			self.cwd(FTP_INDEX)
-			server_size = 0
-			if 'FR' in self.nlst():
-				self.cwd('FR')
-				if 'C' in self.nlst():
-					self.cwd('C')
-					for data in self.mlsd(facts=['type', 'size']):
-						if data[0] == 'co.sif':
-							server_size = int(data[1]['size'])
-			self.disconnect()
-			if local_size < server_size:
-				return True
+		with open(local_filename, 'rb') as myfile:
+			try:
+				response = self.storbinary('STOR ' + server_filename, myfile)
+			except all_errors as error:
+				response = 'Failed to send file ' +	local_filename + ' : ' + str(error)
 			else:
-				return False
-		else:
-			return True
+				response = 'Send file : ' + response
+		return response
+
+
+	def download(self, local_filename, server_filename):
+		"""Download a file from ftp server.
+
+		It creates the file to download.
+
+		:param local_filename: local filename to create
+		:type local_filename: str
+		:param server_filename: server filename to download
+		:type server_filename: str
+		:return: server response message or error message
+		"""
+		with open(local_filename, 'wb') as myfile:
+			try:
+				response = self.retrbinary(
+					'RETR ' + server_filename, myfile.write)
+			except all_errors as error:
+				response = 'Failed to download file ' +	server_filename + ' : ' + str(error)
+			else:
+				response = 'Download file ' + server_filename + ': ' + response
+		return response

@@ -85,7 +85,7 @@ class TestCrawlerBase(object):
 class TestCrawlerBasic(TestCrawlerBase):
     def test_clean_text(self):
         text = module.clean_text('Sample text with non-desired \r whitespaces \t chars \n')
-        assert not '\n' in text and not '\r' in text and not '\t' in text
+        assert '\n' not in text and '\r' not in text and '\t' not in text
 
     def test_get_base_url(self):
         assert module.get_base_url(self.url + '/page1.php') == self.url

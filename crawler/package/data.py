@@ -4,10 +4,7 @@
 
 from datetime import timedelta
 
-__author__ = "Seva Nathan"
-
-
-# strings for directories and files :
+# Strings for directories and files:
 DIR_LINKS = 'links/'
 DIR_CONFIG = 'config/'
 DIR_DATA = 'data/'
@@ -22,10 +19,10 @@ FILE_DOC = DIR_CONFIG + 'Readme'
 FILE_BASELINKS = DIR_LINKS + '0'
 FILE_INDEX = DIR_DATA + 'inverted_index.json'
 
-# strings for ftp location
+# Strings for ftp location
 FTP_INDEX = '/www/data/inverted-index/'
 
-# lists for clean up links and keywords :
+# Lists for clean up links and keywords:
 BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif',
 '.ico', '.svg', '.tiff', '.tif' '.raw', '.flv', '.mpeg', '.mpg', '.wma', '.mp4', '.mp3', '.fla', '.avi', '.gz', '.exe', '.xml')
 START_CHARS = ('«', '\'', '"', '(', ':', '/' , '[', '{', '-', '“')
@@ -33,12 +30,12 @@ END_CHARS = ('.', ',', ';', '!', '?', '»', '\'', '"', ')', ':', '/', ']', '}', 
 MIDLE_CHARS = '’'
 ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
-# others informations :
+# Others informations:
 USER_AGENT = 'Swiftea-Bot'
 HEADERS = {"User-Agent": USER_AGENT}
-INDEXING_TIMEOUT = 30 # time in second to index a document
-MAX_LINKS = 5000 # max links in a file
-CRAWL_DELAY = timedelta(days=2) # the program don't crawl the website if it was crawled x ago
+INDEXING_TIMEOUT = 30  # Time in second to index a document
+MAX_LINKS = 5000  # Max links in a file
+CRAWL_DELAY = timedelta(days=2)  # The program don't crawl the website if it was crawled x ago
 TIMEOUT = 30
 
 # README :

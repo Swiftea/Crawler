@@ -1,15 +1,12 @@
 #!/usr/bin/python3
 
-__author__ = "Seva Nathan"
-
 from time import time
-
 
 from package.module import speak
 from package.data import INDEXING_TIMEOUT, DIR_OUTPUT, ALPHABET
 
 class InvertedIndex(object):
-	"""Manage inverted-index for crawler
+	"""Manage inverted-index for crawler.
 
 	Inverted-index is a dict, each keys are language
 		-> values are a dict, each keys are first letter
@@ -20,28 +17,29 @@ class InvertedIndex(object):
 
 	example:
 	['FR']['A']['av']['avion'][21] is tf of word 'avion' in doc 21, language is FR
-
 	"""
-
 	def __init__(self):
-		"""Build inverted-index manager"""
 		self.inverted_index = dict()
 		self.STOPWORDS = dict()
 
+
 	def setStopwords(self, STOPWORDS):
-		"""Define STOPWORDS"""
+		"""Define STOPWORDS."""
 		self.STOPWORDS = STOPWORDS
 
+
 	def setInvertedIndex(self, inverted_index):
-		"""Define inverted-indexs at the beginning"""
+		"""Define inverted-indexs at the beginning."""
 		self.inverted_index = inverted_index
+
 
 	def getInvertedIndex(self):
 		""":return: inverted-indexs"""
 		return self.inverted_index
 
+
 	def add_doc(self, keywords, doc_id, language):
-		"""Add all words of a doc in inverted-indexs
+		"""Add all words of a doc in inverted-indexs.
 
 		:param keywords: all word in doc_id
 		:type keywords: list
@@ -50,7 +48,6 @@ class InvertedIndex(object):
 		:param language: language of word
 		:type language: str
 		:return: true if time out
-
 		"""
 		language = language.upper()
 		nb_words = len(keywords)
@@ -60,21 +57,21 @@ class InvertedIndex(object):
 				word_infos = {'word': word, 'language': language, 'occurence': keywords.count(word)}
 				if word[0] in ALPHABET:
 					word_infos['first_letter'] = word[0].upper()
-					# first char is a letter
+					# First char is a letter
 					if word[1] in ALPHABET:
-						# second char is a letter
+						# Second char is a letter
 						word_infos['filename'] = word[:2]
 					else:
 						# second char isn't a letter
 						word_infos['filename'] = word_infos['first_letter'].lower() + '-sp'
 				else:
-					# first char isn't a letter
+					# First char isn't a letter
 					word_infos['first_letter'] = 'SP'
 					if word[1] in ALPHABET:
-						# second char is a letter
+						# Second char is a letter
 						word_infos['filename'] = 'sp-' + word[1]
 					else:
-						# second char isn't a letter
+						# Second char isn't a letter
 						word_infos['filename'] = 'sp-sp'
 
 				self.add_word(word_infos, doc_id, nb_words)
@@ -83,12 +80,11 @@ class InvertedIndex(object):
 				speak('Indexing too long : pass', 23)
 				return True
 
-		#self.save_index() # tests
-
 		return False
 
+
 	def add_word(self, word_infos, doc_id, nb_words):
-		"""Add a word in inverted-index
+		"""Add a word in inverted-index.
 
 		:param word_infos: word infos: word, language, occurence,
 			first letter and two first letters
@@ -97,7 +93,6 @@ class InvertedIndex(object):
 		:type doc_id: int
 		:param nb_words: number of words in the doc_id
 		:type nb_words: int
-
 		"""
 		word, language, first_letter, filename = word_infos['word'], word_infos['language'], \
 			word_infos['first_letter'], word_infos['filename']
@@ -124,8 +119,9 @@ class InvertedIndex(object):
 
 		self.inverted_index[language][first_letter][filename] = inverted_index
 
+
 	def delete_word(self, word, language, first_letter, filename):
-		"""Delete a word in inverted-index
+		"""Delete a word in inverted-index.
 
 		:param word: word to delete
 		:type word: str
@@ -135,10 +131,10 @@ class InvertedIndex(object):
 		:type first_letter: str
 		:param filename: two first letters of word
 		:type filename: str
-
 		"""
 		if self.inverted_index[language][first_letter][filename].get(word) is not None:
 			del self.inverted_index[language][first_letter][filename][word]
+
 
 	def delete_id_word(self, word_infos, doc_id):
 		"""Delete a id of a word in inverted-index
@@ -149,21 +145,20 @@ class InvertedIndex(object):
 		:type word_infos: dict
 		:param doc_id: id of the doc in database
 		:type doc_id: int
-
 		"""
 		word, language, first_letter, filename = word_infos['word'], word_infos['language'], \
 			word_infos['first_letter'], word_infos['filename']
 		if self.inverted_index[language][first_letter][filename][word].get(doc_id) is not None:
 			del self.inverted_index[language][first_letter][filename][word][doc_id]
 
+
 	def delete_doc_id(self, doc_id):
-		"""Delete a id in inverted-index
+		"""Delete a id in inverted-index.
 
 		Doesn't work
 
 		:param doc_id: id to delete
 		:type doc_id: int
-
 		"""
 		for language in self.inverted_index:
 			for first_letter in self.inverted_index[language]:
@@ -183,16 +178,3 @@ class InvertedIndex(object):
 			if self.inverted_index[language] == {}:
 				del self.inverted_index[language]
 				break
-
-	# for testing :
-
-	def save_index(self, name='save_index.txt'):
-		"""Save the inverted-index in a file to check errors"""
-		with open(DIR_OUTPUT + name, 'w', encoding='utf-8', errors='replace') as myfile:
-			myfile.write(str(self.inverted_index))
-			myfile.write('\n')
-
-	def save_keyword(self, keywords):
-		"""Save keywords in a file to check errors"""
-		with open(DIR_OUTPUT + 'save_keywords.txt', 'a', encoding='utf-8', errors='replace') as myfile:
-			myfile.write(str(keywords) + '\n\n')

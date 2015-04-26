@@ -2,28 +2,24 @@
 
 """Define several functions for crawler"""
 
-__author__ = "Seva Nathan"
-
-import sys # to leave the programme
-from time import strftime # to have date and time data
+import sys  # To leave the programme
+from time import strftime
 from os import path, mkdir, remove
 import requests
 from urllib.parse import urlparse
 
-
 import package.data as data
 
 def speak(message, EC=None):
-	"""Manage newspaper
+	"""Manage newspaper.
 
 	This function print in console that program doing and save a copy in
-	newspaper file
+	event file.
 
 	:param message: message to print and write
 	:type message: str
 	:param EC: (optional) error code, if given call errors() with given message
 	:type EC: int
-
 	"""
 	if EC:
 		print(str(EC) + ' ' + message)
@@ -35,8 +31,9 @@ def speak(message, EC=None):
 		with open(data.FILE_NEWS, 'a') as myfile:
 			myfile.write(message.capitalize() + '\n')
 
+
 def errors(EC, message):
-	"""Write the error report with time in errors file
+	"""Write the error report with time in errors file.
 
 	Normaly call by speak() when a EC parameter is given
 
@@ -44,22 +41,22 @@ def errors(EC, message):
 	:type message: str
 	:param EC: error code
 	:type EC: int
-
 	"""
 	with open(data.FILE_ERROR, 'a') as myfile:
 		myfile.write(str(EC) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ' : ' + message + '\n')
 
+
 def quit_program():
-	"""Function who manage end of prgoram
+	"""Function who manage end of prgoram.
 
 	Call speak() with 'end' and exit
-
 	"""
 	speak('end\n', 0)
 	sys.exit()
 
+
 def start():
-	"""Manage crawler's runing
+	"""Manage crawler's runing.
 
 	Test lot of things :
 		create config directory
@@ -67,9 +64,8 @@ def start():
 		create config file if it doesn't exists
 		create links directory if it doesn't exists
 		create index directory if it doesn't exists
-
 	"""
-	# create directories if they don't exist
+	# Create directories if they don't exist:
 	if not path.isdir(data.DIR_CONFIG):
 		mkdir(data.DIR_CONFIG)
 	if not path.isdir(data.DIR_DATA):
@@ -79,7 +75,7 @@ def start():
 	if not path.isdir(data.DIR_INDEX):
 		mkdir(data.DIR_INDEX)
 
-	# create doc file if it doesn't exist :
+	# Create doc file if it doesn't exist:
 	if not path.exists(data.FILE_DOC):
 		with open(data.FILE_DOC, 'w') as myfile:
 			myfile.write(data.README)
@@ -91,7 +87,7 @@ def start():
 		with open(data.FILE_DOC, 'w') as myfile:
 			myfile.write(data.README)
 
-	# create directory of links if it doesn't exist :
+	# Create directory of links if it doesn't exist:
 	if not path.isdir(data.DIR_LINKS):
 		print("""No links directory,
 1: let programm choose a list...
@@ -99,7 +95,7 @@ def start():
 (see doc.txt file in config)""")
 		rep = input("What's your choice ? (1/2) : ")
 		if rep == '1':
-			# basic links
+			# Basic links
 			mkdir(data.DIR_LINKS)
 			with open(data.FILE_BASELINKS, 'w') as myfile:
 				myfile.write("""http://www.planet-libre.org
@@ -134,23 +130,23 @@ Press enter when done.""")
 			print('Please enter 1 or 2.')
 			quit()
 
-def clean_text(text): # search
-	"""Clean up text (\\n\\r\\t)
+
+def clean_text(text):  # Search
+	"""Clean up text (\\n\\r\\t).
 
 	:param text: text to clean_text
 	:type text: str
 	:return: cleaned text
-
 	"""
 	return ' '.join(text.split())
 
-def remove_duplicates(old_list): # search
-	"""remove duplicates from a list
+
+def remove_duplicates(old_list):  # Search
+	"""Remove duplicates from a list.
 
 	:param old_list: list to clean
 	:type old_list: list
 	:return: list without duplicates
-
 	"""
 	new_list = list()
 	for elt in old_list:
@@ -158,14 +154,14 @@ def remove_duplicates(old_list): # search
 			new_list.append(elt)
 	return new_list
 
+
 def stats_stop_words(begining, end):
-	"""Percentage of deleted word with stopwords for statistics
+	"""Percentage of deleted word with stopwords for statistics.
 
 	:param begining: size of keywords list before cleaning
 	:type begining: int
 	:param end: size of keywords list after cleaning
 	:type end: int
-
 	"""
 	if end != 0:
 		stats = str(((begining-end) * 100) / end)
@@ -174,21 +170,21 @@ def stats_stop_words(begining, end):
 	with open(data.FILE_STATS2, 'a') as myfile:
 		myfile.write(str(stats) + '\n')
 
+
 def stats_links(stat):
-	"""Number of links for statistics
+	"""Number of links for statistics.
 
 	:param stat: number of list in a webpage
 	:type stat: int
-
 	"""
 	with open(data.FILE_STATS, 'a') as myfile:
-		myfile.write(stat + '\n') # write the number of links found
+		myfile.write(stat + '\n')  # Write the number of links found
 
-def get_stopwords(): # search
-	"""Get stopwords from swiftea website
+
+def get_stopwords():  # Search
+	"""Get stopwords from swiftea website.
 
 	:return: a dict: keys are languages and values are stopwords
-
 	"""
 	STOP_WORDS = dict()
 	try:
@@ -204,23 +200,23 @@ def get_stopwords(): # search
 	else:
 		return STOP_WORDS
 
-def get_base_url(url): # search
-	"""Get base url using urlparse
+
+def get_base_url(url):  # Search
+	"""Get base url using urlparse.
 
 	:param url: url
 	:type url: str
 	:return: base url of given url
-
 	"""
 	infos_url = urlparse(url)
 	base_url = infos_url.scheme + '://' + infos_url.netloc
 	return base_url
 
-def no_connexion(): # web connexion
-	"""Check connexion
+
+def no_connexion():  # Web connexion
+	"""Check connexion.
 
 	:return: True if no connexion
-
 	"""
 	try:
 		requests.get('http://swiftea.alwaysdata.net/')
@@ -230,13 +226,13 @@ def no_connexion(): # web connexion
 	else:
 		return False
 
-def average(content=list): # stats
-	"""Calculate average
+
+def average(content=list):  # Stats
+	"""Calculate average.
 
 	:param content: values
 	:type content: list
 	:return: average
-
 	"""
 	total = 0
 	for value in content:
@@ -244,15 +240,15 @@ def average(content=list): # stats
 	moy = total / len(content)
 	return moy
 
-def rebuild_links(old_links, new_links): # file manager
-	"""Rebuild list of links
+
+def rebuild_links(old_links, new_links):  # File manager
+	"""Rebuild list of links.
 
 	:param old_links: links already in file
 	:type old_links: list
 	:param new_links: links to add
 	:type new_links: list
 	:return: links to write in file
-
 	"""
 	links = old_links + new_links
 	links_to_add = list()
@@ -261,22 +257,23 @@ def rebuild_links(old_links, new_links): # file manager
 			links_to_add.append(link)
 	return links_to_add
 
+
 def check_size_keyword(keyword):
 	if len(keyword) > 2:
 		return True
 	else:
 		return False
 
-def remove_useless_chars(keyword):
-	"""Remove useless chars in keyword
 
-	See data for all could be remove chars
-	Return None is keyword size is under two letters
+def remove_useless_chars(keyword):
+	"""Remove useless chars in keyword.
+
+	See data for all could be remove chars.
+	Return None if keyword size is under two letters.
 
 	:param keyword: keyword
 	:type keyword: str
 	:return: keyword or None
-
 	"""
 	while (keyword.startswith(data.START_CHARS) or keyword.endswith(data.END_CHARS) or keyword[1] == '\'' or
 		keyword[1] == data.MIDLE_CHARS or keyword[-2] == '\'' or keyword[-2] == data.MIDLE_CHARS):
@@ -298,18 +295,21 @@ def remove_useless_chars(keyword):
 	else:
 		return None
 
+
 def is_letters(keyword):
 	if True not in [letter in keyword for letter in data.ALPHABET]:
 		return True
 	else:
 		return False
 
+
 def letter_repeat(keyword):
-	"""Return True if the first letter isn't repeat eatch times"""
+	"""Return True if the first letter isn't repeat eatch times."""
 	if True not in [letter != '' for letter in keyword.split(keyword[0])]:
-		return True # '********'
+		return True  # '********'
 	else:
 		return False
+
 
 def split_keywords(keyword):
 	is_list = False
@@ -317,17 +317,17 @@ def split_keywords(keyword):
 		keyword = keyword.split('.')
 		is_list = True
 	if '/' in keyword:
-		keyword = keyword.split('/') # str -> list
+		keyword = keyword.split('/')  # str -> list
 		is_list = True
 	return is_list, keyword
 
+
 def meta(attrs):
-	"""Manager searches in meat tag
+	"""Manager searches in meat tag.
 
 	:apram attrs: attributes of meta tag
 	:type attrs: list
 	:return: language, description, objet
-
 	"""
 	objet = description = language = str()
 	name = dict(attrs).get('name', '').lower()
@@ -347,15 +347,15 @@ def meta(attrs):
 
 	return language, description, objet
 
+
 def can_append(url, rel):
-	"""Check rel attrs
+	"""Check rel attrs.
 
 	:param url: url to add
 	:type url: str
 	:param rel: rel attrs in a tag
 	:type rel: str
 	:return: url or None if can't add it
-
 	"""
 	if url:
 		if 'noindex' not in rel:
@@ -367,11 +367,11 @@ def can_append(url, rel):
 	else:
 		return None
 
+
 def is_index():
-	"""Check if there is a saved inverted-index file
+	"""Check if there is a saved inverted-index file.
 
 	:return: True if there is the file
-
 	"""
 	if path.exists(data.FILE_INDEX):
 		return True
