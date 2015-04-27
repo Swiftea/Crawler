@@ -13,7 +13,6 @@ import package.module as module
 import package.data as data
 from package.data import *
 from package.module import *
-import package.private_data
 from package.searches import SiteInformations
 from package.inverted_index import InvertedIndex
 from package.parsers import Parser_encoding, MyParser
