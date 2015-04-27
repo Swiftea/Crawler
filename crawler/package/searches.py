@@ -116,12 +116,8 @@ class SiteInformations(object):
 					total_stopwords += 1
 					nb_stopwords[lang] += 1
 
-		if nb_stopwords and total_stopwords != 0:
+		if total_stopwords != 0:
 			language = max(nb_stopwords, key=nb_stopwords.get)
-			percent = round(nb_stopwords[language] * 100 / total_stopwords)
-
-			if(percent < 30):
-				language = ''
 		else:
 			language = ''
 
@@ -161,7 +157,7 @@ class SiteInformations(object):
 				new = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
 				if new.endswith('/'):
 					new = new[:-1]
-				nb_index = new.find('index.')
+				nb_index = new.find('/index.')
 				if nb_index != -1:
 					new = new[:nb_index]
 				if infos_url.query != '':

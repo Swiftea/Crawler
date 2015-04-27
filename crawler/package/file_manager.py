@@ -9,7 +9,7 @@ from configparser import ConfigParser
 import json
 
 from package.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX
-from package.module import speak, stats_links, rebuild_links
+from package.module import speak, stats_links, rebuild_links, convert_keys
 
 class FileManager(object):
 	"""File manager for Swiftea-Crawler.
@@ -82,7 +82,7 @@ class FileManager(object):
 		:param links: links to save
 		:type links: list
 		"""
-		stats_links(str(len(links)))
+		stats_links(len(links))
 		filename = DIR_LINKS + str(self.writing_file_number)
 		if not path.exists(filename):
 			with open(filename, 'w', errors='replace', encoding='utf8') as myfile:
@@ -168,7 +168,7 @@ class FileManager(object):
 		with open(FILE_INDEX, 'r') as myfile:
 			inverted_index = json.load(myfile)
 		remove(FILE_INDEX)
-		return inverted_index
+		return convert_keys(inverted_index)
 
 
 	def read_inverted_index(self):
@@ -187,5 +187,5 @@ class FileManager(object):
 				inverted_index[language][first_letter] = dict()
 				for filename in listdir(DIR_INDEX + language + '/' + first_letter):
 					with open(DIR_INDEX + language + '/' + first_letter + '/' + filename, 'r', encoding='utf-8') as myfile:
-						inverted_index[language][first_letter][filename[:2]] = json.load(myfile)
-		return inverted_index
+						inverted_index[language][first_letter][filename[:-4]] = json.load(myfile)
+		return convert_keys(inverted_index)

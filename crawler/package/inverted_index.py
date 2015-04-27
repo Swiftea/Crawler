@@ -3,7 +3,7 @@
 from time import time
 
 from package.module import speak
-from package.data import INDEXING_TIMEOUT, DIR_OUTPUT, ALPHABET
+from package.data import INDEXING_TIMEOUT, ALPHABET
 
 class InvertedIndex(object):
 	"""Manage inverted-index for crawler.
@@ -160,21 +160,26 @@ class InvertedIndex(object):
 		:param doc_id: id to delete
 		:type doc_id: int
 		"""
+		new_inverted_index = dict()
 		for language in self.inverted_index:
+			new_inverted_index[language] = dict()
 			for first_letter in self.inverted_index[language]:
+				new_inverted_index[language][first_letter] = dict()
 				for filename in self.inverted_index[language][first_letter]:
+					new_inverted_index[language][first_letter][filename] = dict()
 					for word in self.inverted_index[language][first_letter][filename]:
-						if self.inverted_index[language][first_letter][filename][word].get(doc_id) is not None:
-							del self.inverted_index[language][first_letter][filename][word][doc_id]
-						if self.inverted_index[language][first_letter][filename][word] == {}:
-							del self.inverted_index[language][first_letter][filename][word]
-							break
-					if self.inverted_index[language][first_letter][filename] == {}:
-						del self.inverted_index[language][first_letter][filename]
-						break
-				if self.inverted_index[language][first_letter] == {}:
-					del self.inverted_index[language][first_letter]
-					break
-			if self.inverted_index[language] == {}:
-				del self.inverted_index[language]
-				break
+						new_inverted_index[language][first_letter][filename][word] = dict()
+						for doc in self.inverted_index[language][first_letter][filename][word]:
+							if doc != doc_id:
+								new_inverted_index[language][first_letter][filename][word][doc] = \
+									self.inverted_index[language][first_letter][filename][word][doc]
+
+						if new_inverted_index[language][first_letter][filename][word] == dict():
+							del new_inverted_index[language][first_letter][filename][word]
+					if new_inverted_index[language][first_letter][filename] == dict():
+						del new_inverted_index[language][first_letter][filename]
+				if new_inverted_index[language][first_letter] == dict():
+					del new_inverted_index[language][first_letter]
+			if new_inverted_index[language] == dict():
+				del new_inverted_index[language]
+		self.inverted_index = new_inverted_index

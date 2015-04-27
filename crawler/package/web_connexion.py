@@ -10,7 +10,7 @@ from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
 
 from package.data import USER_AGENT, HEADERS, TIMEOUT
-from package.module import speak, no_connexion
+from package.module import speak, no_connexion, is_nofollow
 from package.parsers import Parser_encoding
 
 class WebConnexion(object):
@@ -27,7 +27,7 @@ class WebConnexion(object):
 		:type url: str
 		:return: source code, True if no take links and score
 		"""
-		is_nofollow, url = self.is_nofollow(url)
+		nofollow, url = is_nofollow(url)
 		try:
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
 		except requests.packages.urllib3.exceptions.ReadTimeoutError:
@@ -39,7 +39,7 @@ class WebConnexion(object):
 		except requests.exceptions.RequestException as error:
 			speak('Failed to connect to website: {}, {}'.format(str(error), url), 8)
 			if no_connexion():
-				return 'no_connexion', is_nofollow, 0
+				return 'no_connexion', nofollow, 0
 			else:
 				return None, False, 0
 		else:
@@ -47,10 +47,10 @@ class WebConnexion(object):
 			if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
-				return request.text, is_nofollow, score
+				return request.text, nofollow, score
 			else:
 				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
-					request.headers.get('Content-Type', '') + ', robots permission=' + str(allowed) + ', nofollow=' + str(is_nofollow))
+					request.headers.get('Content-Type', '') + ', robots permission=' + str(allowed) + ', nofollow=' + str(nofollow))
 				return None, False, 0
 
 
@@ -75,24 +75,11 @@ class WebConnexion(object):
 		else:
 			# Search in source code:
 			self.parser_encoding.feed(code)
-			if self.parser_encoding.encoding is not None:
+			if self.parser_encoding.encoding != '':
 				return self.parser_encoding.encoding, .5
 			else:
 				speak('No encoding', 9)
 				return 'utf-8', 0
-
-
-	def is_nofollow(self, url):
-		"""Check if take links.
-
-		:param url: webpage url
-		:type url: str
-		:return: true if nofollow and url
-		"""
-		if url.endswith('!nofollow!'):
-			return True, url[:-10]
-		else:
-			return False, url
 
 
 	def check_robots_perm(self, url):

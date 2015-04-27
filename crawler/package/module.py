@@ -55,7 +55,7 @@ def quit_program():
 	sys.exit()
 
 
-def start():
+def create_dirs():
 	"""Manage crawler's runing.
 
 	Test lot of things :
@@ -75,7 +75,9 @@ def start():
 	if not path.isdir(data.DIR_INDEX):
 		mkdir(data.DIR_INDEX)
 
-	# Create doc file if it doesn't exist:
+
+def create_doc():
+	"""Create doc file if it doesn't exist."""
 	if not path.exists(data.FILE_DOC):
 		with open(data.FILE_DOC, 'w') as myfile:
 			myfile.write(data.README)
@@ -87,7 +89,9 @@ def start():
 		with open(data.FILE_DOC, 'w') as myfile:
 			myfile.write(data.README)
 
-	# Create directory of links if it doesn't exist:
+
+def def_links():
+	"""Create directory of links if it doesn't exist."""
 	if not path.isdir(data.DIR_LINKS):
 		print("""No links directory,
 1: let programm choose a list...
@@ -158,6 +162,8 @@ def remove_duplicates(old_list):  # Search
 def stats_stop_words(begining, end):
 	"""Percentage of deleted word with stopwords for statistics.
 
+	Write the percentage in stats file.
+
 	:param begining: size of keywords list before cleaning
 	:type begining: int
 	:param end: size of keywords list after cleaning
@@ -166,32 +172,32 @@ def stats_stop_words(begining, end):
 	if end != 0:
 		stats = str(((begining-end) * 100) / end)
 	else:
-		stats = 0
+		stats = '0'
 	with open(data.FILE_STATS2, 'a') as myfile:
-		myfile.write(str(stats) + '\n')
+		myfile.write(stats + '\n')
 
 
 def stats_links(stat):
-	"""Number of links for statistics.
+	"""Write the number of links for statistics in stats file.
 
 	:param stat: number of list in a webpage
 	:type stat: int
 	"""
 	with open(data.FILE_STATS, 'a') as myfile:
-		myfile.write(stat + '\n')  # Write the number of links found
+		myfile.write(str(stat) + '\n')  # Write the number of links found
 
 
-def get_stopwords():  # Search
+def get_stopwords(path='http://swiftea.alwaysdata.net/data/stopwords/'):  # Search
 	"""Get stopwords from swiftea website.
 
 	:return: a dict: keys are languages and values are stopwords
 	"""
 	STOP_WORDS = dict()
 	try:
-		r = requests.get('http://swiftea.alwaysdata.net/data/stopwords/fr.stopwords.txt')
+		r = requests.get(path + 'fr.stopwords.txt')
 		r.encoding = 'utf-8'
 		STOP_WORDS['fr'] = r.text
-		r = requests.get('http://swiftea.alwaysdata.net/data/stopwords/en.stopwords.txt')
+		r = requests.get(path + 'en.stopwords.txt')
 		r.encoding = 'utf-8'
 		STOP_WORDS['en'] = r.text
 	except requests.exceptions.ConnectionError:
@@ -213,18 +219,32 @@ def get_base_url(url):  # Search
 	return base_url
 
 
-def no_connexion():  # Web connexion
+def no_connexion(url='http://swiftea.alwaysdata.net'):  # Web connexion
 	"""Check connexion.
 
+	:param url: url use by test
 	:return: True if no connexion
 	"""
 	try:
-		requests.get('http://swiftea.alwaysdata.net/')
+		requests.get(url)
 	except requests.exceptions.RequestException:
 		speak('No connexion')
 		return True
 	else:
 		return False
+
+
+def is_nofollow(url):
+	"""Check if take links.
+
+	:param url: webpage url
+	:type url: str
+	:return: true if nofollow and url
+	"""
+	if url.endswith('!nofollow!'):
+		return True, url[:-10]
+	else:
+		return False, url
 
 
 def average(content=list):  # Stats
@@ -377,3 +397,24 @@ def is_index():
 		return True
 	else:
 		return False
+
+
+def convert_keys(inverted_index):
+	"""Convert str words keys into int from inverted-index.
+
+	:param inverted_index: inverted_index to convert
+	:tyep inverted_index: dict
+	:return: converted inverted-index
+	"""
+	new_inverted_index = dict()
+	for language in inverted_index:
+		new_inverted_index[language] = dict()
+		for first_letter in inverted_index[language]:
+			new_inverted_index[language][first_letter] = dict()
+			for two_letter in inverted_index[language][first_letter]:
+				new_inverted_index[language][first_letter][two_letter] = dict()
+				for word in inverted_index[language][first_letter][two_letter]:
+					new_inverted_index[language][first_letter][two_letter][word] = dict()
+					for doc_id in inverted_index[language][first_letter][two_letter][word]:
+						new_inverted_index[language][first_letter][two_letter][word][int(doc_id)] = inverted_index[language][first_letter][two_letter][word][doc_id]
+	return new_inverted_index

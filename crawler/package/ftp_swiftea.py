@@ -3,14 +3,14 @@
 from os import path, mkdir
 import json
 
-from package.FTP import FTPConnect
+from package.ftp_manager import FTPManager
 from package.data import DIR_INDEX, FTP_INDEX
 from package.module import speak
 
-class FTPManager(FTPConnect):
+class FTPSwiftea(FTPManager):
 	"""Class to manage the ftp connexion for crawler."""
 	def __init__(self, host, user, password):
-		FTPConnect.__init__(self, host, user, password)
+		FTPManager.__init__(self, host, user, password)
 
 
 	def get_inverted_index(self):

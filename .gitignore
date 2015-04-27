@@ -1,10 +1,10 @@
 crawler/tests/coverage_html_report/
-Crawler.egg-info/
 crawler/package/private_data.py
 crawler/package/__pycache__/
 crawler/tests/__pycache__/
 crawler/tests/.coverage
 crawler/__pycache__/
+Crawler.egg-info/
 crawler/output/
 crawler/config/
 crawler/links/

@@ -68,17 +68,17 @@ package.database_swiftea module
     :show-inheritance:
 
 
-package.FTP module
-------------------
-.. automodule:: package.FTP
+package.ftp_manager module
+--------------------------
+.. automodule:: package.ftp_manager
     :members:
     :undoc-members:
     :show-inheritance:
 
 
-package.ftp_manager module
+package.ftp_swiftea module
 --------------------------
-.. automodule:: package.ftp_manager
+.. automodule:: package.ftp_swiftea
     :members:
     :undoc-members:
     :show-inheritance:

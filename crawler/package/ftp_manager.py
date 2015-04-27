@@ -12,7 +12,7 @@ class MyFtpError(Exception):
 		return repr(self.value)
 
 
-class FTPConnect(FTP):
+class FTPManager(FTP):
 	"""Class to connect to a ftp server more easily.
 
 

@@ -7,13 +7,13 @@ try:
 	import package.private_data as pvdata
 except ImportError:
 	pass
-from package.module import speak, quit_program, start, is_index
+from package.module import speak, quit_program, create_dirs, is_index, create_doc, def_links
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
 from package.database_swiftea import DatabaseSwiftea
 from package.searches import SiteInformations
 from package.inverted_index import InvertedIndex
-from package.ftp_manager import FTPManager
+from package.ftp_swiftea import FTPSwiftea
 
 
 class Crawler(object):
@@ -24,7 +24,7 @@ class Crawler(object):
 			speak('No stopwords, quit program')
 			quit_program()
 		self.file_manager = FileManager()
-		self.ftp_manager = FTPManager(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
+		self.ftp_manager = FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
 		self.get_inverted_index()
 		self.index_manager = InvertedIndex()
 		self.index_manager.setInvertedIndex(self.inverted_index)
@@ -52,7 +52,7 @@ class Crawler(object):
 		"""Start main loop of crawling."""
 		speak(strftime("%d/%m/%y %H:%M:%S"))  # Speak time
 		while True:
-			for k in range(50):
+			for _ in range(50):
 				while len(self.infos) < 10:
 					speak('Reading {0}, link {1}'.format(
 						str(self.file_manager.reading_file_number),
@@ -170,6 +170,8 @@ class Crawler(object):
 		quit_program()
 
 if __name__ == '__main__':
-	start()
+	create_dirs()
+	create_doc()
+	def_links()
 	crawler = Crawler()
 	crawler.start()
