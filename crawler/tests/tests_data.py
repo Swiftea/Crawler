@@ -76,6 +76,12 @@ code3 = """<!DOCTYPE html>
 
 inverted_index = {'EN': {'T': {'ti': {'titre': {0: 0.375}}}, 'S': {'st': {'strong': {0: 0.125}}, 'sw': {'swiftea': {0: 0.125}}}, 'P': {'pe': {'petit': {0: 0.125}}}, 'G': {'gr': {'gros': {0: 0.125}}}, 'M': {'mo': {'moyen': {0: 0.125}}}}}
 
+USER = ''
+PASSWORD = ''
+HOST_FTP = 'ftp'
+HOST_DB = 'mysql'
+NAME_DB = 'bdd'
+
 def reset():
     rmtree(DIR_DATA)
     rmtree(DIR_CONFIG)

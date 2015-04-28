@@ -6,7 +6,6 @@ from os import mkdir
 from configparser import ConfigParser
 import pytest
 
-import package.private_data as pvdata
 import package.data as data
 from main import Crawler
 from package.module import speak, create_dirs, create_doc
@@ -90,12 +89,12 @@ class TestCrawler(Crawler):
             speak('No stopwords, quit program')
             quit_program()
         self.file_manager = FileManager()
-        self.ftp_manager = TestFTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
+        self.ftp_manager = TestFTPSwiftea(tests_data.HOST_FTP, tests_data.USER, tests_data.PASSWORD)
         self.get_inverted_index()
         self.index_manager = InvertedIndex()
         self.index_manager.setInvertedIndex(self.inverted_index)
         self.index_manager.setStopwords(self.site_informations.STOPWORDS)
-        self.database = TestDatabaseSwiftea(pvdata.HOST_DB, pvdata.USER, pvdata.PASSWORD, pvdata.NAME_DB)
+        self.database = TestDatabaseSwiftea(tests_data.HOST_DB, tests_data.USER, tests_data.PASSWORD, tests_data.NAME_DB)
         self.web_connexion = TestWebConnexion()
 
         self.infos = list()
