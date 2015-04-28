@@ -45,6 +45,8 @@ class SiteInformations(object):
 		"""
 		self.url = url
 		self.score = score
+		if module.is_homepage(url):
+			self.score += 1
 
 		self.parser.feed(code)
 
@@ -56,7 +58,7 @@ class SiteInformations(object):
 		# Language:
 		if self.parser.language != '':
 			self.language = self.parser.language
-			self.score += 0.5
+			self.score += 0.25
 		else:
 			self.language = self.detect_language(keywords)
 
@@ -72,7 +74,7 @@ class SiteInformations(object):
 
 			# Css:
 			if self.parser.css:
-				self.score += 0.5
+				self.score += 0.25
 
 			module.stats_stop_words(begining_size, len(self.keywords))  # stats
 

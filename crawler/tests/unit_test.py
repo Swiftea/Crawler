@@ -5,7 +5,6 @@ from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
 from os import mkdir, rmdir
 from configparser import ConfigParser
-from shutil import rmtree
 
 import main
 import stats
@@ -18,6 +17,7 @@ from package.inverted_index import InvertedIndex
 from package.parsers import Parser_encoding, MyParser
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
+import tests.tests_data as tests_data
 
 class TestCrawlerBase(object):
     """Base class for all crawler test classes."""
@@ -39,54 +39,11 @@ class TestCrawlerBase(object):
         self.parser_encoding = Parser_encoding()
         self.objet = 'title'
         self.title = 'letter'
-        self.code1 = """<!DOCTYPE html>
-        <html lang="en">
-            <head>
-                <meta charset="utf-8">
-                <meta name="Description" content="Moteur de recherche">
-                <title>Swiftea</title>
-                <link rel="stylesheet" href="public/css/reset.css">
-                <link rel="icon" href="public/favicon.ico" type="image/x-icon">
-            </head>
-            <body>
-                <a href="demo">CSS Demo</a>
-                <h1>Gros titre</h1>
-                <h2>Moyen titre</h2>
-                <h3>petit titre</h3>
-                <p><strong>strong </strong><em>em</em></p>
-                <a href="index">
-                    <img src="public/themes/default/img/logo.png" alt="Swiftea">
-                </a>
-                <a href="about/ninf.php" rel="noindex, nofollow">Why use Swiftea ?</a>
-                <a href="about/ni.php" rel="noindex">Why use Swiftea ?</a>
-                <a href="about/nf.php" rel="nofollow">Why use Swiftea ?</a>
-                <img src="public/themes/default/img/github.png" alt="Github Swiftea">
-                <img src="public/themes/default/img/twitter.png" alt="Twitter Swiftea">
-            </body>
-        </html>
-        """
+        self.code1 = tests_data.code1
 
-        self.code2 = """<!DOCTYPE html>
-        <html>
-            <head>
-                <meta http-equiv="content-language" content="en">
-                <meta http-equiv="Content-Type" content="text/html; charset=UTF-16 LE" />
-                <link rel="shortcut icon" href="public/favicon2.ico" type="image/x-icon">
-            </head>
-            <body>
-            </body>
-        </html>
-        """
+        self.code2 = tests_data.code2
 
-        self.code3 = """<!DOCTYPE html>
-        <html>
-            <head>
-                <meta name="language" content="fr">
-            </head>
-            <body>
-            </body>
-        </html>
-        """
+        self.code3 = tests_data.code3
 
         self.reqrobots = RobotsCache()
         self.headers = {'status': '200 OK', 'content-type': 'text/html; charset=utf-8', 'vary': 'X-PJAX, Accept-Encoding'}
@@ -97,13 +54,6 @@ class TestCrawlerBase(object):
 
 
 class TestCrawlerFunctions(TestCrawlerBase):
-    def test_rebuild_links(self):
-        old_links = ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2']
-        new_links = ['http://example.fr/page2', 'http://example.fr/page3']
-        links_to_add = module.rebuild_links(old_links, new_links)
-        assert links_to_add == ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2', 'http://example.fr/page3']
-
-
     def test_average(self):
         assert module.average(['20', '20', '30', '30']) == 25
 
@@ -219,6 +169,11 @@ class TestSearches(TestCrawlerBase):
         assert SiteInformations.clean_favicon(self, '/icon.ico') == 'http://www.example.en/icon.ico'
         assert SiteInformations.clean_favicon(self, '//example.fr/icon.ico') == 'http://example.fr/icon.ico'
         assert SiteInformations.clean_favicon(self, 'icon.ico') == 'http://www.example.en/icon.ico'
+
+
+    def test_is_homepage(self):
+        assert is_homepage(self.url) == True
+        assert is_homepage(self.url + '/page1') == False
 
 
 class TestWebConnexion(TestCrawlerBase):
@@ -442,9 +397,13 @@ class TestFileManager(TestCrawlerBase):
         assert inverted_index == {'FR': {'A': {'ab': {'abondamment': {1610: 0.005618}}}}}
 
 
+    def test_rebuild_links(self):
+        old_links = ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2']
+        new_links = ['http://example.fr/page2', 'http://example.fr/page3']
+        links_to_add = module.rebuild_links(old_links, new_links)
+        assert links_to_add == ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2', 'http://example.fr/page3']
+
+
 class TestReset(TestCrawlerBase):
     def test_reset(self):
-        rmtree(DIR_DATA)
-        rmtree(DIR_CONFIG)
-        rmdir(DIR_OUTPUT)
-        rmdir(DIR_LINKS)
+        tests_data.reset()

@@ -2,7 +2,6 @@
 
 from time import strftime
 
-
 try:
 	import package.private_data as pvdata
 except ImportError:
@@ -14,7 +13,6 @@ from package.database_swiftea import DatabaseSwiftea
 from package.searches import SiteInformations
 from package.inverted_index import InvertedIndex
 from package.ftp_swiftea import FTPSwiftea
-
 
 class Crawler(object):
 	"""Crawler main class."""

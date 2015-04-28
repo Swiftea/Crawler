@@ -93,6 +93,7 @@ def create_doc():
 def def_links():
 	"""Create directory of links if it doesn't exist."""
 	if not path.isdir(data.DIR_LINKS):
+		mkdir(data.DIR_LINKS)
 		print("""No links directory,
 1: let programm choose a list...
 2: fill a file yourself...
@@ -100,7 +101,6 @@ def def_links():
 		rep = input("What's your choice ? (1/2) : ")
 		if rep == '1':
 			# Basic links
-			mkdir(data.DIR_LINKS)
 			with open(data.FILE_BASELINKS, 'w') as myfile:
 				myfile.write("""http://www.planet-libre.org
 http://zestedesavoir.com
@@ -121,7 +121,6 @@ http://www.lequipe.fr
 http://swiftea.alwaysdata.net
 http://trukastuss.over-blog.com""")
 		elif rep == '2':
-			mkdir(data.DIR_LINKS)
 			open(data.FILE_BASELINKS, 'w').close()
 			print("""
 Create a file '0' without extention who contains a list of 20 links maximum.
@@ -129,7 +128,6 @@ They must start with 'http://' or 'https://' and no ends with '/'.
 Choose popular websites.
 Press enter when done.""")
 			input()
-
 		else:
 			print('Please enter 1 or 2.')
 			quit()
@@ -418,3 +416,16 @@ def convert_keys(inverted_index):
 					for doc_id in inverted_index[language][first_letter][two_letter][word]:
 						new_inverted_index[language][first_letter][two_letter][word][int(doc_id)] = inverted_index[language][first_letter][two_letter][word][doc_id]
 	return new_inverted_index
+
+
+def is_homepage(url):
+	"""Check if url is the homepage
+
+	:param url: url to check
+	:type url: str
+	:return: true or false
+	"""
+	if url.count('/') > 2:
+		return False
+	else:
+		return True
