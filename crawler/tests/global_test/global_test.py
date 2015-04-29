@@ -2,7 +2,7 @@
 
 """Classes to test Swiftea-Crawler globaly."""
 
-from os import mkdir
+from os import mkdir, _exit
 from configparser import ConfigParser
 import pytest
 
@@ -20,7 +20,7 @@ import tests.tests_data as tests_data
 def quit_program():
     speak('end\n', 0)
     tests_data.reset()
-    pytest.exit('ok')
+    _exit(0)
 
 
 def def_links():
