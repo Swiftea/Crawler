@@ -31,15 +31,15 @@ class WebConnexion(object):
 		try:
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
 		except requests.packages.urllib3.exceptions.ReadTimeoutError:
-			speak('Website not responding (urllib3): ' + url, 7)
+			speak('Read timeout rrror (urllib3): ' + url, 7)
 			return None, False, 0
 		except requests.exceptions.Timeout:
-			speak('Website not responding: ' + url, 7)
+			speak('Timeout error: ' + url, 7)
 			return None, False, 0
 		except requests.exceptions.RequestException as error:
-			speak('Failed to connect to website: {}, {}'.format(str(error), url), 8)
+			speak('Connexion failed: {}, {}'.format(str(error), url), 8)
 			if no_connexion():
-				return 'no_connexion', nofollow, 0
+				return 'no connexion', url, 0
 			else:
 				return None, False, 0
 		else:
@@ -47,7 +47,7 @@ class WebConnexion(object):
 			if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
-				return request.text, nofollow, score
+				return request.text, url, score
 			else:
 				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots permission=' + str(allowed) + ', nofollow=' + str(nofollow))

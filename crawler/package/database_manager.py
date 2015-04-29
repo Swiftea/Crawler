@@ -82,12 +82,12 @@ class DatabaseManager(object):
 					result = self.cursor.fetchone()
 			except socket.timeout:
 				result = None
-				response = 'Connexion error (socket.timeout)'
+				response = 'Timeout error'
 			except pymysql.err.OperationalError:
 				result = None
-				response = 'Connexion error (err.OperationalError)'
+				response = 'Operational error'
 			else:
-				response = 'Send command : ok'
+				response = 'Send command: ok'
 
 			self.close_connexion()
 			return result, response

@@ -137,6 +137,8 @@ class SiteInformations(object):
 						new = 'http:' + new
 					elif new.startswith('/'):
 						new = base_url + new
+					elif new.startswith(':'):
+						new = 'http' + new
 					else:
 						new = base_url + '/' + new
 				# Delete anchors:
@@ -149,7 +151,8 @@ class SiteInformations(object):
 					new = new[:nb_index]
 				if infos_url.query != '':
 					new += '?' + infos_url.query
-				new_links.append(new)
+				if len(new) > 8:
+					new_links.append(new)
 
 		return module.remove_duplicates(new_links)
 

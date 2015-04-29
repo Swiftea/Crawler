@@ -100,7 +100,7 @@ class TestCrawler(Crawler):
         tests_data.reset()
 
 
-class TestGlobal():
+class TestGlobal(object):
     def test_crawler(self):
         create_dirs()
         create_doc()

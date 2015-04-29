@@ -29,7 +29,7 @@ def speak(message, EC=None):
 	else:
 		print(message)
 		with open(data.FILE_NEWS, 'a') as myfile:
-			myfile.write(message.capitalize() + '\n')
+			myfile.write(message + '\n')
 
 
 def errors(EC, message):

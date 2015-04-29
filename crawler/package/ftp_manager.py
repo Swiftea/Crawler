@@ -15,8 +15,6 @@ class MyFtpError(Exception):
 class FTPManager(FTP):
 	"""Class to connect to a ftp server more easily.
 
-
-
 	:param host: hostname of the ftp server
 	:type host: str
 	:param user: username to use for connexion

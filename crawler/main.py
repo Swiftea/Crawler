@@ -97,15 +97,13 @@ class Crawler(object):
 		"""
 		speak('Crawling url : ' + url)
 		# Get webpage's html code :
-		html_code, is_nofollow, score = self.web_connexion.get_code(url)
+		html_code, url, score = self.web_connexion.get_code(url)
 		if html_code is None:
 			speak('Ignore')
-		elif html_code == 'no_connexion':
+		elif html_code == 'no connexion':
 			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 			quit_program()
 		else:
-			if is_nofollow:
-				url = url = url[:-10]
 			webpage_infos = {}
 			webpage_infos['url'] = url
 			(links, webpage_infos['title'], webpage_infos['description'],

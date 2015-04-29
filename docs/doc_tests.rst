@@ -16,3 +16,10 @@ package.tests.global_test
     :members:
     :undoc-members:
     :show-inheritance:
+
+package.tests.tests_data
+-------------------------
+.. automodule:: tests.tests_data
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -10,7 +10,6 @@ crawler/output/
 crawler/config/
 crawler/links/
 crawler/data/
-docs/_static
 docs/_build
 .coverage
 notes.txt

@@ -134,10 +134,10 @@ class TestSearches(TestCrawlerBase):
     def test_clean_links(self):
         links = ['page.php', 'http://www.example.fr/', 'mailto:test@test.fr',
             '//www.example.fr?w=word', 'http://www.example.en/page1/index.html',
-            '/page1']
+            '/page1', 'http:/', 'https://a.net', '://www.sportetstyle.fr']
         links = SiteInformations.clean_links(self, links, self.url)
         assert links == ['http://www.example.en/page.php', 'http://www.example.fr',
-            'http://www.example.fr?w=word', 'http://www.example.en/page1']
+            'http://www.example.fr?w=word', 'http://www.example.en/page1', 'https://a.net', 'http://www.sportetstyle.fr']
 
     def test_clean_keywords(self):
         # 'jean/pierre', 'fichier.ext'
@@ -348,8 +348,9 @@ class TestFileManager(TestCrawlerBase):
     def test_get_url(self):
         mkdir(DIR_LINKS)
         with open(DIR_LINKS + '1', 'w') as myfile:
-            myfile.write(self.url)
+            myfile.write(self.url + '\nhttp://example.en/page qui parle de ça')
         assert FileManager.get_url(self) == self.url
+        assert FileManager.get_url(self) == 'http://example.en/page qui parle de ça'
         self.reading_file_number = 1
         assert FileManager.get_url(self) == 'stop'
 
