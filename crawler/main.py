@@ -49,7 +49,8 @@ class Crawler(object):
 	def start(self):
 		"""Start main loop of crawling."""
 		speak(strftime("%d/%m/%y %H:%M:%S"))  # Speak time
-		while True:
+		run = True
+		while run:
 			for _ in range(50):
 				while len(self.infos) < 10:
 					speak('Reading {0}, link {1}'.format(
@@ -62,6 +63,7 @@ class Crawler(object):
 					self.crawl_webpage(url)
 
 				# End of crawling loop
+
 				speak('{} new documents ! '.format(self.crawled_websites))
 
 				self.send_to_db()
@@ -76,11 +78,13 @@ class Crawler(object):
 				if self.file_manager.run == 'false':
 					speak('User wants stop program')
 					self.safe_quit()
+					run = False
+					break
 
 			# End of loop range(n)
-
-			self.send_inverted_index()
-			self.suggestions()
+			if run:
+				self.send_inverted_index()
+				self.suggestions()
 
 	def crawl_webpage(self, url):
 		"""Crawl the given url.
@@ -165,7 +169,8 @@ class Crawler(object):
 		"""Send inverted-index and quit."""
 		self.send_inverted_index()
 		speak('Programm will quit')
-		quit_program()
+		speak('end\n', 0)
+
 
 if __name__ == '__main__':
 	create_dirs()

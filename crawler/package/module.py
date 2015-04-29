@@ -2,7 +2,6 @@
 
 """Define several functions for crawler"""
 
-import sys  # To leave the programme
 from time import strftime
 from os import path, mkdir, remove
 import requests

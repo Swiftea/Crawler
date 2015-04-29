@@ -9,9 +9,9 @@ from configparser import ConfigParser
 import main
 import stats
 import package.module as module
+from package.module import *
 import package.data as data
 from package.data import *
-from package.module import *
 from package.searches import SiteInformations
 from package.inverted_index import InvertedIndex
 from package.parsers import Parser_encoding, MyParser
@@ -55,12 +55,10 @@ class TestCrawlerBase(object):
 
 class TestCrawlerFunctions(TestCrawlerBase):
     def test_average(self):
-        assert module.average(['20', '20', '30', '30']) == 25
-
+        assert average(['20', '20', '30', '30']) == 25
 
     def test_create_dirs(self):
         create_dirs()
-
 
     def test_create_doc(self):
         create_doc()
@@ -69,21 +67,17 @@ class TestCrawlerFunctions(TestCrawlerBase):
             myfile.write('This is not the doc.')
         create_doc()
 
-
     def test_speak(self):
         speak('A test message', 0)
-
 
     def test_get_stopwords(self):
         get_stopwords()
         get_stopwords(self.url)
 
-
     def test_is_index(self):
         assert is_index() == False
         open(FILE_INDEX, 'w').close()
         assert is_index() == True
-
 
     def test_stats(self):
         stats_links(30)
@@ -92,42 +86,22 @@ class TestCrawlerFunctions(TestCrawlerBase):
 
 
 class TestSearches(TestCrawlerBase):
+    def test_get_base_url(self):
+        assert get_base_url(self.url + '/page1.php') == self.url
+
     def test_clean_text(self):
-        text = module.clean_text('Sample text with non-desired \r whitespaces \t chars \n')
+        text = clean_text('Sample text with non-desired \r whitespaces \t chars \n')
         assert '\n' not in text and '\r' not in text and '\t' not in text
 
-
-    def test_get_base_url(self):
-        assert module.get_base_url(self.url + '/page1.php') == self.url
-
-
-    def test_clean_links(self):
-        links = ['page.php', 'http://www.example.fr/', 'mailto:test@test.fr',
-            '//www.example.fr?w=word', 'http://www.example.en/page1/index.html',
-            '/page1']
-        links = SiteInformations.clean_links(self, links)
-        assert links == ['http://www.example.en/page.php', 'http://www.example.fr',
-            'http://www.example.fr?w=word', 'http://www.example.en/page1']
-
-
-    def test_clean_keywords(self):
-        # 'jean/pierre', 'fichier.ext'
-        keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
-        'quoi...', '*****', 'epee,...', '2.0', 'fi\'s']
-        keywords = SiteInformations.clean_keywords(self, keywords)
-        assert keywords == ['bureau', 'word', 'example', 'oiseau', 'quoi', 'epee']
-
-
     def test_split_keywords(self):
-        is_list, keywords = module.split_keywords('jean/pierre')
+        is_list, keywords = split_keywords('jean/pierre')
         assert is_list == True
         assert keywords == ['jean', 'pierre']
-        is_list, keywords = module.split_keywords('fichier.ext')
+        is_list, keywords = split_keywords('fichier.ext')
         assert keywords == ['fichier', 'ext']
-        is_list, keywords = module.split_keywords('fichier')
+        is_list, keywords = split_keywords('fichier')
         assert is_list == False
         assert keywords == 'fichier'
-
 
     def test_letter_repeat(self):
         assert letter_repeat('file') == False
@@ -140,6 +114,18 @@ class TestSearches(TestCrawlerBase):
         assert is_letters('****') == True
         assert is_letters('2015') == True
 
+    def test_check_size_keyword(self):
+        assert check_size_keyword('keyword') == True
+        assert check_size_keyword('in') == False
+        assert check_size_keyword('the') == True
+
+    def test_remove_duplicates(self):
+        assert remove_duplicates(['word', 'word']) == ['word']
+
+    def test_is_homepage(self):
+        assert is_homepage(self.url) == True
+        assert is_homepage(self.url + '/page1') == False
+
 
     def test_remove_useless_chars(self):
         assert remove_useless_chars('(file’s)...') == 'file'
@@ -148,15 +134,20 @@ class TestSearches(TestCrawlerBase):
         assert remove_useless_chars("fi's") is None
 
 
-    def test_check_size_keyword(self):
-        assert check_size_keyword('keyword') == True
-        assert check_size_keyword('in') == False
-        assert check_size_keyword('the') == True
+    def test_clean_links(self):
+        links = ['page.php', 'http://www.example.fr/', 'mailto:test@test.fr',
+            '//www.example.fr?w=word', 'http://www.example.en/page1/index.html',
+            '/page1']
+        links = SiteInformations.clean_links(self, links)
+        assert links == ['http://www.example.en/page.php', 'http://www.example.fr',
+            'http://www.example.fr?w=word', 'http://www.example.en/page1']
 
-
-    def test_remove_duplicates(self):
-        assert module.remove_duplicates(['word', 'word']) == ['word']
-
+    def test_clean_keywords(self):
+        # 'jean/pierre', 'fichier.ext'
+        keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
+        'quoi...', '*****', 'epee,...', '2.0', 'fi\'s']
+        keywords = SiteInformations.clean_keywords(self, keywords)
+        assert keywords == ['bureau', 'word', 'example', 'oiseau', 'quoi', 'epee']
 
     def test_detect_language(self):
         keywords = "un texte d'exemple pour tester la fonction".split()
@@ -164,32 +155,13 @@ class TestSearches(TestCrawlerBase):
         keywords = "un texte d'exemple sans stopwords".split()
         assert SiteInformations.detect_language(self, keywords) == ''
 
-
     def test_clean_favicon(self):
         assert SiteInformations.clean_favicon(self, '/icon.ico') == 'http://www.example.en/icon.ico'
         assert SiteInformations.clean_favicon(self, '//example.fr/icon.ico') == 'http://example.fr/icon.ico'
         assert SiteInformations.clean_favicon(self, 'icon.ico') == 'http://www.example.en/icon.ico'
 
 
-    def test_is_homepage(self):
-        assert is_homepage(self.url) == True
-        assert is_homepage(self.url + '/page1') == False
-
-
 class TestWebConnexion(TestCrawlerBase):
-    def test_search_encoding(self):
-        assert  WebConnexion.search_encoding(self, {}, self.code3) == ('utf-8', 0)
-        assert WebConnexion.search_encoding(self, self.headers, self.code3) == ('utf-8', 0.5)
-        assert WebConnexion.search_encoding(self, {}, self.code1) == ('utf-8', 0.5)
-        assert WebConnexion.search_encoding(self, {}, self.code2) == ('UTF-16 LE', .5)
-
-
-    def test_check_robots_perm(self):
-        assert WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com') == True
-        assert WebConnexion.check_robots_perm(self, 'https://www.facebook.com') == False
-        assert WebConnexion.check_robots_perm(self, self.url) == True
-
-
     def test_is_nofollow(self):
         nofollow, url = is_nofollow(self.url + '!nofollow!')
         assert nofollow == True
@@ -198,43 +170,29 @@ class TestWebConnexion(TestCrawlerBase):
         assert nofollow == False
         assert url == self.url
 
-
     def test_no_connexion(self):
         assert no_connexion(self.url) == True
         assert no_connexion() == False
 
 
+    def test_search_encoding(self):
+        assert  WebConnexion.search_encoding(self, {}, self.code3) == ('utf-8', 0)
+        assert WebConnexion.search_encoding(self, self.headers, self.code3) == ('utf-8', 0.5)
+        assert WebConnexion.search_encoding(self, {}, self.code1) == ('utf-8', 0.5)
+        assert WebConnexion.search_encoding(self, {}, self.code2) == ('UTF-16 LE', .5)
+
+    def test_check_robots_perm(self):
+        assert WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com') == True
+        assert WebConnexion.check_robots_perm(self, 'https://www.facebook.com') == False
+        assert WebConnexion.check_robots_perm(self, self.url) == True
+
+
 class TestParser(TestCrawlerBase):
-    def test_parser(self):
-        parser = MyParser()
-        parser.feed(self.code1)
-        assert parser.links == ['demo', 'index', 'about/nf.php!nofollow!']
-        assert module.clean_text(parser.first_title) == 'Gros titre'
-        assert module.clean_text(parser.keywords) == 'Gros titre Moyen titre petit titre strong em'
-        assert parser.css == True
-        assert parser.description == 'Moteur de recherche'
-        assert parser.language == 'en'
-        assert parser.favicon == 'public/favicon.ico'
-        assert parser.title == 'Swiftea'
-
-        parser.feed(self.code2)
-        assert parser.language == 'en'
-        assert parser.favicon == 'public/favicon2.ico'
-
-        parser.feed(self.code3)
-        assert parser.language == 'fr'
-
-
-    def test_handle_entityref(self):
-        MyParser.handle_entityref(self, 'eacute')
-        assert self.title == 'letteré'
-        MyParser.handle_entityref(self, 'agrave')
-        assert self.title == 'letteréà'
-
-
-    def test_handle_charref(self):
-        pass
-
+    def test_can_append(self):
+        assert can_append('about/ninf.php', 'noindex, nofollow') == None
+        assert can_append('about/ninf.php', 'nofollow') == 'about/ninf.php!nofollow!'
+        assert can_append('about/ninf.php', '') == 'about/ninf.php'
+        assert can_append(None, '') is None
 
     def test_meta(self):
         language, description, objet = meta([('name', 'description'), ('content', 'Communauté du Libre partage')])
@@ -248,19 +206,41 @@ class TestParser(TestCrawlerBase):
         assert language == 'en'
 
 
+    def test_handle_entityref(self):
+        MyParser.handle_entityref(self, 'eacute')
+        assert self.title == 'letteré'
+        MyParser.handle_entityref(self, 'agrave')
+        assert self.title == 'letteréà'
+
+    def test_handle_charref(self):
+        pass
+
+
+    def test_parser(self):
+        parser = MyParser()
+        parser.feed(self.code1)
+        assert parser.links == ['demo', 'index', 'about/nf.php!nofollow!']
+        assert clean_text(parser.first_title) == 'Gros titre'
+        assert clean_text(parser.keywords) == 'Gros titre Moyen titre petit titre strong em'
+        assert parser.css == True
+        assert parser.description == 'Moteur de recherche'
+        assert parser.language == 'en'
+        assert parser.favicon == 'public/favicon.ico'
+        assert parser.title == 'Swiftea'
+
+        parser.feed(self.code2)
+        assert parser.language == 'en'
+        assert parser.favicon == 'public/favicon2.ico'
+
+        parser.feed(self.code3)
+        assert parser.language == 'fr'
+
     def test_parser_encoding(self):
         parser = Parser_encoding()
         parser.feed(self.code1)
         assert parser.encoding == 'utf-8'
         parser.feed(self.code2)
         assert parser.encoding == 'UTF-16 LE'
-
-
-    def test_can_append(self):
-        assert can_append('about/ninf.php', 'noindex, nofollow') == None
-        assert can_append('about/ninf.php', 'nofollow') == 'about/ninf.php!nofollow!'
-        assert can_append('about/ninf.php', '') == 'about/ninf.php'
-        assert can_append(None, '') is None
 
 
 class TestIndex(TestCrawlerBase):
@@ -270,15 +250,13 @@ class TestIndex(TestCrawlerBase):
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
 
-    def test_set_index(self):
+    def test_setInvertedIndex(self):
         InvertedIndex.setInvertedIndex(self, self.inverted_index)
         assert InvertedIndex.getInvertedIndex(self) == self.inverted_index
-
 
     def test_setStopwords(self):
         InvertedIndex.setStopwords(self, {'fr':('mot', 'pour', 'autre')})
         assert self.STOPWORDS == {'fr':('mot', 'pour', 'autre')}
-
 
     def test_add_word(self):
         # Add language:
@@ -317,14 +295,12 @@ class TestIndex(TestCrawlerBase):
         'A': {'av': {'avion': {9: 7/40}, 'aviation': {9: 7/40, 10: 0.1333333}}, 'ab': {'aboutir': {56: 7/40}}, 'a-sp': {'aùviation': {9: 7/40}}},
         'SP': {'sp-a': {'ùaviation': {9: 7/40}}}}, 'ES': {'F': {'fi': {'fiesta': {9: 6/40}}}}}
 
-
     def test_delete_word(self):
         InvertedIndex.delete_word(self, 'above', 'EN', 'A', 'ab')
         assert self.inverted_index == {'EN': {
         'A': {'ab': {'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
-
 
     def test_delete_id_word(self):
         word_infos = {'word': 'boule', 'language': 'FR', 'first_letter': 'B', 'filename': 'bo'}
@@ -333,7 +309,6 @@ class TestIndex(TestCrawlerBase):
         'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25}}}}}
-
 
     def test_delete_doc_id(self):
         InvertedIndex.delete_doc_id(self, 2)
@@ -347,29 +322,31 @@ class TestIndex(TestCrawlerBase):
 
 
 class TestFileManager(TestCrawlerBase):
+    def test_rebuild_links(self):
+        old_links = ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2']
+        new_links = ['http://example.fr/page2', 'http://example.fr/page3']
+        links_to_add = rebuild_links(old_links, new_links)
+        assert links_to_add == ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2', 'http://example.fr/page3']
+
+
     def test_init(self):
         FileManager.__init__(self)
         FileManager.__init__(self)
-
 
     def test_check_stop_crawling(self):
         FileManager.check_stop_crawling(self)
         assert self.run == 'true'
 
-
     def test_get_max_links(self):
         FileManager.get_max_links(self)
         assert self.max_links == MAX_LINKS
 
-
     def test_save_config(self):
         FileManager.save_config(self)
-
 
     def test_ckeck_size_links(self):
         self.max_links = 2
         FileManager.ckeck_size_links(self, self.links)
-
 
     def test_get_url(self):
         mkdir(DIR_LINKS)
@@ -379,14 +356,11 @@ class TestFileManager(TestCrawlerBase):
         self.reading_file_number = 1
         assert FileManager.get_url(self) == 'stop'
 
-
     def test_save_inverted_index(self):
         FileManager.save_inverted_index(self, self.inverted_index)
 
-
     def test_get_inverted_index(self):
         assert FileManager.get_inverted_index(self) == self.inverted_index
-
 
     def test_read_inverted_index(self):
         mkdir('data/inverted_index/FR')
@@ -395,13 +369,6 @@ class TestFileManager(TestCrawlerBase):
             myfile.write('{"abondamment": {"1610": 0.005618}}')
         inverted_index = FileManager.read_inverted_index(self)
         assert inverted_index == {'FR': {'A': {'ab': {'abondamment': {1610: 0.005618}}}}}
-
-
-    def test_rebuild_links(self):
-        old_links = ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2']
-        new_links = ['http://example.fr/page2', 'http://example.fr/page3']
-        links_to_add = module.rebuild_links(old_links, new_links)
-        assert links_to_add == ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2', 'http://example.fr/page3']
 
 
 class TestReset(TestCrawlerBase):

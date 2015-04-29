@@ -2,9 +2,8 @@
 
 """Classes to test Swiftea-Crawler globaly."""
 
-from os import mkdir, _exit
+from os import mkdir
 from configparser import ConfigParser
-import pytest
 
 import package.data as data
 from main import Crawler
@@ -16,12 +15,6 @@ from package.ftp_swiftea import FTPSwiftea
 from package.searches import SiteInformations
 from package.file_manager import FileManager
 import tests.tests_data as tests_data
-
-def quit_program():
-    speak('end\n', 0)
-    tests_data.reset()
-    _exit(0)
-
 
 def def_links():
     with open(data.DIR_LINKS + '0', 'w') as myfile:
@@ -103,7 +96,8 @@ class TestCrawler(Crawler):
     def safe_quit(self):
         self.send_inverted_index()
         speak('Programm will quit')
-        quit_program()
+        speak('end\n', 0)
+        tests_data.reset()
 
 
 class TestGlobal():
