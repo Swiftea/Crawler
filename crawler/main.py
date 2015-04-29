@@ -96,10 +96,10 @@ class Crawler(object):
 		:type url: str
 		"""
 		speak('Crawling url : ' + url)
-		# Get webpage's html code :
-		html_code, url, score = self.web_connexion.get_code(url)
+		# Get webpage's html code:
+		html_code, nofollow, score, url = self.web_connexion.get_code(url)
 		if html_code is None:
-			speak('Ignore')
+			self.delete_if_exists(url)
 		elif html_code == 'no connexion':
 			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 			quit_program()
@@ -109,19 +109,28 @@ class Crawler(object):
 			(links, webpage_infos['title'], webpage_infos['description'],
 				webpage_infos['keywords'], webpage_infos['language'],
 				webpage_infos['score'], webpage_infos['favicon'], webpage_infos['homepage']
-				) = self.site_informations.get_infos(url, html_code, is_nofollow, score)
+				) = self.site_informations.get_infos(url, html_code, nofollow, score)
 
 			if webpage_infos['title'] != '':
 				self.infos.append(webpage_infos)
 				self.crawled_websites += 1
 				self.file_manager.save_links(links)
 			else:
-				speak('Ignore')
+				self.delete_if_exists(url)
+
+	def delete_if_exists(self, url):
+		is_doc = self.database.is_doc(url)
+		if is_doc is None:
+			self.safe_quit()
+		elif is_doc:
+			self.database.del_one_doc(url)
+		else:
+			speak('Ignore')
 
 	def send_to_db(self):
 		"""Send all informations about crawled webpages to database."""
-		response_url = self.database.send_infos(self.infos)
-		if response_url:
+		error = self.database.send_infos(self.infos)
+		if error:
 			self.safe_quit()
 
 	def indexing(self):

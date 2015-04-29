@@ -32,26 +32,26 @@ class WebConnexion(object):
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
 		except requests.packages.urllib3.exceptions.ReadTimeoutError:
 			speak('Read timeout rrror (urllib3): ' + url, 7)
-			return None, False, 0
+			return None, False, 0, None
 		except requests.exceptions.Timeout:
 			speak('Timeout error: ' + url, 7)
-			return None, False, 0
+			return None, False, 0, None
 		except requests.exceptions.RequestException as error:
 			speak('Connexion failed: {}, {}'.format(str(error), url), 8)
 			if no_connexion():
-				return 'no connexion', url, 0
+				return 'no connexion', None, 0, None
 			else:
-				return None, False, 0
+				return None, False, 0, None
 		else:
 			allowed = self.check_robots_perm(url)
 			if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
-				return request.text, url, score
+				return request.text, nofollow, score, url
 			else:
 				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
-					request.headers.get('Content-Type', '') + ', robots permission=' + str(allowed) + ', nofollow=' + str(nofollow))
-				return None, False, 0
+					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed))
+				return None, False, 0, None
 
 
 	def search_encoding(self, headers, code):

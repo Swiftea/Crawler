@@ -72,7 +72,7 @@ class TestWebConnexion(WebConnexion):
         WebConnexion.__init__(self)
 
     def get_code(self, url):
-        return tests_data.code1, False, 1
+        return tests_data.code1, False, 1, url
 
 
 class TestCrawler(Crawler):
