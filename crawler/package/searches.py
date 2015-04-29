@@ -112,7 +112,7 @@ class SiteInformations(object):
 		return language
 
 
-	def clean_links(self, links, base_url):
+	def clean_links(self, links, base_url=None):
 		"""Clean webpage's links: rebuild urls with base url and
 		remove anchors, mailto, javascript, .index.
 

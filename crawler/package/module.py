@@ -425,7 +425,12 @@ def is_homepage(url):
 	:type url: str
 	:return: true or false
 	"""
-	if url.count('/') > 2:
-		return False
+	if url.count('/') == 2:
+		if '//www.' in url and url.count('.') == 2:
+			return True
+		elif url.count('.') == 1:
+			return True
+		else:
+			return False
 	else:
-		return True
+		return False

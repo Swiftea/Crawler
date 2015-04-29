@@ -118,8 +118,10 @@ class TestSearches(TestCrawlerBase):
         assert remove_duplicates(['word', 'word']) == ['word']
 
     def test_is_homepage(self):
-        assert is_homepage(self.url) == True
-        assert is_homepage(self.url + '/page1') == False
+        assert is_homepage('http://www.bfmtv.com') == True
+        assert is_homepage('http://www.bfmtv.com/page.html') == False
+        assert is_homepage('https://github.com') == True
+        assert is_homepage('http://bfmbusiness.bfmtv.com') == False
 
 
     def test_remove_useless_chars(self):
