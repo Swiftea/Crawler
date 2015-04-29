@@ -110,7 +110,7 @@ class Crawler(object):
 			webpage_infos['url'] = url
 			(links, webpage_infos['title'], webpage_infos['description'],
 				webpage_infos['keywords'], webpage_infos['language'],
-				webpage_infos['score'], webpage_infos['favicon'],
+				webpage_infos['score'], webpage_infos['favicon'], webpage_infos['homepage']
 				) = self.site_informations.get_infos(url, html_code, is_nofollow, score)
 
 			if webpage_infos['title'] != '':

@@ -10,9 +10,9 @@ package.tests.test_crawler
     :undoc-members:
     :show-inheritance:
 
-package.tests.global_test.global_test
--------------------------------------
-.. automodule:: tests.global_test.global_test
+package.tests.global_test
+-------------------------
+.. automodule:: tests.global_test
     :members:
     :undoc-members:
     :show-inheritance:

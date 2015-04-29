@@ -65,8 +65,9 @@ class DatabaseSwiftea(DatabaseManager):
 		speak('Updating : ' + infos['url'])
 		response = self.send_command(
 """UPDATE index_url
-SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, score=%s, favicon=%s
-WHERE url = %s """, (infos['title'], infos['description'], infos['language'], popularity, infos['score'], infos['favicon'], infos['url']))
+SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, score=%s, homepage=%s, favicon=%s
+WHERE url = %s """, (infos['title'], infos['description'], infos['language'], popularity, infos['score'],\
+	infos['homepage'], infos['favicon'], infos['url']))
 		if response[1] != 'Send command : ok':
 			speak('Failed to update : ' + response[1], 16)
 			return True
@@ -83,9 +84,9 @@ WHERE url = %s """, (infos['title'], infos['description'], infos['language'], po
 		"""
 		speak('Adding : ' + infos['url'])
 		response = self.send_command(
-"""INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, favicon)
-VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s)""", \
-(infos['title'], infos['description'], infos['url'], infos['language'], infos['score'], infos['favicon']))
+"""INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, homepage, favicon)
+VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
+(infos['title'], infos['description'], infos['url'], infos['language'], infos['score'], infos['homepage'], infos['favicon']))
 		if response[1] != 'Send command : ok':
 			speak("Failed to add : " + response[1], 16)
 			return True

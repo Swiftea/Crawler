@@ -71,12 +71,12 @@ class WebConnexion(object):
 		charset = headers.find('charset')
 		end_charset = headers.find('\'', charset)
 		if charset != -1 and end_charset != -1:
-			return headers[charset+8:end_charset], .5
+			return headers[charset+8:end_charset], 1
 		else:
 			# Search in source code:
 			self.parser_encoding.feed(code)
 			if self.parser_encoding.encoding != '':
-				return self.parser_encoding.encoding, .5
+				return self.parser_encoding.encoding, 1
 			else:
 				speak('No encoding', 9)
 				return 'utf-8', 0

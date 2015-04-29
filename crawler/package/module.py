@@ -6,6 +6,7 @@ from time import strftime
 from os import path, mkdir, remove
 import requests
 from urllib.parse import urlparse
+import sys
 
 import package.data as data
 
@@ -270,7 +271,7 @@ def rebuild_links(old_links, new_links):  # File manager
 	links = old_links + new_links
 	links_to_add = list()
 	for link in links:
-		if link not in links_to_add:
+		if link not in links_to_add and len(link) <= 255:
 			links_to_add.append(link)
 	return links_to_add
 

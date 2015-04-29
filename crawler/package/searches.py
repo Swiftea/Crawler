@@ -14,17 +14,6 @@ class SiteInformations(object):
 	def __init__(self):
 		"""Build searches manager"""
 		self.parser = MyParser()
-		self.url = str()
-		self.score = float()
-		self.title = str()
-		self.description = str()
-		self.language = str()
-		self.links = list()
-		self.keywords = list()
-		self.code = str()
-		self.new = str()
-		self.slash = int()
-		self.favicon = str()
 		self.STOPWORDS = module.get_stopwords()
 
 
@@ -43,59 +32,56 @@ class SiteInformations(object):
 			score, number of words
 
 		"""
-		self.url = url
-		self.score = score
-		if module.is_homepage(url):
-			self.score += 1
+		homepage = 1 if module.is_homepage(url) else 0
 
 		self.parser.feed(code)
 
-		self.title = module.clean_text(self.parser.title)  # Find title and clean it
+		title = module.clean_text(self.parser.title)  # Find title and clean it
 
 		keywords = module.clean_text(self.parser.keywords.lower()).split()
 		begining_size = len(keywords)  # Stats
 
 		# Language:
 		if self.parser.language != '':
-			self.language = self.parser.language
-			self.score += 0.25
+			language = self.parser.language
+			score += 1
 		else:
-			self.language = self.detect_language(keywords)
+			language = self.detect_language(keywords)
 
-		if self.language in self.STOPWORDS and self.parser.title != '':
-			self.keywords = self.clean_keywords(keywords)
-			self.keywords.extend(self.clean_keywords(self.title.lower().split()))
+		if language in self.STOPWORDS and self.parser.title != '':
+			keywords = self.clean_keywords(keywords, language)
+			keywords.extend(self.clean_keywords(title.lower().split(), language))
 
 			# Description:
 			if self.parser.description == '':
-				self.description = module.clean_text(self.parser.first_title)
+				description = module.clean_text(self.parser.first_title)
 			else:
-				self.description = module.clean_text(self.parser.description)
+				description = module.clean_text(self.parser.description)
 
 			# Css:
 			if self.parser.css:
-				self.score += 0.25
+				score += 1
 
-			module.stats_stop_words(begining_size, len(self.keywords))  # stats
+			module.stats_stop_words(begining_size, len(keywords))  # stats
+
+			base_url = module.get_base_url(url)
 
 			# Links:
 			if nofollow:
-				self.links = list()
-				module.speak('No take links')  # why ?
+				links = list()
 			else:
-				self.links = self.clean_links(self.parser.links)
+				links = self.clean_links(self.parser.links, base_url)
 
 			# Favicon:
 			if self.parser.favicon != '':
-				self.favicon = self.clean_favicon(self.parser.favicon)
+				favicon = self.clean_favicon(self.parser.favicon, base_url)
 			else:
-				self.favicon = ''
+				favicon = ''
 		else:
 			module.speak('No language or title')
-			self.title = ''
-			self.links = self.description = self.keywords = self.language = self.score = self.favicon = None
+			title = links = description = score = favicon = ''
 
-		return self.links, self.title, self.description, self.keywords, self.language, self.score, self.favicon
+		return links, title, description, keywords, language, score, favicon, homepage
 
 
 	def detect_language(self, keywords):
@@ -126,7 +112,7 @@ class SiteInformations(object):
 		return language
 
 
-	def clean_links(self, links):
+	def clean_links(self, links, base_url):
 		"""Clean webpage's links: rebuild urls with base url and
 		remove anchors, mailto, javascript, .index.
 
@@ -147,7 +133,6 @@ class SiteInformations(object):
 				'javascript:' not in new and
 				new != ''):
 				if not new.startswith('http') and not new.startswith('www'):
-					base_url = module.get_base_url(self.url)
 					if new.startswith('//'):
 						new = 'http:' + new
 					elif new.startswith('/'):
@@ -169,7 +154,7 @@ class SiteInformations(object):
 		return module.remove_duplicates(new_links)
 
 
-	def clean_favicon(self, favicon):
+	def clean_favicon(self, favicon, base_url):
 		"""Clean favicon.
 
 		:param favicon: favicon url to clean
@@ -177,7 +162,6 @@ class SiteInformations(object):
 		:return: cleaned favicon
 
 		"""
-		base_url = module.get_base_url(self.url)
 		if not favicon.startswith('http') and not favicon.startswith('www'):
 			if favicon.startswith('//'):
 				favicon = 'http:' + favicon
@@ -189,7 +173,7 @@ class SiteInformations(object):
 		return favicon
 
 
-	def clean_keywords(self, keywords):
+	def clean_keywords(self, keywords, language):
 		"""Clean found keywords.
 
 		Delete stopwords, bad chars, two letter less word and split word1-word2
@@ -199,7 +183,7 @@ class SiteInformations(object):
 		:return: list of cleaned keywords
 
 		"""
-		stopwords = self.STOPWORDS[self.language]
+		stopwords = self.STOPWORDS[language]
 		new_keywords = []
 		for keyword in keywords:
 			if module.check_size_keyword(keyword):
@@ -213,7 +197,7 @@ class SiteInformations(object):
 
 				is_list, keywords = module.split_keywords(keyword)
 				if is_list:
-					keywords = self.clean_keywords(keywords)
+					keywords = self.clean_keywords(keywords, language)
 
 				if keyword not in stopwords:
 					new_keywords.append(keyword)

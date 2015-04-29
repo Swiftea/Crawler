@@ -24,13 +24,11 @@ class TestCrawlerBase(object):
     def setup_method(self, _):
         """Configure the app."""
         self.url = 'http://www.example.en'
-        self.language = 'fr'
         self.STOPWORDS = {'fr':('mot', 'pour')}
         self.inverted_index = {'EN': {
         'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
         'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
         'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
-
         self.max_links = 3
         self.writing_file_number = 5
         self.reading_file_number = 1
@@ -40,11 +38,8 @@ class TestCrawlerBase(object):
         self.objet = 'title'
         self.title = 'letter'
         self.code1 = tests_data.code1
-
         self.code2 = tests_data.code2
-
         self.code3 = tests_data.code3
-
         self.reqrobots = RobotsCache()
         self.headers = {'status': '200 OK', 'content-type': 'text/html; charset=utf-8', 'vary': 'X-PJAX, Accept-Encoding'}
         self.config = ConfigParser()
@@ -138,7 +133,7 @@ class TestSearches(TestCrawlerBase):
         links = ['page.php', 'http://www.example.fr/', 'mailto:test@test.fr',
             '//www.example.fr?w=word', 'http://www.example.en/page1/index.html',
             '/page1']
-        links = SiteInformations.clean_links(self, links)
+        links = SiteInformations.clean_links(self, links, self.url)
         assert links == ['http://www.example.en/page.php', 'http://www.example.fr',
             'http://www.example.fr?w=word', 'http://www.example.en/page1']
 
@@ -146,7 +141,7 @@ class TestSearches(TestCrawlerBase):
         # 'jean/pierre', 'fichier.ext'
         keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
         'quoi...', '*****', 'epee,...', '2.0', 'fi\'s']
-        keywords = SiteInformations.clean_keywords(self, keywords)
+        keywords = SiteInformations.clean_keywords(self, keywords, 'fr')
         assert keywords == ['bureau', 'word', 'example', 'oiseau', 'quoi', 'epee']
 
     def test_detect_language(self):
@@ -156,9 +151,9 @@ class TestSearches(TestCrawlerBase):
         assert SiteInformations.detect_language(self, keywords) == ''
 
     def test_clean_favicon(self):
-        assert SiteInformations.clean_favicon(self, '/icon.ico') == 'http://www.example.en/icon.ico'
-        assert SiteInformations.clean_favicon(self, '//example.fr/icon.ico') == 'http://example.fr/icon.ico'
-        assert SiteInformations.clean_favicon(self, 'icon.ico') == 'http://www.example.en/icon.ico'
+        assert SiteInformations.clean_favicon(self, '/icon.ico', self.url) == 'http://www.example.en/icon.ico'
+        assert SiteInformations.clean_favicon(self, '//example.fr/icon.ico', self.url) == 'http://example.fr/icon.ico'
+        assert SiteInformations.clean_favicon(self, 'icon.ico', self.url) == 'http://www.example.en/icon.ico'
 
 
 class TestWebConnexion(TestCrawlerBase):
@@ -177,9 +172,9 @@ class TestWebConnexion(TestCrawlerBase):
 
     def test_search_encoding(self):
         assert  WebConnexion.search_encoding(self, {}, self.code3) == ('utf-8', 0)
-        assert WebConnexion.search_encoding(self, self.headers, self.code3) == ('utf-8', 0.5)
-        assert WebConnexion.search_encoding(self, {}, self.code1) == ('utf-8', 0.5)
-        assert WebConnexion.search_encoding(self, {}, self.code2) == ('UTF-16 LE', .5)
+        assert WebConnexion.search_encoding(self, self.headers, self.code3) == ('utf-8', 1)
+        assert WebConnexion.search_encoding(self, {}, self.code1) == ('utf-8', 1)
+        assert WebConnexion.search_encoding(self, {}, self.code2) == ('UTF-16 LE', 1)
 
     def test_check_robots_perm(self):
         assert WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com') == True
