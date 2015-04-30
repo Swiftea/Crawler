@@ -86,7 +86,7 @@ class Crawler(object):
 				self.send_inverted_index()
 				self.suggestions()
 				if dir_size(DIR_INDEX) > 8000000:
-					speak("Index is too big for current server")
+					speak('Index is too big for current server')
 					self.safe_quit()
 					run = False
 
@@ -195,7 +195,7 @@ class Crawler(object):
 			self.infos.clear()  # Reset the list of dict of informations of websites.
 
 	def safe_quit(self):
-		"""Send inverted-index and quit."""
+		"""Save inverted-index and quit."""
 		self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 		speak('Programm will quit')
 		speak('end\n', 0)

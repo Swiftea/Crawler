@@ -11,7 +11,7 @@ from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
 
 from package.data import USER_AGENT, HEADERS, TIMEOUT
-from package.module import speak, no_connexion, is_nofollow
+from package.module import speak, no_connexion, is_nofollow, clean_link
 from package.parsers import Parser_encoding
 
 class WebConnexion(object):
@@ -118,14 +118,11 @@ class WebConnexion(object):
 		infos_url = urlparse(request.url)
 		if infos_url.query != '':
 			size_with_param = len(request.text)
-			print(size_with_param)
 			new_url = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
-			print(new_url)
 			size_without_param = len(requests.get(new_url).text)
-			print(size_without_param)
 			if size_with_param == size_without_param:
-				return new_url
+				return clean_link(new_url)
 			else:
-				return request.url
+				return clean_link(request.url)
 		else:
-			return request.url
+			return clean_link(request.url)

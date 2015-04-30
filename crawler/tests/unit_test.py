@@ -139,6 +139,9 @@ class TestSearches(TestCrawlerBase):
         assert remove_useless_chars("fi'") is None
         assert remove_useless_chars("fi's") is None
 
+    def test_clean_link(self):
+        assert clean_link('http://www.example.fr?w=word#big_title') == 'http://www.example.fr?w=word'
+
 
     def test_clean_links(self):
         links = ['page.php', 'http://www.example.fr/', 'mailto:test@test.fr',
@@ -195,8 +198,8 @@ class TestWebConnexion(TestCrawlerBase):
         assert WebConnexion.check_robots_perm(self, 'http://premium.lefigaro.fr') == True
 
     def test_param_duplicate(self):
-        assert WebConnexion.param_duplicate(self, req.get('http://www.01net.com/')) == 'http://www.01net.com/'
-        assert WebConnexion.param_duplicate(self, req.get('http://www.01net.com/?page=12')) == 'http://www.01net.com/'
+        assert WebConnexion.param_duplicate(self, req.get('http://www.01net.com')) == 'http://www.01net.com'
+        assert WebConnexion.param_duplicate(self, req.get('http://www.01net.com/?page=12')) == 'http://www.01net.com'
         assert WebConnexion.param_duplicate(self, req.get('https://www.google.fr/webhp?tab=Xw')) == 'https://www.google.fr/webhp?tab=Xw'
 
 
@@ -386,8 +389,5 @@ class TestFileManager(TestCrawlerBase):
 
 
 class TestReset(object):
-    #def test_dir_size(self):
-        #assert dir_size(DIR_DATA) == 16430
-
     def test_reset(self):
         tests_data.reset()

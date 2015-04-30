@@ -2,6 +2,7 @@
 
 """Define several functions for crawler"""
 
+from urllib.parse import urlparse
 from time import strftime
 from os import path, mkdir, remove, listdir
 import requests
@@ -319,6 +320,47 @@ def is_homepage(url):  # Search
 			return False
 	else:
 		return False
+
+def clean_link(url, base_url=None):
+	"""Clean a link.
+
+	:param url: links to clean
+	:type url: str
+	:return: cleaned link
+	"""
+	new = url.strip()  # Link to add in new list of links
+	if (not new.endswith(data.BAD_EXTENTIONS) and
+		new != '/' and
+		new != '#' and
+		not new.startswith('mailto:') and
+		'javascript:' not in new and
+		new != ''):
+		if not new.startswith('http') and not new.startswith('www'):
+			if new.startswith('//'):
+				new = 'http:' + new
+			elif new.startswith('/'):
+				new = base_url + new
+			elif new.startswith(':'):
+				new = 'http' + new
+			else:
+				new = base_url + '/' + new
+		# Delete anchors:
+		infos_url = urlparse(new)
+		new = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
+		if new.endswith('/'):
+			new = new[:-1]
+		nb_index = new.find('/index.')
+		if nb_index != -1:
+			new = new[:nb_index]
+		if infos_url.query != '':
+			new += '?' + infos_url.query
+
+		if len(new) > 8:
+			return new
+		else:
+			return None
+	else:
+		return None
 
 
 def meta(attrs):  # Parser

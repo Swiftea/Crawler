@@ -3,8 +3,6 @@
 """After parse source code, data extracted must be classify and clean.
 Here is a class who use the html parser and manage all results."""
 
-from urllib.parse import urlparse
-
 import package.data as data
 import package.module as module
 from package.parsers import MyParser
@@ -124,34 +122,9 @@ class SiteInformations(object):
 		new_links = list()
 
 		for url in links:
-			new = url.strip()  # Link to add in new list of links
-			if (not new.endswith(data.BAD_EXTENTIONS) and
-				new != '/' and
-				new != '#' and
-				not new.startswith('mailto:') and
-				'javascript:' not in new and
-				new != ''):
-				if not new.startswith('http') and not new.startswith('www'):
-					if new.startswith('//'):
-						new = 'http:' + new
-					elif new.startswith('/'):
-						new = base_url + new
-					elif new.startswith(':'):
-						new = 'http' + new
-					else:
-						new = base_url + '/' + new
-				# Delete anchors:
-				infos_url = urlparse(new)
-				new = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
-				if new.endswith('/'):
-					new = new[:-1]
-				nb_index = new.find('/index.')
-				if nb_index != -1:
-					new = new[:nb_index]
-				if infos_url.query != '':
-					new += '?' + infos_url.query
-				if len(new) > 8:
-					new_links.append(new)
+			new_url = module.clean_link(url, base_url)
+			if new_url:
+				new_links.append(new_url)
 
 		return module.remove_duplicates(new_links)
 
