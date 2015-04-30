@@ -51,7 +51,7 @@ class WebConnexion(object):
 			else:
 				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed))
-				return 'redirection', False, 0, request.url
+				return 'ignore', False, 0, request.url
 
 
 	def search_encoding(self, headers, code):

@@ -69,8 +69,7 @@ class Crawler(object):
 				self.send_to_db()
 				self.indexing()
 
-				# Reset the list of dict of informations of websites :
-				self.infos.clear()
+				self.infos.clear()  # Reset the list of dict of informations of websites.
 				self.file_manager.check_stop_crawling()
 				self.file_manager.get_max_links()
 				self.file_manager.save_config()
@@ -99,11 +98,11 @@ class Crawler(object):
 		# Get webpage's html code:
 		html_code, nofollow, score, new_url = self.web_connexion.get_code(url)
 		if html_code is None:
-			self.delete_if_exists(url)
+			self.delete_if_exists(url)  # Failed to get code, must delete from database.
 		elif html_code == 'no connexion':
 			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 			quit_program()
-		elif html_code == 'redirection':
+		elif html_code == 'ignore':  # There was something wrong and maybe a redirection.
 			self.delete_if_exists(url)
 			if url != new_url:
 				self.delete_if_exists(new_url)
@@ -188,7 +187,7 @@ class Crawler(object):
 				self.crawl_website(url)
 			self.send_to_db()
 			self.indexing()
-			self.infos.clear()  # Reset the list of dict of informations of websites :
+			self.infos.clear()  # Reset the list of dict of informations of websites.
 
 	def safe_quit(self):
 		"""Send inverted-index and quit."""

@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from package.module import speak
+from package.module import speak, convert_secure, url_is_secure
 from package.database_manager import DatabaseManager
 from package.data import CRAWL_DELAY
 
@@ -30,7 +30,9 @@ class DatabaseSwiftea(DatabaseManager):
 		:return: true if an error occured
 		"""
 		for webpage_infos in infos:
-			result, response = self.send_command("SELECT popularity, last_crawl FROM index_url WHERE url = %s", (webpage_infos['url'],), True)
+			# http and https duplicate
+			url = self.https_duplicate(webpage_infos['url'])
+			result, response = self.send_command("SELECT popularity, last_crawl FROM index_url WHERE url = %s", (url,), True)
 			if 'error' in response:
 				speak('Popularity and last_crawl query failed: ' + response, 16)
 				return True
@@ -39,15 +41,15 @@ class DatabaseSwiftea(DatabaseManager):
 				last_crawl = result[0][1]  # datetime.datetime object
 				if (datetime.now() - last_crawl) > CRAWL_DELAY:
 					# The program already crawled this website
-					response = self.update(webpage_infos, result[0][0]+1)
-					if response:
+					error = self.update(webpage_infos, result[0][0]+1)
+					if error:
 						return True
 				else:
 					speak('No updates, recently crawled')
 			else:
 				# Url not found in database, the url don't exists in the database, we add it:
-				response = self.insert(webpage_infos)
-				if response:
+				error = self.insert(webpage_infos)
+				if error:
 					return True
 		# End of loop
 		return False  # All is correct
@@ -164,3 +166,17 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 			return True
 		else:
 			return False
+
+	def https_duplicate(self, old_url):
+		new_url = convert_secure(old_url)
+		new_exists = self.doc_exists(new_url)
+		if url_is_secure(old_url):
+			# old_url is secure
+			if new_exists:  # Insecure url exists
+				self.del_one_doc(new_url)
+			return old_url
+		else:
+			# old_url is insecure
+			if new_exists and self.doc_exists(old_url):  # Secure url exists
+				self.del_one_doc(old_url)
+			return new_url

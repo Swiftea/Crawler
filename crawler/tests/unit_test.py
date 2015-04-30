@@ -17,6 +17,7 @@ from package.inverted_index import InvertedIndex
 from package.parsers import Parser_encoding, MyParser
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
+from package.database_swiftea import DatabaseSwiftea
 import tests.tests_data as tests_data
 
 class TestCrawlerBase(object):
@@ -78,6 +79,14 @@ class TestCrawlerFunctions(TestCrawlerBase):
         stats_links(30)
         stats_stop_words(40, 20)
         stats_stop_words(20, 0)
+
+    def test_url_is_secure(self):
+        assert url_is_secure(self.url) == False
+        assert url_is_secure('https://www.example.en') == True
+
+    def test_convert_secure(self):
+        assert convert_secure(self.url) == 'https://www.example.en'
+        assert convert_secure('https://www.example.en') == self.url
 
 
 class TestSearches(TestCrawlerBase):
@@ -369,6 +378,6 @@ class TestFileManager(TestCrawlerBase):
         assert inverted_index == {'FR': {'A': {'ab': {'abondamment': {1610: 0.005618}}}}}
 
 
-class TestReset(TestCrawlerBase):
+class TestReset(object):
     def test_reset(self):
         tests_data.reset()
