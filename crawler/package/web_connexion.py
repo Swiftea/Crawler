@@ -47,7 +47,7 @@ class WebConnexion(object):
 			if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
-				return request.text, nofollow, score, url
+				return request.text, nofollow, score, request.url
 			else:
 				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed))

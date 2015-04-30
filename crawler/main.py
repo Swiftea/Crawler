@@ -127,7 +127,7 @@ class Crawler(object):
 				self.index_manager.delete_doc_id(doc_id)
 			else:
 				self.safe_quit()
-		elif doc_id is None:
+		elif doc_exists is None:
 			self.safe_quit()
 		else:
 			speak('Ignore')
@@ -179,7 +179,7 @@ class Crawler(object):
 
 	def safe_quit(self):
 		"""Send inverted-index and quit."""
-		self.send_inverted_index()
+		self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 		speak('Programm will quit')
 		speak('end\n', 0)
 
