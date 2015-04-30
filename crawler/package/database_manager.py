@@ -11,8 +11,9 @@ class DatabaseManager(object):
 
 	How to: create a subclass
 
-	result, response = self.send_comand(command, data=tuple(), all=False)
-	if 'error' in response: print('An error occured.')
+	result, response = self.send_comand(command, data=tuple(), all=False)\n
+	if 'error' in response:\n
+	\tprint('An error occured.')
 
 	where result are data asked and response a message.
 

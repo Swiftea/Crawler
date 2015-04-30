@@ -147,8 +147,8 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 			return suggested_links
 
 
-	def is_doc(self, url, table='index_url'):
-		"""Check if url is in database
+	def doc_exists(self, url, table='index_url'):
+		"""Check if url is in database.
 
 		:param url: url corresponding to doc
 		:type url: str

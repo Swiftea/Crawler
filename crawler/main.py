@@ -95,7 +95,7 @@ class Crawler(object):
 		:param url: url of webpage
 		:type url: str
 		"""
-		speak('Crawling url : ' + url)
+		speak('Crawling url: ' + url)
 		# Get webpage's html code:
 		html_code, nofollow, score, url = self.web_connexion.get_code(url)
 		if html_code is None:
@@ -119,11 +119,16 @@ class Crawler(object):
 				self.delete_if_exists(url)
 
 	def delete_if_exists(self, url):
-		is_doc = self.database.is_doc(url)
-		if is_doc is None:
+		doc_exists = self.database.doc_exists(url)
+		if doc_exists:
+			doc_id = self.database.get_doc_id(url)
+			if doc_id:
+				self.database.del_one_doc(url)
+				self.index_manager.delete_doc_id(doc_id)
+			else:
+				self.safe_quit()
+		elif doc_id is None:
 			self.safe_quit()
-		elif is_doc:
-			self.database.del_one_doc(url)
 		else:
 			speak('Ignore')
 
