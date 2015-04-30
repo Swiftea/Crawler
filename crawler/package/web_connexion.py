@@ -5,6 +5,7 @@ Thoses errors are waiting for: timeout with socket module and with urllib3 mudul
 and all RequestException errors."""
 
 import requests
+from urllib.parse import urlparse
 
 from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
@@ -47,7 +48,8 @@ class WebConnexion(object):
 			if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
-				return request.text, nofollow, score, request.url
+				url = self.param_duplicate(request)
+				return request.text, nofollow, score, url
 			else:
 				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed))
@@ -104,3 +106,26 @@ class WebConnexion(object):
 			speak('Unknow robots.txt error: ' + str(error) + ' ' + url, 24)
 			allowed = True
 		return allowed
+
+
+	def param_duplicate(self, request):
+		"""Avoid param duplicate.
+
+		:param request: request
+		:type request: requests.models.Response
+		:return: url
+		"""
+		infos_url = urlparse(request.url)
+		if infos_url.query != '':
+			size_with_param = len(request.text)
+			print(size_with_param)
+			new_url = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
+			print(new_url)
+			size_without_param = len(requests.get(new_url).text)
+			print(size_without_param)
+			if size_with_param == size_without_param:
+				return new_url
+			else:
+				return request.url
+		else:
+			return request.url

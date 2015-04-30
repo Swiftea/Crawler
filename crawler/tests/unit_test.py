@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import requests
+import requests as req
 from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
 from os import mkdir, rmdir
@@ -191,6 +191,13 @@ class TestWebConnexion(TestCrawlerBase):
         assert WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com') == True
         assert WebConnexion.check_robots_perm(self, 'https://www.facebook.com') == False
         assert WebConnexion.check_robots_perm(self, self.url) == True
+        assert WebConnexion.check_robots_perm(self, 'http://wiki.bilboplanet.com') == True
+        assert WebConnexion.check_robots_perm(self, 'http://premium.lefigaro.fr') == True
+
+    def test_param_duplicate(self):
+        assert WebConnexion.param_duplicate(self, req.get('http://www.01net.com/')) == 'http://www.01net.com/'
+        assert WebConnexion.param_duplicate(self, req.get('http://www.01net.com/?page=12')) == 'http://www.01net.com/'
+        assert WebConnexion.param_duplicate(self, req.get('https://www.google.fr/webhp?tab=Xw')) == 'https://www.google.fr/webhp?tab=Xw'
 
 
 class TestParser(TestCrawlerBase):

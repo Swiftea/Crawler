@@ -3,6 +3,7 @@ crawler/tests/coverage_html_report/
 crawler/package/private_data.py
 crawler/package/__pycache__/
 crawler/tests/__pycache__/
+crawler/tests/__init__.py
 crawler/tests/.coverage
 crawler/__pycache__/
 Crawler.egg-info/
