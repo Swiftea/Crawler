@@ -86,7 +86,7 @@ class Crawler(object):
 				self.send_inverted_index()
 				self.suggestions()
 				if dir_size(DIR_INDEX) > 8000000:
-					speak()
+					speak("Index is too big for current server")
 					self.safe_quit()
 					run = False
 

@@ -82,7 +82,7 @@ class DatabaseManager(object):
 					result = self.cursor.fetchall()
 				else:
 					result = self.cursor.fetchone()
-			except socket.timeout:
+			except timeout:
 				result = None
 				response = 'Timeout error'
 			except pymysql.err.OperationalError:
