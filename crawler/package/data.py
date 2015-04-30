@@ -2,7 +2,11 @@
 
 """Define required data for crawler."""
 
+from socket import setdefaulttimeout
+
 from datetime import timedelta
+
+setdefaulttimeout(30)
 
 # Strings for directories and files:
 DIR_LINKS = 'links/'

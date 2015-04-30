@@ -386,5 +386,8 @@ class TestFileManager(TestCrawlerBase):
 
 
 class TestReset(object):
+    def test_dir_size(self):
+        assert dir_size(DIR_DATA) == 16430
+
     def test_reset(self):
         tests_data.reset()

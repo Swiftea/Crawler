@@ -168,6 +168,17 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 			return False
 
 	def https_duplicate(self, old_url):
+		"""Avoid https and http duplicate.
+
+		If old url is secure (https), delete insecure url if exists,
+		then return secure url (old url).
+		If old url is insecure (http), delete it if secure url exists,
+		then return sucre url (new url)
+
+		:param old_url: old url
+		:type old_url: str
+		:return: new url
+		"""
 		new_url = convert_secure(old_url)
 		new_exists = self.doc_exists(new_url)
 		if url_is_secure(old_url):

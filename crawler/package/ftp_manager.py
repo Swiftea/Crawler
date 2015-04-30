@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 
+from socket import timeout
+
 from ftplib import FTP, all_errors
 
 from package.data import TIMEOUT
 
 class MyFtpError(Exception):
-	"""How to use it: raise MyFtpError('my error message')"""
+	"""How to use it: raise MyFtpError('Error message')"""
 	def __init__(self, value):
 		self.value = value
 	def __str__(self):
@@ -42,8 +44,10 @@ class FTPManager(FTP):
 			self.connect(self.host)
 			# Login:
 			self.login(self.user, self.password)
+		except timeout:
+			response = 'Timeout error'
 		except all_errors as error:
-			response = 'Failed to connect to server : ' + str(error)
+			response = 'Failed to connect to server: ' + str(error)
 		else:
 			# Use utf-8 encoding:
 			self.sendcmd("OPTS UTF8 ON")
@@ -63,7 +67,7 @@ class FTPManager(FTP):
 		except all_errors as error:
 			response = "Can't quit server : " + str(error)
 		except AttributeError:
-			response = "Connexion already exited."
+			response = 'Connexion already exited.'
 		else:
 			self.close()
 		return response
@@ -106,7 +110,7 @@ class FTPManager(FTP):
 				response = self.retrbinary(
 					'RETR ' + server_filename, myfile.write)
 			except all_errors as error:
-				response = 'Failed to download file ' +	server_filename + ' : ' + str(error)
+				response = 'Failed to download file ' +	server_filename + ': ' + str(error)
 			else:
 				response = 'Download file ' + server_filename + ': ' + response
 		return response

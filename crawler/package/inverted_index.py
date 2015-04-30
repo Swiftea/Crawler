@@ -8,12 +8,12 @@ from package.data import INDEXING_TIMEOUT, ALPHABET
 class InvertedIndex(object):
 	"""Manage inverted-index for crawler.
 
-	Inverted-index is a dict, each keys are language
-		-> values are a dict, each keys are first letter
-		-> values are dict, each keys are two first letters
-		-> values are dict, each keys are word
-		-> values are dict, each keys are id
-		-> values are int : tf
+	Inverted-index is a dict, each keys are language\n
+		-> values are a dict, each keys are first letter\n
+		-> values are dict, each keys are two first letters\n
+		-> values are dict, each keys are word\n
+		-> values are dict, each keys are id\n
+		-> values are int : tf\n
 
 	example:
 	['FR']['A']['av']['avion'][21] is tf of word 'avion' in doc 21, language is FR

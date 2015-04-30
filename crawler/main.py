@@ -6,7 +6,8 @@ try:
 	import package.private_data as pvdata
 except ImportError:
 	pass
-from package.module import speak, quit_program, create_dirs, is_index, create_doc, def_links
+from package.module import speak, quit_program, create_dirs, is_index, create_doc, def_links, dir_size
+from package.data import DIR_INDEX
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
 from package.database_swiftea import DatabaseSwiftea
@@ -84,6 +85,10 @@ class Crawler(object):
 			if run:
 				self.send_inverted_index()
 				self.suggestions()
+				if dir_size(DIR_INDEX) > 8000000:
+					speak()
+					self.safe_quit()
+					run = False
 
 	def crawl_webpage(self, url):
 		"""Crawl the given url.
@@ -180,7 +185,7 @@ class Crawler(object):
 		else:
 			suggestions = self.site_informations.clean_links(suggestions)
 			if len(suggestions) > 0:
-				speak('Suggestions : ')
+				speak('Suggestions: ')
 			else:
 				speak('No suggestions')
 			for url in suggestions:

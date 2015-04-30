@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import socket
+from socket import timeout
 
 import pymysql
 
@@ -44,10 +44,10 @@ class DatabaseManager(object):
 				use_unicode=True,
 				charset='utf8',
 				connect_timeout=TIMEOUT)
-		except socket.timeout:
-			response = 'Connexion error (socket.timeout:)'
+		except timeout:
+			response = 'Timeout error'
 		except pymysql.err.OperationalError as error:
-			response = 'Connexion error : ' + str(error)
+			response = 'Connexion error: ' + str(error)
 		else:
 			self.cursor = self.conn.cursor()  # Cursor building
 			response = 'Connected to database'

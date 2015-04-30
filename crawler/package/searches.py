@@ -30,7 +30,6 @@ class SiteInformations(object):
 		:type nofollow: bool
 		:return: links, title, description, key words, language,
 			score, number of words
-
 		"""
 		homepage = 1 if module.is_homepage(url) else 0
 

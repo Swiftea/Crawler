@@ -3,7 +3,7 @@
 """Define several functions for crawler"""
 
 from time import strftime
-from os import path, mkdir, remove
+from os import path, mkdir, remove, listdir
 import requests
 from urllib.parse import urlparse
 import sys
@@ -31,7 +31,6 @@ def speak(message, EC=None):
 		with open(data.FILE_NEWS, 'a') as myfile:
 			myfile.write(message + '\n')
 
-
 def errors(EC, message):
 	"""Write the error report with time in errors file.
 
@@ -44,7 +43,6 @@ def errors(EC, message):
 	"""
 	with open(data.FILE_ERROR, 'a') as myfile:
 		myfile.write(str(EC) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ' : ' + message + '\n')
-
 
 def quit_program():
 	"""Function who manage end of prgoram.
@@ -132,29 +130,25 @@ Press enter when done.""")
 			print('Please enter 1 or 2.')
 			quit()
 
+def is_index():
+	"""Check if there is a saved inverted-index file.
 
-def clean_text(text):  # Search
-	"""Clean up text (\\n\\r\\t).
-
-	:param text: text to clean_text
-	:type text: str
-	:return: cleaned text
+	:return: True if there is the file
 	"""
-	return ' '.join(text.split())
+	if path.exists(data.FILE_INDEX):
+		return True
+	else:
+		return False
 
-
-def remove_duplicates(old_list):  # Search
-	"""Remove duplicates from a list.
-
-	:param old_list: list to clean
-	:type old_list: list
-	:return: list without duplicates
-	"""
-	new_list = list()
-	for elt in old_list:
-		if elt not in new_list:
-			new_list.append(elt)
-	return new_list
+def dir_size(source):
+        total_size = path.getsize(source)
+        for item in listdir(source):
+            itempath = path.join(source, item)
+            if path.isfile(itempath):
+                total_size += path.getsize(itempath)
+            elif path.isdir(itempath):
+                total_size += dir_size(itempath)
+        return total_size
 
 
 def stats_stop_words(begining, end):
@@ -174,7 +168,6 @@ def stats_stop_words(begining, end):
 	with open(data.FILE_STATS2, 'a') as myfile:
 		myfile.write(stats + '\n')
 
-
 def stats_links(stat):
 	"""Write the number of links for statistics in stats file.
 
@@ -183,6 +176,19 @@ def stats_links(stat):
 	"""
 	with open(data.FILE_STATS, 'a') as myfile:
 		myfile.write(str(stat) + '\n')  # Write the number of links found
+
+def average(content=list):  # Stats
+	"""Calculate average.
+
+	:param content: values
+	:type content: list
+	:return: average
+	"""
+	total = 0
+	for value in content:
+		total += float(value)
+	moy = total / len(content)
+	return moy
 
 
 def get_stopwords(path='http://swiftea.alwaysdata.net/data/stopwords/'):  # Search
@@ -205,6 +211,28 @@ def get_stopwords(path='http://swiftea.alwaysdata.net/data/stopwords/'):  # Sear
 		return STOP_WORDS
 
 
+def clean_text(text):  # Search
+	"""Clean up text (\\n\\r\\t).
+
+	:param text: text to clean_text
+	:type text: str
+	:return: cleaned text
+	"""
+	return ' '.join(text.split())
+
+def remove_duplicates(old_list):  # Search
+	"""Remove duplicates from a list.
+
+	:param old_list: list to clean
+	:type old_list: list
+	:return: list without duplicates
+	"""
+	new_list = list()
+	for elt in old_list:
+		if elt not in new_list:
+			new_list.append(elt)
+	return new_list
+
 def get_base_url(url):  # Search
 	"""Get base url using urlparse.
 
@@ -216,74 +244,13 @@ def get_base_url(url):  # Search
 	base_url = infos_url.scheme + '://' + infos_url.netloc
 	return base_url
 
-
-def no_connexion(url='http://swiftea.alwaysdata.net'):  # Web connexion
-	"""Check connexion.
-
-	:param url: url use by test
-	:return: True if no connexion
-	"""
-	try:
-		requests.get(url)
-	except requests.exceptions.RequestException:
-		speak('No connexion')
-		return True
-	else:
-		return False
-
-
-def is_nofollow(url):
-	"""Check if take links.
-
-	:param url: webpage url
-	:type url: str
-	:return: true if nofollow and url
-	"""
-	if url.endswith('!nofollow!'):
-		return True, url[:-10]
-	else:
-		return False, url
-
-
-def average(content=list):  # Stats
-	"""Calculate average.
-
-	:param content: values
-	:type content: list
-	:return: average
-	"""
-	total = 0
-	for value in content:
-		total += float(value)
-	moy = total / len(content)
-	return moy
-
-
-def rebuild_links(old_links, new_links):  # File manager
-	"""Rebuild list of links.
-
-	:param old_links: links already in file
-	:type old_links: list
-	:param new_links: links to add
-	:type new_links: list
-	:return: links to write in file
-	"""
-	links = old_links + new_links
-	links_to_add = list()
-	for link in links:
-		if link not in links_to_add and len(link) <= 255:
-			links_to_add.append(link)
-	return links_to_add
-
-
-def check_size_keyword(keyword):
+def check_size_keyword(keyword):  # Search
 	if len(keyword) > 2:
 		return True
 	else:
 		return False
 
-
-def remove_useless_chars(keyword):
+def remove_useless_chars(keyword):  # Search
 	"""Remove useless chars in keyword.
 
 	See data for all could be remove chars.
@@ -313,23 +280,20 @@ def remove_useless_chars(keyword):
 	else:
 		return None
 
-
-def is_letters(keyword):
+def is_letters(keyword):  # Search
 	if True not in [letter in keyword for letter in data.ALPHABET]:
 		return True
 	else:
 		return False
 
-
-def letter_repeat(keyword):
+def letter_repeat(keyword):  # Search
 	"""Return True if the first letter isn't repeat eatch times."""
 	if True not in [letter != '' for letter in keyword.split(keyword[0])]:
 		return True  # '********'
 	else:
 		return False
 
-
-def split_keywords(keyword):
+def split_keywords(keyword):  # Search
 	is_list = False
 	if '.' in keyword:
 		keyword = keyword.split('.')
@@ -339,8 +303,25 @@ def split_keywords(keyword):
 		is_list = True
 	return is_list, keyword
 
+def is_homepage(url):  # Search
+	"""Check if url is the homepage
 
-def meta(attrs):
+	:param url: url to check
+	:type url: str
+	:return: true or false
+	"""
+	if url.count('/') == 2:
+		if '//www.' in url and url.count('.') == 2:
+			return True
+		elif url.count('.') == 1:
+			return True
+		else:
+			return False
+	else:
+		return False
+
+
+def meta(attrs):  # Parser
 	"""Manager searches in meat tag.
 
 	:apram attrs: attributes of meta tag
@@ -365,8 +346,7 @@ def meta(attrs):
 
 	return language, description, objet
 
-
-def can_append(url, rel):
+def can_append(url, rel):  # Parser
 	"""Check rel attrs.
 
 	:param url: url to add
@@ -386,18 +366,24 @@ def can_append(url, rel):
 		return None
 
 
-def is_index():
-	"""Check if there is a saved inverted-index file.
+def rebuild_links(old_links, new_links):  # File manager
+	"""Rebuild list of links.
 
-	:return: True if there is the file
+	:param old_links: links already in file
+	:type old_links: list
+	:param new_links: links to add
+	:type new_links: list
+	:return: links to write in file
 	"""
-	if path.exists(data.FILE_INDEX):
-		return True
-	else:
-		return False
+	links = old_links + new_links
+	links_to_add = list()
+	for link in links:
+		if link not in links_to_add and len(link) <= 255:
+			links_to_add.append(link)
+	return links_to_add
 
 
-def convert_keys(inverted_index):
+def convert_keys(inverted_index):  # Inverted-index
 	"""Convert str words keys into int from inverted-index.
 
 	:param inverted_index: inverted_index to convert
@@ -418,24 +404,33 @@ def convert_keys(inverted_index):
 	return new_inverted_index
 
 
-def is_homepage(url):
-	"""Check if url is the homepage
+def no_connexion(url='http://swiftea.alwaysdata.net'):  # Web connexion
+	"""Check connexion.
 
-	:param url: url to check
-	:type url: str
-	:return: true or false
+	:param url: url use by test
+	:return: True if no connexion
 	"""
-	if url.count('/') == 2:
-		if '//www.' in url and url.count('.') == 2:
-			return True
-		elif url.count('.') == 1:
-			return True
-		else:
-			return False
+	try:
+		requests.get(url)
+	except requests.exceptions.RequestException:
+		speak('No connexion')
+		return True
 	else:
 		return False
 
-def url_is_secure(url):
+def is_nofollow(url):  # Web connexion
+	"""Check if take links.
+
+	:param url: webpage url
+	:type url: str
+	:return: true if nofollow and url
+	"""
+	if url.endswith('!nofollow!'):
+		return True, url[:-10]
+	else:
+		return False, url
+
+def url_is_secure(url):  # Web connexion
 	"""Check if given url is secure (https).
 
 	:param url: url to check
@@ -447,7 +442,7 @@ def url_is_secure(url):
 	else:
 		return False
 
-def convert_secure(url):
+def convert_secure(url):  # Web connexion
 	"""Convert https to http and http to https.
 
 	:param url: url to convert

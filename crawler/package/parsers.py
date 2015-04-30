@@ -12,16 +12,16 @@ from package.module import meta, can_append
 class MyParser(HTMLParser):
 	"""Html parser for extract data.
 
-	self.objet : the type of text for title, description and keywords
+	self.objet : the type of text for title, description and keywords\n
 	dict(attrs).get('content') : convert attrs in a dict and retrun the value
 
 	Data could be extract:
-		title
-		language
-		description
-		links with nofollow and noindex
-		stylesheet
-		favicon
+		title\n
+		language\n
+		description\n
+		links with nofollow and noindex\n
+		stylesheet\n
+		favicon\n
 		keywords: h1, h2, h3, strong, em
 	"""
 	def __init__(self):

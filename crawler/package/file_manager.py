@@ -126,7 +126,7 @@ class FileManager(object):
 				list_links = myfile.read().splitlines()  # List of urls
 		except FileNotFoundError:
 			# No link file
-			speak('Reading file is not found in get_url : ' + filename, 4)
+			speak('Reading file is not found in get_url: ' + filename, 4)
 			return 'stop'
 		else:
 			url = list_links[self.reading_line_number]
@@ -136,10 +136,10 @@ class FileManager(object):
 				self.reading_line_number = 0
 				if self.reading_file_number != 0:  # Or > 0 ? wich is better ?
 					remove(filename)
-					speak('file "' + filename + '" is remove')
+					speak('File ' + filename + ' removed')
 				self.reading_file_number += 1
 				# The program have read all the links: next reading_file_number
-				speak('Next reading file : ' + str(self.reading_file_number))
+				speak('Next reading file: ' + str(self.reading_file_number))
 			return url
 
 
