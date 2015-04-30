@@ -97,28 +97,41 @@ class Crawler(object):
 		"""
 		speak('Crawling url: ' + url)
 		# Get webpage's html code:
-		html_code, nofollow, score, url = self.web_connexion.get_code(url)
+		html_code, nofollow, score, new_url = self.web_connexion.get_code(url)
 		if html_code is None:
 			self.delete_if_exists(url)
 		elif html_code == 'no connexion':
 			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 			quit_program()
+		elif html_code == 'redirection':
+			self.delete_if_exists(url)
+			if url != new_url:
+				self.delete_if_exists(new_url)
 		else:
+			if url != new_url:
+				self.delete_if_exists(url)
 			webpage_infos = {}
-			webpage_infos['url'] = url
+			webpage_infos['url'] = new_url
 			(links, webpage_infos['title'], webpage_infos['description'],
 				webpage_infos['keywords'], webpage_infos['language'],
 				webpage_infos['score'], webpage_infos['favicon'], webpage_infos['homepage']
-				) = self.site_informations.get_infos(url, html_code, nofollow, score)
+				) = self.site_informations.get_infos(new_url, html_code, nofollow, score)
 
 			if webpage_infos['title'] != '':
 				self.infos.append(webpage_infos)
 				self.crawled_websites += 1
 				self.file_manager.save_links(links)
 			else:
-				self.delete_if_exists(url)
+				self.delete_if_exists(new_url)
 
 	def delete_if_exists(self, url):
+		"""Delete bad doc if exists.
+
+		Check if doc exists in database and delete it from database and inverted-index.
+
+		:param url: url to delete
+		:type url: str
+		"""
 		doc_exists = self.database.doc_exists(url)
 		if doc_exists:
 			doc_id = self.database.get_doc_id(url)
@@ -130,7 +143,7 @@ class Crawler(object):
 		elif doc_exists is None:
 			self.safe_quit()
 		else:
-			speak('Ignore')
+			speak('Ignore: ' + url)
 
 	def send_to_db(self):
 		"""Send all informations about crawled webpages to database."""

@@ -25,7 +25,7 @@ class WebConnexion(object):
 
 		:param url: url of webpage
 		:type url: str
-		:return: source code, True if no take links and score
+		:return: source code, True if no take links, score and new url (redirection)
 		"""
 		nofollow, url = is_nofollow(url)
 		try:
@@ -51,7 +51,7 @@ class WebConnexion(object):
 			else:
 				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed))
-				return None, False, 0, None
+				return 'redirection', False, 0, request.url
 
 
 	def search_encoding(self, headers, code):
