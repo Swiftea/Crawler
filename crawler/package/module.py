@@ -142,14 +142,14 @@ def is_index():
 
 def dir_size(source):
 	total_size = path.getsize(source)
-    for item in listdir(source):
-        itempath = path.join(source, item)
-        if path.isfile(itempath):
-            total_size += path.getsize(itempath)
-        elif path.isdir(itempath):
-            total_size += dir_size(itempath)
-    return total_size
-
+	for item in listdir(source):
+		itempath = path.join(source, item)
+		if path.isfile(itempath):
+			total_size += path.getsize(itempath)
+		elif path.isdir(itempath):
+			total_size += dir_size(itempath)
+	return total_size
+	
 
 def stats_stop_words(begining, end):
 	"""Percentage of deleted word with stopwords for statistics.
