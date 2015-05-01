@@ -23,6 +23,7 @@ class MyParser(HTMLParser):
 		stylesheet\n
 		favicon\n
 		keywords: h1, h2, h3, strong, em
+
 	"""
 	def __init__(self):
 		HTMLParser.__init__(self)
@@ -34,8 +35,8 @@ class MyParser(HTMLParser):
 		self.first_title = ''  # The first title (h1) of the web site
 		self.description = self.language = self.title = self.favicon  = ''
 
-
 	def re_init(self):
+		"""Call when met html tag, put back all variables to default."""
 		self.links = list()
 		self.first_title = self.keywords = self.description = ''
 		self.language = self.title = self.favicon  = ''
@@ -50,8 +51,9 @@ class MyParser(HTMLParser):
 		:type tag: str
 		:param attrs: attributes: [('name', 'language'), ('content', 'fr')]
 		:type attrs: list
+
 		"""
-		if tag =='html':  # Bigining of the source code : reset all variables
+		if tag =='html':
 			self.re_init()
 			if len(dict(attrs).get('lang', '')) >= 2:
 				self.language = dict(attrs).get('lang').lower().strip()[:2]
@@ -88,12 +90,12 @@ class MyParser(HTMLParser):
 		if tag == 'h1' or tag == 'h2' or tag == 'h3' or tag == 'strong' or tag == 'em':
 			self.objet = 'keyword'
 
-
 	def handle_data(self, data):
 		"""Call when parser met data.
 
 		:param tag: starting tag
 		:type tag: str
+
 		"""
 		if self.objet == 'title':
 			self.title += data
@@ -102,7 +104,6 @@ class MyParser(HTMLParser):
 		if self.h1:
 			self.first_title = data
 
-
 	def handle_endtag(self, tag):
 		"""Call when parser met a ending tag.
 
@@ -110,6 +111,7 @@ class MyParser(HTMLParser):
 		:type tag: str
 		:param attrs: attributes
 		:type attrs: list
+
 		"""
 		if tag == 'title':
 			self.objet = None
@@ -122,7 +124,6 @@ class MyParser(HTMLParser):
 		if tag == 'h1':
 			self.h1 = False
 
-
 	def handle_entityref(self, name):
 		try:
 			letter = chr(name2codepoint[name])
@@ -134,7 +135,6 @@ class MyParser(HTMLParser):
 		else:
 			if self.objet == 'title':
 				self.title += letter
-
 
 	def handle_charref(self, name):
 		if name.startswith('x'):
@@ -159,6 +159,7 @@ class Parser_encoding(HTMLParser):
 		:type tag: str
 		:param attrs: attributes
 		:type attrs: list
+
 		"""
 		if tag == 'meta':
 			# <meta charset="utf-8">

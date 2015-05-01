@@ -17,6 +17,7 @@ class DatabaseSwiftea(DatabaseManager):
 	:type password: str
 	:param name: name of database
 	:type name: str
+
 	"""
 	def __init__(self, host, user, password, name):
 		DatabaseManager.__init__(self, host, user, password, name)
@@ -27,7 +28,8 @@ class DatabaseSwiftea(DatabaseManager):
 
 		:param infos: informations to send to database
 		:type infos: list
-		:return: true if an error occured
+		:return: True if an error occured
+
 		"""
 		result, response = self.send_command("SELECT popularity, last_crawl FROM index_url WHERE url = %s", (webpage_infos['url'],), True)
 		if 'error' in response:
@@ -58,7 +60,8 @@ class DatabaseSwiftea(DatabaseManager):
 		:type infos: dict()
 		:param popularity: new doc popularity
 		:type popularity: int
-		:return: true is an arror occured
+		:return: True is an arror occured
+
 		"""
 		tell('Updating ' + infos['url'])
 		response = self.send_command(
@@ -67,7 +70,7 @@ SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, score=%s
 WHERE url = %s """, (infos['title'], infos['description'], infos['language'], popularity, infos['score'],\
 	infos['homepage'], infos['favicon'], infos['url']))
 		if 'error' in  response[1]:
-			tell('Failed to update: ' + response[1], 16)
+			tell('Failed to update: ' + response[1], 9)
 			return True
 		else:
 			return False
@@ -78,7 +81,8 @@ WHERE url = %s """, (infos['title'], infos['description'], infos['language'], po
 
 		:param infos: doc infos
 		:type infos: dict()
-		:return: true is an arror occured
+		:return: True is an arror occured
+
 		"""
 		tell('Adding ' + infos['url'])
 		response = self.send_command(
@@ -86,7 +90,7 @@ WHERE url = %s """, (infos['title'], infos['description'], infos['language'], po
 VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 (infos['title'], infos['description'], infos['url'], infos['language'], infos['score'], infos['homepage'], infos['favicon']))
 		if 'error' in  response[1]:
-			tell('Failed to add: ' + response[1], 16)
+			tell('Failed to add: ' + response[1], 10)
 			return True
 		else:
 			return False
@@ -100,10 +104,11 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		:param table: table, default to index_url
 		:type table: str
 		:return: id of webpage or None if not found
+
 		"""
 		result, response = self.send_command("SELECT id FROM {} WHERE url = %s".format(table), (url,))
 		if 'error' in  response[1]:
-			tell('Failed to get id: ' + response, 18)
+			tell('Failed to get id: ' + response, 11)
 			return None
 		else:
 			return str(result[0])
@@ -119,11 +124,12 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		:param table: table, default to index_url
 		:type table: str
 		:return: status message
+
 		"""
 		tell('Delete from {} doc: '.format(table) + url)
 		response = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url,))
 		if 'error' in  response[1]:
-			tell('Doc not removed: {0}, {1}'.format(url, response[1]), 17)
+			tell('Doc not removed: {0}, {1}'.format(url, response[1]), 12)
 		return response[1]
 
 
@@ -131,10 +137,11 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		"""Get the five first url from Suggestions table and delete them.
 
 		:return: list of url in Suggestions table and delete them
+
 		"""
 		result, response = self.send_command("SELECT url FROM suggestions LIMIT 5", fetchall=True)
 		if 'error' in  response[1]:
-			tell('Failed to get url: ' + response, 16)
+			tell('Failed to get url: ' + response, 13)
 			return None
 		else:
 			suggested_links = list()
@@ -152,11 +159,12 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		:type url: str
 		:param table: table, default to index_url
 		:type table: str
-		:return: true if doc exists
+		:return: True if doc exists
+
 		"""
 		result, response = self.send_command("SELECT EXISTS(SELECT * FROM {} WHERE url=%s)".format(table), (url,))
 		if 'error' in  response:
-			tell('Failed to check row: ' + response)
+			tell('Failed to check row: ' + response, 14)
 			return None
 		if result[0] == 1:
 			return True
@@ -174,6 +182,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		:param old_url: old url
 		:type old_url: str
 		:return: url to add and url to delete
+
 		"""
 		tell('url to send: ' + old_url, severity=-1)
 		new_url = convert_secure(old_url)

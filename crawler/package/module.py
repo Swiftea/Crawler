@@ -13,16 +13,16 @@ import package.data as data
 def tell(message, error_code=None, severity=1):
 	"""Manage newspaper.
 
-	This function print in console that program doing and save a copy in
-	event file.
+	Print in console that program doing and save a copy with time in event file.
 
 	:param message: message to print and write
 	:type message: str
 	:param error_code: (optional) error code, if given call errors() with given message
 	:type error_code: int
 	:param severity: 1 is default severity, -1 add 4 spaces befor message,
-	0 add 2 spaces befor the message, 2 uppercase and underline message.
+		0 add 2 spaces befor the message, 2 uppercase and underline message.
 	:type severity: int
+
 	"""
 	msg_to_print = message[:131]
 	message = message.capitalize()
@@ -33,41 +33,33 @@ def tell(message, error_code=None, severity=1):
 
 	if severity == -1:
 		print('    ' + message[:127].lower())
-		with open(data.FILE_NEWS, 'a') as myfile:
-			myfile.write('    ' + strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
 	elif severity == 0:
 		print('  ' + message[:129].lower())
-		with open(data.FILE_NEWS, 'a') as myfile:
-			myfile.write('  ' + strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
 	elif severity == 1:
 		print(msg_to_print.capitalize())
-		with open(data.FILE_NEWS, 'a') as myfile:
-			myfile.write(strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
 	elif severity == 2:
 		print(msg_to_print.upper())
 		print(''.center(len(msg_to_print), '='))
-		with open(data.FILE_NEWS, 'a') as myfile:
-			size_msg = myfile.write(strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
-			myfile.write(''.center(size_msg, '='))
+
+	with open(data.FILE_NEWS, 'a') as myfile:
+		myfile.write(strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
 
 def errors(message, error_code):
-	"""Write the error report in errors file.
+	"""Write the error report with the time in errors file.
 
-	Normaly call by tell() when a error_code parameter is given
+	Normaly call by tell() when a error_code parameter is given.
 
 	:param message: message to print and write
 	:type message: str
 	:param error_code: error code
 	:type error_code: int
+
 	"""
 	with open(data.FILE_ERROR, 'a') as myfile:
 		myfile.write(str(error_code) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ': ' + message + '\n')
 
 def quit_program():
-	"""Function who manage end of prgoram.
-
-	Call tell() with 'end' and exit
-	"""
+	"""Function who manage end of prgoram."""
 	tell('end\n', 0)
 	sys.exit()
 
@@ -75,12 +67,13 @@ def quit_program():
 def create_dirs():
 	"""Manage crawler's runing.
 
-	Test lot of things :
-		create config directory
-		create doc file if  doesn't exists
-		create config file if it doesn't exists
-		create links directory if it doesn't exists
-		create index directory if it doesn't exists
+	Test lot of things:
+		create config directory\n
+		create doc file if  doesn't exists\n
+		create config file if it doesn't exists\n
+		create links directory if it doesn't exists\n
+		create index directory if it doesn't exists\n
+
 	"""
 	# Create directories if they don't exist:
 	if not path.isdir(data.DIR_CONFIG):
@@ -94,21 +87,26 @@ def create_dirs():
 
 
 def create_doc():
-	"""Create doc file if it doesn't exist."""
+	"""Create doc file if it doesn't exist and if it was modified."""
 	if not path.exists(data.FILE_DOC):
 		with open(data.FILE_DOC, 'w') as myfile:
-			myfile.write(data.README)
+			myfile.write(data.ERROR_CODE_DOC)
 	else:
 		with open(data.FILE_DOC, 'r') as myfile:
 			content = myfile.read()
-		if content != data.README:
+		if content != data.ERROR_CODE_DOC:
 			remove(data.FILE_DOC)
 		with open(data.FILE_DOC, 'w') as myfile:
-			myfile.write(data.README)
+			myfile.write(data.ERROR_CODE_DOC)
 
 
 def def_links():
-	"""Create directory of links if it doesn't exist."""
+	"""Create directory of links if it doesn't exist
+
+	Ask to user what doing if there isn't basic links.
+	Create a basic links file if user what it.
+
+	"""
 	if not path.isdir(data.DIR_LINKS):
 		mkdir(data.DIR_LINKS)
 		print("""No links directory,
@@ -152,7 +150,8 @@ Press enter when done.""")
 def is_index():
 	"""Check if there is a saved inverted-index file.
 
-	:return: True if there is the file
+	:return: True if there is one
+
 	"""
 	if path.exists(data.FILE_INDEX):
 		return True
@@ -171,14 +170,13 @@ def dir_size(source):
 
 
 def stats_stop_words(begining, end):
-	"""Percentage of deleted word with stopwords for statistics.
-
-	Write the percentage in stats file.
+	"""Write the percentage of deleted word with stopwords for statistics.
 
 	:param begining: size of keywords list before cleaning
 	:type begining: int
 	:param end: size of keywords list after cleaning
 	:type end: int
+
 	"""
 	if end != 0:
 		stats = str(((begining-end) * 100) / end)
@@ -188,20 +186,22 @@ def stats_stop_words(begining, end):
 		myfile.write(stats + '\n')
 
 def stats_links(stat):
-	"""Write the number of links for statistics in stats file.
+	"""Write the number of links for statistics.
 
 	:param stat: number of list in a webpage
 	:type stat: int
+
 	"""
 	with open(data.FILE_STATS, 'a') as myfile:
 		myfile.write(str(stat) + '\n')  # Write the number of links found
 
-def average(content=list):  # Stats
+def average(content):  # Stats
 	"""Calculate average.
 
 	:param content: values
 	:type content: list
 	:return: average
+
 	"""
 	total = 0
 	for value in content:
@@ -214,6 +214,7 @@ def get_stopwords(path='http://swiftea.alwaysdata.net/data/stopwords/'):  # Sear
 	"""Get stopwords from swiftea website.
 
 	:return: a dict: keys are languages and values are stopwords
+
 	"""
 	STOP_WORDS = dict()
 	try:
@@ -231,11 +232,12 @@ def get_stopwords(path='http://swiftea.alwaysdata.net/data/stopwords/'):  # Sear
 
 
 def clean_text(text):  # Search
-	"""Clean up text (\\n\\r\\t).
+	"""Clean up text by removing tabulation, blank and carriage return.
 
 	:param text: text to clean_text
 	:type text: str
 	:return: cleaned text
+
 	"""
 	return ' '.join(text.split())
 
@@ -245,6 +247,7 @@ def remove_duplicates(old_list):  # Search
 	:param old_list: list to clean
 	:type old_list: list
 	:return: list without duplicates
+
 	"""
 	new_list = list()
 	for elt in old_list:
@@ -258,12 +261,14 @@ def get_base_url(url):  # Search
 	:param url: url
 	:type url: str
 	:return: base url of given url
+
 	"""
 	infos_url = urlparse(url)
 	base_url = infos_url.scheme + '://' + infos_url.netloc
 	return base_url
 
 def check_size_keyword(keyword):  # Search
+	"""Return True if size of given keyword is over than 2."""
 	if len(keyword) > 2:
 		return True
 	else:
@@ -278,6 +283,7 @@ def remove_useless_chars(keyword):  # Search
 	:param keyword: keyword
 	:type keyword: str
 	:return: keyword or None
+
 	"""
 	while (keyword.startswith(data.START_CHARS) or keyword.endswith(data.END_CHARS) or keyword[1] == '\'' or
 		keyword[1] == data.MIDLE_CHARS or keyword[-2] == '\'' or keyword[-2] == data.MIDLE_CHARS):
@@ -300,7 +306,14 @@ def remove_useless_chars(keyword):  # Search
 		return None
 
 def is_letters(keyword):  # Search
-	if True not in [letter in keyword for letter in data.ALPHABET]:
+	"""Return True if one char at least is a letter.
+
+	:param keyword: keyword to check
+	:type keyword: str
+	:return: True or False
+
+	"""
+	if True in [letter in data.ALPHABET for letter in keyword]:
 		return True
 	else:
 		return False
@@ -313,6 +326,13 @@ def letter_repeat(keyword):  # Search
 		return False
 
 def split_keywords(keyword):  # Search
+	"""Split the given keyword by '.' and '/'.
+
+	:param keyword: keyword to split
+	:type keyword: str
+	:return: True is the keyword was split and the list of new keyword or the keyword.
+
+	"""
 	is_list = False
 	if '.' in keyword:
 		keyword = keyword.split('.')
@@ -323,11 +343,14 @@ def split_keywords(keyword):  # Search
 	return is_list, keyword
 
 def is_homepage(url):  # Search
-	"""Check if url is the homepage
+	"""Check if url is the homepage.
+
+	If there is only two '/' and two '.' if www and one otherwise.
 
 	:param url: url to check
 	:type url: str
-	:return: true or false
+	:return: True or False
+
 	"""
 	if url.count('/') == 2:
 		if '//www.' in url and url.count('.') == 2:
@@ -342,9 +365,15 @@ def is_homepage(url):  # Search
 def clean_link(url, base_url=None):
 	"""Clean a link.
 
+	Rebuild url with base url, pass mailto and javascript,
+	remove anchors, pass if more than 5 query, pass if more than 255 chars,
+	remove /index.xxx, remove last /.
+
 	:param url: links to clean
 	:type url: str
+	:param base_url: base url for rebuilding, can be None if
 	:return: cleaned link
+
 	"""
 	new = url.strip()  # Link to add in new list of links
 	if (not new.endswith(data.BAD_EXTENTIONS) and
@@ -362,7 +391,6 @@ def clean_link(url, base_url=None):
 				new = 'http' + new
 			else:
 				new = base_url + '/' + new
-		# Delete anchors:
 		infos_url = urlparse(new)
 		new = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
 		if new.endswith('/'):
@@ -373,7 +401,7 @@ def clean_link(url, base_url=None):
 		if infos_url.query != '':
 			new += '?' + infos_url.query
 
-		if len(new) > 8 and new.count('&') < 5 and len(new) < 255:
+		if len(new) > 8 and new.count('&') < 5 and len(new) <= 255:
 			return new
 		else:
 			return None
@@ -384,9 +412,15 @@ def clean_link(url, base_url=None):
 def meta(attrs):  # Parser
 	"""Manager searches in meat tag.
 
+	Can find:
+		<meta name='description' content='my description'/>\n
+		<meta name='language' content='en'/>\n
+		<meta http-equiv='content-language' content='en'/>\n
+
 	:apram attrs: attributes of meta tag
 	:type attrs: list
 	:return: language, description, objet
+
 	"""
 	objet = description = language = str()
 	name = dict(attrs).get('name', '').lower()
@@ -407,13 +441,16 @@ def meta(attrs):  # Parser
 	return language, description, objet
 
 def can_append(url, rel):  # Parser
-	"""Check rel attrs.
+	"""Check rel attrs to know if crawler can take this the link.
+
+	Add !nofollow! at the end of the url if can't follow links of url.
 
 	:param url: url to add
 	:type url: str
 	:param rel: rel attrs in a tag
 	:type rel: str
-	:return: url or None if can't add it
+	:return: None if can't add it, otherwise return url
+
 	"""
 	if url:
 		if 'noindex' not in rel:
@@ -426,29 +463,15 @@ def can_append(url, rel):  # Parser
 		return None
 
 
-def rebuild_links(old_links, new_links):  # File manager
-	"""Rebuild list of links.
-
-	:param old_links: links already in file
-	:type old_links: list
-	:param new_links: links to add
-	:type new_links: list
-	:return: links to write in file
-	"""
-	links = old_links + new_links
-	links_to_add = list()
-	for link in links:
-		if link not in links_to_add and len(link) <= 255:
-			links_to_add.append(link)
-	return links_to_add
-
-
 def convert_keys(inverted_index):  # Inverted-index
 	"""Convert str words keys into int from inverted-index.
+
+	Json convert doc id key in str, must convert in int.
 
 	:param inverted_index: inverted_index to convert
 	:tyep inverted_index: dict
 	:return: converted inverted-index
+
 	"""
 	new_inverted_index = dict()
 	for language in inverted_index:
@@ -467,8 +490,11 @@ def convert_keys(inverted_index):  # Inverted-index
 def no_connexion(url='http://swiftea.alwaysdata.net'):  # Web connexion
 	"""Check connexion.
 
+	Try to connect to swiftea website.
+
 	:param url: url use by test
 	:return: True if no connexion
+
 	"""
 	try:
 		requests.get(url)
@@ -481,9 +507,12 @@ def no_connexion(url='http://swiftea.alwaysdata.net'):  # Web connexion
 def is_nofollow(url):  # Web connexion
 	"""Check if take links.
 
+	Search !nofollow! at the end of url, remove it if found.
+
 	:param url: webpage url
 	:type url: str
-	:return: true if nofollow and url
+	:return: True if nofollow and url
+
 	"""
 	if url.endswith('!nofollow!'):
 		return True, url[:-10]
@@ -495,7 +524,8 @@ def url_is_secure(url):  # Web connexion
 
 	:param url: url to check
 	:type url: str
-	:return: true if secure
+	:return: True if url is secure
+
 	"""
 	if url.startswith('https'):
 		return True
@@ -508,6 +538,7 @@ def convert_secure(url):  # Web connexion
 	:param url: url to convert
 	:type url: str
 	:return: converted url
+
 	"""
 	if url_is_secure(url):
 		return url[:4] + url [5:]

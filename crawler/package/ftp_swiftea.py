@@ -14,12 +14,13 @@ class FTPSwiftea(FTPManager):
 
 
 	def get_inverted_index(self):
-		"""Get inverted-indexs.
+		"""Get inverted-index.
 
-		:return: inverted-indexs and True if an error occured
+		:return: inverted-index and True if an error occured
+
 		"""
-		tell('Get inverted-indexs from server')
-		error_msg = None, True
+		tell('Get inverted-index from server')
+		error_msg = '', True
 		inverted_index = dict()
 		self.connexion()
 		if self.cd(FTP_INDEX).startswith('Error'): return error_msg
@@ -46,8 +47,7 @@ class FTPSwiftea(FTPManager):
 					path_index = language + '/' + first_letter + '/' + filename
 					response = self.download(DIR_INDEX + path_index, filename)
 					if 'Error' in response:
-						tell('Failed to download inverted-index ' + path_index + ', ' + response, 22)
-						return error_msg
+						return path_index + ': ' + response
 					else:
 						with open(DIR_INDEX + path_index, 'r', encoding='utf-8') as myfile:
 							inverted_index[language][first_letter][filename[:-4]] = json.load(myfile)
@@ -61,31 +61,32 @@ class FTPSwiftea(FTPManager):
 		return inverted_index, False
 
 	def send_inverted_index(self, inverted_index):
-		"""Send inverted-indexs.
+		"""Send inverted-index.
 
-		:param inverted_index: inverted-indexs to send
+		:param inverted_index: inverted-index to send
 		:type inverted_index: dict
 		:return: True if an error occured
+
 		"""
-		tell('Send inverted-indexs')
+		tell('Send inverted-index')
 		self.connexion()
-		if self.cd(FTP_INDEX).startswith('Error'): return True
+		if self.cd(FTP_INDEX).startswith('Error'): return ''
 		for language in inverted_index:
 			list_language = self.listdir()
-			if list_language[0].startswith('Error'): return True
+			if list_language[0].startswith('Error'): return ''
 			if language not in list_language:
 				self.mkd(language)
 			if not path.isdir(DIR_INDEX + language):
 				mkdir(DIR_INDEX + language)
-			if self.cd(language).startswith('Error'): return True
+			if self.cd(language).startswith('Error'): return ''
 			for first_letter in inverted_index[language]:
 				list_first_letter = self.listdir()
-				if list_first_letter[0].startswith('Error'): return True
+				if list_first_letter[0].startswith('Error'): return ''
 				if first_letter not in list_first_letter:
 					self.mkd(first_letter)
 				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
 					mkdir(DIR_INDEX + language + '/' + first_letter)
-				if self.cd(first_letter).startswith('Error'): return True
+				if self.cd(first_letter).startswith('Error'): return ''
 				for two_letters in inverted_index[language][first_letter]:
 					index = inverted_index[language][first_letter][two_letters]
 					path_index = language + '/' + first_letter + '/' + two_letters + '.sif'
@@ -93,10 +94,9 @@ class FTPSwiftea(FTPManager):
 						json.dump(index, myfile, ensure_ascii=False)
 					response = self.upload(DIR_INDEX + path_index, two_letters + '.sif')
 					if 'Error' in response:
-						tell('Failed to send inverted-indexs ' + path_index + ', ' + response, 21)
-						return True
-				if self.cd('..').startswith('Error'): return True
-			if self.cd('..').startswith('Error'): return True
+						return path_index + ': ' + response
+				if self.cd('..').startswith('Error'): return ''
+			if self.cd('..').startswith('Error'): return ''
 		self.disconnect()
 		tell('Transfer complete', severity=0)
 		return False
@@ -105,7 +105,8 @@ class FTPSwiftea(FTPManager):
 	def compare_indexs(self):
 		"""Compare inverted-index in local and in server.
 
-		:return: true if must dowload from server
+		:return: True if must dowload from server
+
 		"""
 		local_file = DIR_INDEX + 'FR/' + 'C/' + 'co.sif'
 		if path.exists(local_file):

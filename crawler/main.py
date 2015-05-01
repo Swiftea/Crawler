@@ -35,7 +35,12 @@ class Crawler(object):
 		self.crawled_websites = 0
 
 	def get_inverted_index(self):
-		"""Manage all operations to get inverted-index."""
+		"""Manage all operations to get inverted-index.
+
+		Check for a save inverted-index file, compare inverted-index in local and
+		on server to know if it's necessary to download it.
+
+		"""
 		if is_index():
 			self.inverted_index = self.file_manager.get_inverted_index()
 		else:
@@ -45,11 +50,19 @@ class Crawler(object):
 				self.inverted_index = self.file_manager.read_inverted_index()
 				error = False
 			if error and self.file_manager.reading_file_number != 0:
+				tell('Failed to download inverted-index ' + self.inverted_index, 1)
 				quit_program()
 
 	def start(self):
-		"""Start main loop of crawling."""
-		tell(strftime("%d/%m/%y %H:%M:%S"))  # Speak time
+		"""Start main loop of crawling.
+
+		Crawl 10 webpages, send documents to database, index them
+		and save the configurations (line number in links file, ...).
+		Send the inverted-index and check for suggestions each 500 crawled webpages.
+
+		Do it until the user want stop crawling, occured an error, or fill the server.
+
+		"""
 		run = True
 		while run:
 			for _ in range(50):
@@ -86,9 +99,9 @@ class Crawler(object):
 
 			# End of loop range(n)
 			if run:
-				self.send_inverted_index()
 				self.suggestions()
-				if dir_size(DIR_INDEX) > 8000000:
+				self.send_inverted_index()
+				if dir_size(DIR_INDEX) > 7000000:
 					tell('Index is too big for current server', severity=-1)
 					self.safe_quit()
 					run = False
@@ -96,11 +109,12 @@ class Crawler(object):
 	def crawl_webpage(self, url):
 		"""Crawl the given url.
 
-		Webpage score is define here: 0.5 for giving encondig,
-		0.5 for have css style file and 0.5 for specified language.
+		Get webpage source code, feed it to the parser, manager extracting data,
+		manager redirections and can delete some documents to avoid duplicates.
 
 		:param url: url of webpage
 		:type url: str
+
 		"""
 		tell('Crawling ' + url)
 		# Get webpage's html code:
@@ -142,6 +156,7 @@ class Crawler(object):
 
 		:param url: url to delete
 		:type url: str
+
 		"""
 		doc_exists = self.database.doc_exists(url)
 		if doc_exists:
@@ -157,7 +172,11 @@ class Crawler(object):
 			tell('Ignore: ' + url, severity=-1)
 
 	def send_to_db(self):
-		"""Send all informations about crawled webpages to database."""
+		"""Send all informations about crawled webpages to database.
+
+		Can delete some documents to avoid http and https duplicates.
+
+		"""
 		tell('Send to database', severity=2)
 		for webpage_infos in self.infos:
 			url_to_add, url_to_del = self.database.https_duplicate(webpage_infos['url'])
@@ -166,11 +185,15 @@ class Crawler(object):
 				self.delete_if_exists(url_to_del)
 			tell('New url: ' + webpage_infos['url'], severity=-1)
 			error = self.database.send_doc(webpage_infos)
-		if error:
-			self.safe_quit()
+			if error:
+				self.safe_quit()
 
 	def indexing(self):
-		"""Index crawled webpages."""
+		"""Index crawled webpages.
+
+		get id of each documents and index them.
+
+		"""
 		tell('Indexing', severity=2)
 		for webpage_infos in self.infos:
 			doc_id = self.database.get_doc_id(webpage_infos['url'])
@@ -183,6 +206,7 @@ class Crawler(object):
 		"""Send inverted-index generate by indexing to ftp server."""
 		error = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		if error:
+			tell('Failed to send inverted-index ' + error, 2)
 			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 			quit_program()
 
@@ -191,6 +215,7 @@ class Crawler(object):
 
 		Get 5 urls from database, delete them, crawl them,
 		send all informations about them, index them and return to main loop.
+
 		"""
 		suggestions = self.database.suggestions()
 		if suggestions is not None:

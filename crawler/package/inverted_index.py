@@ -15,7 +15,8 @@ class InvertedIndex(object):
 		-> values are int : tf\n
 
 	example:
-	['FR']['A']['av']['avion'][21] is tf of word 'avion' in doc 21, language is FR
+	['FR']['A']['av']['avion'][21] is tf of word 'avion' in doc 21 in french.
+
 	"""
 	def __init__(self):
 		self.inverted_index = dict()
@@ -23,20 +24,25 @@ class InvertedIndex(object):
 
 
 	def setStopwords(self, STOPWORDS):
-		"""Define STOPWORDS."""
+		"""Define stopwords."""
 		self.STOPWORDS = STOPWORDS
 
 	def setInvertedIndex(self, inverted_index):
-		"""Define inverted-indexs at the beginning."""
+		"""Define inverted-index at the beginning.
+
+		:param inverted_index: inverted-index
+		:type inverted_index: dict
+
+		"""
 		self.inverted_index = inverted_index
 
 	def getInvertedIndex(self):
-		""":return: inverted-indexs"""
+		""":return: inverted-index"""
 		return self.inverted_index
 
 
 	def add_doc(self, keywords, doc_id, language):
-		"""Add all words of a doc in inverted-indexs.
+		"""Add all words of a doc in inverted-index.
 
 		:param keywords: all word in doc_id
 		:type keywords: list
@@ -44,6 +50,7 @@ class InvertedIndex(object):
 		:type doc_id: int
 		:param language: language of word
 		:type language: str
+
 		"""
 		language = language.upper()
 		nb_words = len(keywords)
@@ -81,6 +88,7 @@ class InvertedIndex(object):
 		:type doc_id: int
 		:param nb_words: number of words in the doc_id
 		:type nb_words: int
+
 		"""
 		word, language, first_letter, filename = word_infos['word'], word_infos['language'], \
 			word_infos['first_letter'], word_infos['filename']
@@ -118,6 +126,7 @@ class InvertedIndex(object):
 		:type first_letter: str
 		:param filename: two first letters of word
 		:type filename: str
+
 		"""
 		if self.inverted_index[language][first_letter][filename].get(word) is not None:
 			del self.inverted_index[language][first_letter][filename][word]
@@ -131,6 +140,7 @@ class InvertedIndex(object):
 		:type word_infos: dict
 		:param doc_id: id of the doc in database
 		:type doc_id: int
+
 		"""
 		word, language, first_letter, filename = word_infos['word'], word_infos['language'], \
 			word_infos['first_letter'], word_infos['filename']
@@ -140,10 +150,9 @@ class InvertedIndex(object):
 	def delete_doc_id(self, doc_id):
 		"""Delete a id in inverted-index.
 
-		Doesn't work
-
 		:param doc_id: id to delete
 		:type doc_id: int
+
 		"""
 		new_inverted_index = dict()
 		for language in self.inverted_index:

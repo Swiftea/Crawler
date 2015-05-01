@@ -64,7 +64,7 @@ class TestCrawlerFunctions(TestCrawlerBase):
         create_doc()
 
     def test_speak(self):
-        speak('A test message', 0)
+        tell('A test message', 0)
 
     def test_get_stopwords(self):
         get_stopwords()
@@ -110,13 +110,13 @@ class TestSearches(TestCrawlerBase):
     def test_letter_repeat(self):
         assert letter_repeat('file') == False
         assert letter_repeat('*****') == True
-
+        assert letter_repeat('aaaaa') == True
 
     def test_is_letters(self):
-        assert is_letters('file') == False
-        assert is_letters('fi*le') == False
-        assert is_letters('****') == True
-        assert is_letters('2015') == True
+        assert is_letters('file') == True
+        assert is_letters('fi*le') == True
+        assert is_letters('****') == False
+        assert is_letters('2015') == False
 
     def test_check_size_keyword(self):
         assert check_size_keyword('keyword') == True
@@ -338,15 +338,6 @@ class TestIndex(TestCrawlerBase):
 
 
 class TestFileManager(TestCrawlerBase):
-    def test_rebuild_links(self):
-        old_links = ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2']
-        new_links = ['http://example.fr/page2', 'http://example.fr/page3',
-        'http://www.telerama.fr/breve/"Films de Cannes 2014"']
-        links_to_add = rebuild_links(old_links, new_links)
-        assert links_to_add == ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2',
-        'http://example.fr/page3', 'http://www.telerama.fr/breve/"Films de Cannes 2014"']
-
-
     def test_init(self):
         FileManager.__init__(self)
         FileManager.__init__(self)

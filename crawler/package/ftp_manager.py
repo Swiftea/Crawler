@@ -22,6 +22,7 @@ class FTPManager(FTP):
 	:type user: str
 	:param password: password to use for connexion
 	:type password: str
+
 	"""
 	def __init__(self, host, user='', password=''):
 		"""Build ftp manager"""
@@ -37,6 +38,7 @@ class FTPManager(FTP):
 		Catch all_errors of ftplib. Use utf-8 encoding.
 
 		:return: server welcome message
+
 		"""
 		try:
 			# Connexion to ftp server:
@@ -59,6 +61,7 @@ class FTPManager(FTP):
 		Close it if an error occured while trying to quit it.
 
 		:return: server goodbye message or error message
+
 		"""
 		try:
 			response = self.quit()
@@ -72,6 +75,13 @@ class FTPManager(FTP):
 
 
 	def cd(self, path):
+		"""Set the current directory on the server.
+
+		:param path: path to set
+		:type path: str
+		:return: sever response
+
+		"""
 		try:
 			response = self.cwd(path)
 		except all_errors as error:
@@ -80,6 +90,8 @@ class FTPManager(FTP):
 			return response
 
 	def listdir(self):
+		"""Return the result of LIST command or
+		a list whose first element is the error response."""
 		try:
 			result = self.nlst()
 		except  all_errors as error:
@@ -88,6 +100,8 @@ class FTPManager(FTP):
 			return result
 
 	def infos_listdir(self, **kargs):
+		"""Return the result of mlsd command of ftplib or
+		a list whose first element is the error response."""
 		try:
 			result = self.mlsd(**kargs)
 		except  all_errors as error:
@@ -105,6 +119,7 @@ class FTPManager(FTP):
 		:param server_filename: server filename to upload
 		:type server_filename: str
 		:return: response of server
+
 		"""
 		with open(local_filename, 'rb') as myfile:
 			try:
@@ -125,6 +140,7 @@ class FTPManager(FTP):
 		:param server_filename: server filename to download
 		:type server_filename: str
 		:return: server response message or error message
+
 		"""
 		with open(local_filename, 'wb') as myfile:
 			try:

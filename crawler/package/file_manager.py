@@ -9,7 +9,7 @@ from configparser import ConfigParser
 import json
 
 from package.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX
-from package.module import tell, stats_links, rebuild_links, convert_keys
+from package.module import tell, stats_links, convert_keys, remove_duplicates
 
 class FileManager(object):
 	"""File manager for Swiftea-Crawler.
@@ -18,6 +18,7 @@ class FileManager(object):
 	read inverted-index from json file saved and from file using when send it.
 
 	Create configuration file if doesn't exists	or read it.
+
 	"""
 	def __init__(self):
 		self.writing_file_number = 1  # Meter of the writing file
@@ -78,6 +79,7 @@ class FileManager(object):
 
 		:param links: links to save
 		:type links: list
+
 		"""
 		stats_links(len(links))
 		filename = DIR_LINKS + str(self.writing_file_number)
@@ -88,7 +90,7 @@ class FileManager(object):
 			with open(filename, 'r+', errors='replace', encoding='utf8') as myfile:
 				old_links = myfile.read().split('\n')
 				myfile.seek(0)
-				links = rebuild_links(old_links, links)
+				links = remove_duplicates(old_links + links)
 				myfile.write('\n'.join(links))
 
 		self.ckeck_size_links(links)
@@ -98,6 +100,7 @@ class FileManager(object):
 
 		:param links: links saved in file
 		:type links: str
+
 		"""
 		if len(links) > self.max_links:  # Check the size
 			self.writing_file_number += 1
@@ -114,6 +117,7 @@ class FileManager(object):
 		Check the size of curent reading links and increment it if over.
 
 		:return: url of webpage to crawl
+
 		"""
 		filename = DIR_LINKS + str(self.reading_file_number)
 		try:
@@ -146,6 +150,7 @@ class FileManager(object):
 
 		:param inverted_index: inverted-index
 		:type inverted_index: dict
+
 		"""
 		tell('Save inverted-index in save file')
 		with open(FILE_INDEX, 'w') as myfile:
@@ -158,6 +163,7 @@ class FileManager(object):
 		Delete this file after reading.
 
 		:return: inverted-index
+
 		"""
 		tell('Get inverted-index form save file')
 		with open(FILE_INDEX, 'r') as myfile:
@@ -172,6 +178,7 @@ class FileManager(object):
 		Read all files created for sending inverted-index.
 
 		:return: inverted-index
+
 		"""
 		tell('Get inverted-index in local')
 		inverted_index = dict()

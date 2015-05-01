@@ -25,6 +25,7 @@ class DatabaseManager(object):
 	:type password: str
 	:param name: name of database
 	:type name: str
+
 	"""
 	def __init__(self, host, user, password, name):
 		self.host = host  # Hostname
@@ -71,6 +72,7 @@ class DatabaseManager(object):
 		:param fetchall: True if return all results
 		:type fetchall: bool
 		:return: result of the query and status message
+
 		"""
 		response = self.connexion()
 		if response != 'Connected to database':

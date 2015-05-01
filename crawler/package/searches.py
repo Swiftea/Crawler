@@ -9,7 +9,7 @@ from package.parsers import MyParser
 class SiteInformations(object):
 	"""Class to manage searches in source codes."""
 	def __init__(self):
-		"""Build searches manager"""
+		"""Build searches manager."""
 		self.parser = MyParser()
 		self.STOPWORDS = module.get_stopwords()
 
@@ -27,6 +27,7 @@ class SiteInformations(object):
 		:type nofollow: bool
 		:return: links, title, description, key words, language,
 			score, number of words
+
 		"""
 		homepage = 1 if module.is_homepage(url) else 0
 
@@ -168,7 +169,7 @@ class SiteInformations(object):
 				keyword = module.remove_useless_chars(keyword)
 				if keyword is None:
 					continue
-				if module.is_letters(keyword):
+				if not module.is_letters(keyword):
 					continue
 
 				is_list, keywords = module.split_keywords(keyword)

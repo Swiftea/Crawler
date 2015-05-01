@@ -27,18 +27,19 @@ class WebConnexion(object):
 		:param url: url of webpage
 		:type url: str
 		:return: source code, True if no take links, score and new url (redirection)
+
 		"""
 		nofollow, url = is_nofollow(url)
 		try:
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
 		except requests.packages.urllib3.exceptions.ReadTimeoutError:
-			tell('Read timeout rrror (urllib3): ' + url, 7)
+			tell('Read timeout error (urllib3): ' + url, 3)
 			return None, False, 0, None
 		except requests.exceptions.Timeout:
-			tell('Timeout error: ' + url, 7)
+			tell('Timeout error: ' + url, 4)
 			return None, False, 0, None
 		except requests.exceptions.RequestException as error:
-			tell('Connexion failed: {}, {}'.format(str(error), url), 8)
+			tell('Connexion failed: {}, {}'.format(str(error), url), 5)
 			if no_connexion():
 				return 'no connexion', None, 0, None
 			else:
@@ -70,6 +71,7 @@ class WebConnexion(object):
 		:param code: source code
 		:type code: str
 		:return: encoding of webpage and it score
+
 		"""
 		# Search in headers:
 		headers = str(headers).lower()
@@ -91,30 +93,35 @@ class WebConnexion(object):
 
 		:param url: webpage url
 		:type url: str
-		:return: true if can crawl
+		:return: True if can crawl
+
 		"""
 		try:
 			allowed = self.reqrobots.allowed(url, USER_AGENT)
 		except ServerError as error:
-			tell('Error robots.txt (reppy): ' + str(error) + ' ' + url, 24)
+			tell('Error robots.txt (reppy): ' + str(error) + ' ' + url, 6)
 			allowed = True
 		except requests.exceptions.Timeout:
 			tell('Error robots.txt (timeout): ' + url)
 			allowed = True
 		except requests.exceptions.RequestException as error:
-			tell('Error robots.txt (requests): ' + str(error) + ' ' + url, 24)
+			tell('Error robots.txt (requests): ' + str(error) + ' ' + url, 7)
 			allowed = True
 		except Exception as error:
-			tell('Unknow robots.txt error: ' + str(error) + ' ' + url, 24)
+			tell('Unknow robots.txt error: ' + str(error) + ' ' + url, 8)
 			allowed = True
 		return allowed
 
 	def param_duplicate(self, request):
 		"""Avoid param duplicate.
 
+		Compare the size of source code with params and whitout.
+		Return url whitout params if it's the smae size.
+
 		:param request: request
 		:type request: requests.models.Response
 		:return: url
+
 		"""
 		infos_url = urlparse(request.url)
 		if infos_url.query != '':
