@@ -160,9 +160,9 @@ class TestSearches(TestCrawlerBase):
 
     def test_detect_language(self):
         keywords = "un texte d'exemple pour tester la fonction".split()
-        assert SiteInformations.detect_language(self, keywords) == 'fr'
+        assert SiteInformations.detect_language(self, keywords, self.url) == 'fr'
         keywords = "un texte d'exemple sans stopwords".split()
-        assert SiteInformations.detect_language(self, keywords) == ''
+        assert SiteInformations.detect_language(self, keywords, self.url) == ''
 
     def test_clean_favicon(self):
         assert SiteInformations.clean_favicon(self, '/icon.ico', self.url) == 'http://www.example.en/icon.ico'
@@ -340,9 +340,11 @@ class TestIndex(TestCrawlerBase):
 class TestFileManager(TestCrawlerBase):
     def test_rebuild_links(self):
         old_links = ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2']
-        new_links = ['http://example.fr/page2', 'http://example.fr/page3']
+        new_links = ['http://example.fr/page2', 'http://example.fr/page3',
+        'http://www.telerama.fr/breve/"Films de Cannes 2014"']
         links_to_add = rebuild_links(old_links, new_links)
-        assert links_to_add == ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2', 'http://example.fr/page3']
+        assert links_to_add == ['http://example.fr', 'http://example.fr/page1', 'http://example.fr/page2',
+        'http://example.fr/page3', 'http://www.telerama.fr/breve/"Films de Cannes 2014"']
 
 
     def test_init(self):

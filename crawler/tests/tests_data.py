@@ -4,23 +4,21 @@ from shutil import rmtree
 
 from package.data import DIR_DATA, DIR_OUTPUT, DIR_LINKS, DIR_CONFIG
 
-infos = [{'homepage': 0, 'description': 'Moteur de recherche', 'score': 3, 'favicon': 'http://swiftea.alwaysdata.net/public/favicon.ico', 'keywords': ['gros', 'titre', 'moyen', 'titre', 'petit', 'titre', 'strong', 'swiftea'], 'language': 'en', 'url': 'http://swiftea.alwaysdata.net', 'title': 'Swiftea'}, {'homepage': 0, 'description': 'Moteur de recherche', 'score': 3, 'favicon': 'http://swiftea.alwaysdata.net/public/favicon.ico', 'keywords': ['gros', 'titre', 'moyen', 'titre', 'petit', 'titre', 'strong', 'swiftea'], 'language': 'en', 'url': 'http://swiftea.alwaysdata.net', 'title': 'Swiftea'}, {'homepage': 0, 'description': 'Moteur de recherche', 'score': 3, 'favicon': 'http://swiftea.alwaysdata.net/public/favicon.ico', 'keywords': ['gros', 'titre', 'moyen', 'titre', 'petit', 'titre', 'strong', 'swiftea'], 'language': 'en', 'url': 'http://swiftea.alwaysdata.net', 'title': 'Swiftea'}, {'homepage': 0, 'description': 'Moteur de recherche', 'score': 3, 'favicon': 'http://swiftea.alwaysdata.net/public/favicon.ico', 'keywords': ['gros', 'titre', 'moyen', 'titre', 'petit', 'titre', 'strong', 'swiftea'], 'language': 'en', 'url': 'http://swiftea.alwaysdata.net', 'title': 'Swiftea'}, {'homepage': 0, 'description': 'Moteur de recherche', 'score': 3, 'favicon': 'http://swiftea.alwaysdata.net/public/favicon.ico', 'keywords': ['gros', 'titre', 'moyen', 'titre', 'petit', 'titre', 'strong', 'swiftea'], 'language': 'en', 'url': 'http://swiftea.alwaysdata.net', 'title': 'Swiftea'}, {'homepage': 0, 'description': 'Moteur de recherche', 'score': 3, 'favicon': 'http://swiftea.alwaysdata.net/public/favicon.ico', 'keywords': ['gros', 'titre', 'moyen', 'titre', 'petit', 'titre', 'strong', 'swiftea'], 'language': 'en', 'url': 'http://swiftea.alwaysdata.net', 'title': 'Swiftea'}, {'homepage': 0, 'description': 'Moteur de recherche', 'score': 3, 'favicon': 'http://swiftea.alwaysdata.net/public/favicon.ico', 'keywords': ['gros', 'titre', 'moyen', 'titre', 'petit', 'titre', 'strong', 'swiftea'], 'language': 'en', 'url': 'http://swiftea.alwaysdata.net', 'title': 'Swiftea'}, {'homepage': 0, 'description': 'Moteur de recherche', 'score': 3, 'favicon': 'http://swiftea.alwaysdata.net/public/favicon.ico', 'keywords': ['gros', 'titre', 'moyen', 'titre', 'petit', 'titre', 'strong', 'swiftea'], 'language': 'en', 'url': 'http://swiftea.alwaysdata.net', 'title': 'Swiftea'}, {'homepage': 0, 'description': 'Moteur de recherche', 'score': 3, 'favicon': 'http://swiftea.alwaysdata.net/public/favicon.ico', 'keywords': ['gros', 'titre', 'moyen', 'titre', 'petit', 'titre', 'strong', 'swiftea'], 'language': 'en', 'url': 'http://swiftea.alwaysdata.net', 'title': 'Swiftea'}, {'homepage': 0, 'description': 'Moteur de recherche', 'score': 3, 'favicon': 'http://swiftea.alwaysdata.net/public/favicon.ico', 'keywords': ['gros', 'titre', 'moyen', 'titre', 'petit', 'titre', 'strong', 'swiftea'], 'language': 'en', 'url': 'http://swiftea.alwaysdata.net', 'title': 'Swiftea'}]
-
-base_links = """http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
-http://swiftea.alwaysdata.net
+base_links = """http://swiftea.alwaysdata.net/0
+http://swiftea.alwaysdata.net/1
+http://swiftea.alwaysdata.net/2
+http://swiftea.alwaysdata.net/3
+http://swiftea.alwaysdata.net/4
+http://swiftea.alwaysdata.net/5
+http://swiftea.alwaysdata.net/6
+http://swiftea.alwaysdata.net/7
+http://swiftea.alwaysdata.net/8
+http://swiftea.alwaysdata.net/9
+http://swiftea.alwaysdata.net/10
+http://swiftea.alwaysdata.net/11
+http://swiftea.alwaysdata.net/12
+http://swiftea.alwaysdata.net/13
+http://swiftea.alwaysdata.net/14
 """
 
 suggestions = ['http://suggestions.net/page1.html', 'http://suggestions.net/page2.html']

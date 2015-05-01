@@ -81,7 +81,7 @@ class FTPSwiftea(FTPManager):
 			if self.cd(language).startswith('Error'): return True
 			for first_letter in inverted_index[language]:
 				list_first_letter = self.listdir()
-				if list_first_letter[0].startswith('Error'): return error_msg
+				if list_first_letter[0].startswith('Error'): return True
 				if first_letter not in list_first_letter:
 					self.mkd(first_letter)
 				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
@@ -96,8 +96,8 @@ class FTPSwiftea(FTPManager):
 					if 'Error' in response:
 						speak('Failed to send inverted-indexs ' + path_index + ', ' + response, 21)
 						return True
-				if self.cd('..').startswith('Error'): return error_msg
-			if self.cd('..').startswith('Error'): return error_msg
+				if self.cd('..').startswith('Error'): return True
+			if self.cd('..').startswith('Error'): return True
 		self.disconnect()
 		speak('Transfer complete')
 		return False

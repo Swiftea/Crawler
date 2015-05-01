@@ -28,8 +28,25 @@ class TestDatabaseSwiftea(DatabaseSwiftea):
     def __init__(self, host, user, password, name):
         DatabaseSwiftea.__init__(self, host, user, password, name)
 
-    def send_infos(self, infos):
-        assert infos == tests_data.infos
+    def send_doc(self, infos):
+        #assert infos == self.infos()
+        assert 1
+
+    def gen_infos(self):
+        for k in range(15):
+            yield {'score': 3,
+                'favicon': 'http://swiftea.alwaysdata.net/public/favicon.ico',
+                'title': 'Swiftea',
+                'homepage': 0,
+                'url': 'http://swiftea.alwaysdata.net' + '/' + str(k),
+                'language': 'en',
+                'keywords': ['gros', 'titre', 'moyen', 'titre', 'petit', 'titre', 'strong', 'swiftea'],
+                'description': 'Moteur de recherche'
+            }
+
+    def infos(self):
+        for info in self.gen_infos():
+            return info
 
     def get_doc_id(self, url):
         for result in self.gen_get_doc_id():
@@ -97,7 +114,6 @@ class TestCrawler(Crawler):
         self.send_inverted_index()
         speak('Programm will quit')
         speak('end\n', 0)
-        tests_data.reset()
 
 
 class TestGlobal(object):
@@ -123,3 +139,4 @@ class TestGlobal(object):
             config.write(configfile)
 
         crawler.start()
+        tests_data.reset()
