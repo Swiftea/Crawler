@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from socket import timeout
-
 from ftplib import FTP, all_errors
 
 from package.data import TIMEOUT
@@ -54,7 +53,6 @@ class FTPManager(FTP):
 			response = self.getwelcome()
 		return response
 
-
 	def disconnect(self):
 		"""Quit connexion to ftp server.
 
@@ -72,6 +70,30 @@ class FTPManager(FTP):
 			self.close()
 		return response
 
+
+	def cd(self, path):
+		try:
+			response = self.cwd(path)
+		except all_errors as error:
+			return 'Error: ' + error
+		else:
+			return response
+
+	def listdir(self):
+		try:
+			result = self.nlst()
+		except  all_errors as error:
+			return ['Error: ' + error]
+		else:
+			return result
+
+	def infos_listdir(self, **kargs):
+		try:
+			result = self.mlsd(**kargs)
+		except  all_errors as error:
+			return 'Error: ' + error
+		else:
+			return result
 
 	def upload(self, local_filename, server_filename):
 		"""Upload a file into ftp server.
@@ -92,7 +114,6 @@ class FTPManager(FTP):
 			else:
 				response = 'Send file : ' + response
 		return response
-
 
 	def download(self, local_filename, server_filename):
 		"""Download a file from ftp server.
