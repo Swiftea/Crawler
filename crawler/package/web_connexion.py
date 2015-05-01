@@ -11,7 +11,7 @@ from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
 
 from package.data import USER_AGENT, HEADERS, TIMEOUT
-from package.module import speak, no_connexion, is_nofollow, clean_link
+from package.module import tell, no_connexion, is_nofollow, clean_link
 from package.parsers import Parser_encoding
 
 class WebConnexion(object):
@@ -32,13 +32,13 @@ class WebConnexion(object):
 		try:
 			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
 		except requests.packages.urllib3.exceptions.ReadTimeoutError:
-			speak('Read timeout rrror (urllib3): ' + url, 7)
+			tell('Read timeout rrror (urllib3): ' + url, 7)
 			return None, False, 0, None
 		except requests.exceptions.Timeout:
-			speak('Timeout error: ' + url, 7)
+			tell('Timeout error: ' + url, 7)
 			return None, False, 0, None
 		except requests.exceptions.RequestException as error:
-			speak('Connexion failed: {}, {}'.format(str(error), url), 8)
+			tell('Connexion failed: {}, {}'.format(str(error), url), 8)
 			if no_connexion():
 				return 'no connexion', None, 0, None
 			else:
@@ -54,8 +54,8 @@ class WebConnexion(object):
 				else:
 					return 'ignore', False, 0, None
 			else:
-				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
-					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed))
+				tell('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
+					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed), severity=0)
 				return 'ignore', False, 0, request.url
 
 
@@ -83,9 +83,8 @@ class WebConnexion(object):
 			if self.parser_encoding.encoding != '':
 				return self.parser_encoding.encoding, 1
 			else:
-				speak('No encoding', 9)
+				tell('No encoding', 9, severity=0)
 				return 'utf-8', 0
-
 
 	def check_robots_perm(self, url):
 		"""Check robots.txt for permission.
@@ -97,19 +96,18 @@ class WebConnexion(object):
 		try:
 			allowed = self.reqrobots.allowed(url, USER_AGENT)
 		except ServerError as error:
-			speak('Error robots.txt (reppy): ' + str(error) + ' ' + url, 24)
+			tell('Error robots.txt (reppy): ' + str(error) + ' ' + url, 24)
 			allowed = True
 		except requests.exceptions.Timeout:
-			speak('Error robots.txt (timeout): ' + url)
+			tell('Error robots.txt (timeout): ' + url)
 			allowed = True
 		except requests.exceptions.RequestException as error:
-			speak('Error robots.txt (requests): ' + str(error) + ' ' + url, 24)
+			tell('Error robots.txt (requests): ' + str(error) + ' ' + url, 24)
 			allowed = True
 		except Exception as error:
-			speak('Unknow robots.txt error: ' + str(error) + ' ' + url, 24)
+			tell('Unknow robots.txt error: ' + str(error) + ' ' + url, 24)
 			allowed = True
 		return allowed
-
 
 	def param_duplicate(self, request):
 		"""Avoid param duplicate.

@@ -6,7 +6,7 @@ try:
 	import package.private_data as pvdata
 except ImportError:
 	pass
-from package.module import speak, quit_program, create_dirs, is_index, create_doc, def_links, dir_size, remove_duplicates
+from package.module import tell, quit_program, create_dirs, is_index, create_doc, def_links, dir_size, remove_duplicates
 from package.data import DIR_INDEX
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
@@ -20,7 +20,7 @@ class Crawler(object):
 	def __init__(self):
 		self.site_informations = SiteInformations()
 		if self.site_informations.STOPWORDS is None:
-			speak('No stopwords, quit program')
+			tell('No stopwords, quit program')
 			quit_program()
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
@@ -49,14 +49,15 @@ class Crawler(object):
 
 	def start(self):
 		"""Start main loop of crawling."""
-		speak(strftime("%d/%m/%y %H:%M:%S"))  # Speak time
+		tell(strftime("%d/%m/%y %H:%M:%S"))  # Speak time
 		run = True
 		while run:
 			for _ in range(50):
+				tell('Crawl', severity=2)
 				while len(self.infos) < 10:
-					speak('Reading {0}, link {1}'.format(
+					tell('Reading {0}, link {1}'.format(
 						str(self.file_manager.reading_file_number),
-						str(self.file_manager.reading_line_number+1)))
+						str(self.file_manager.reading_line_number+1)), severity=0)
 					# Get the url of the website :
 					url = self.file_manager.get_url()
 					if url == 'stop':
@@ -67,7 +68,7 @@ class Crawler(object):
 
 				# End of crawling loop
 
-				speak('{} new documents ! '.format(self.crawled_websites))
+				tell('{} new documents ! '.format(self.crawled_websites), severity=-1)
 
 				self.send_to_db()
 				self.indexing()
@@ -78,7 +79,7 @@ class Crawler(object):
 				self.file_manager.save_config()
 				#self.file_manager.check_size_file()
 				if self.file_manager.run == 'false':
-					speak('User wants stop program')
+					tell('User wants stop program')
 					self.safe_quit()
 					run = False
 					break
@@ -88,7 +89,7 @@ class Crawler(object):
 				self.send_inverted_index()
 				self.suggestions()
 				if dir_size(DIR_INDEX) > 8000000:
-					speak('Index is too big for current server')
+					tell('Index is too big for current server', severity=-1)
 					self.safe_quit()
 					run = False
 
@@ -101,7 +102,7 @@ class Crawler(object):
 		:param url: url of webpage
 		:type url: str
 		"""
-		speak('Crawling url: ' + url)
+		tell('Crawling ' + url)
 		# Get webpage's html code:
 		html_code, nofollow, score, new_url = self.web_connexion.get_code(url)
 		if html_code is None:
@@ -115,10 +116,10 @@ class Crawler(object):
 				if url != new_url:
 					self.delete_if_exists(new_url)
 			else:
-				speak('Bad redirection')
+				tell('Bad redirection', severity=0)
 		else:
 			if url != new_url:
-				speak('Redirect to: ' + new_url)
+				tell('Redirect to ' + new_url, severity=0)
 				self.delete_if_exists(url)
 			webpage_infos = {}
 			webpage_infos['url'] = new_url
@@ -153,27 +154,29 @@ class Crawler(object):
 		elif doc_exists is None:
 			self.safe_quit()
 		else:
-			speak('Ignore: ' + url)
+			tell('Ignore: ' + url, severity=-1)
 
 	def send_to_db(self):
 		"""Send all informations about crawled webpages to database."""
+		tell('Send to database', severity=2)
 		for webpage_infos in self.infos:
 			url_to_add, url_to_del = self.database.https_duplicate(webpage_infos['url'])
 			webpage_infos['url'] = url_to_add
 			if url_to_del:
 				self.delete_if_exists(url_to_del)
-			speak('new url: ' + webpage_infos['url'])
+			tell('New url: ' + webpage_infos['url'], severity=-1)
 			error = self.database.send_doc(webpage_infos)
 		if error:
 			self.safe_quit()
 
 	def indexing(self):
 		"""Index crawled webpages."""
+		tell('Indexing', severity=2)
 		for webpage_infos in self.infos:
 			doc_id = self.database.get_doc_id(webpage_infos['url'])
 			if doc_id is None:
 				self.safe_quit()
-			speak('Indexing : {0} {1}'.format(doc_id, webpage_infos['url']))
+			tell('Indexing {0} {1}'.format(doc_id, webpage_infos['url']))
 			self.index_manager.add_doc(webpage_infos['keywords'], doc_id, webpage_infos['language'])
 
 	def send_inverted_index(self):
@@ -191,13 +194,13 @@ class Crawler(object):
 		"""
 		suggestions = self.database.suggestions()
 		if suggestions is not None:
-			speak('Failed to get suggestions')
+			tell('Failed to get suggestions')
 		else:
 			suggestions = self.site_informations.clean_links(suggestions)
 			if len(suggestions) > 0:
-				speak('Suggestions: ')
+				tell('Suggestions', severity=2)
 			else:
-				speak('No suggestions')
+				tell('No suggestions', severity=0)
 			for url in suggestions:
 				self.crawl_website(url)
 			self.send_to_db()
@@ -207,8 +210,8 @@ class Crawler(object):
 	def safe_quit(self):
 		"""Save inverted-index and quit."""
 		self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
-		speak('Programm will quit')
-		speak('end\n', 0)
+		tell('Programm will quit', severity=2)
+		tell('end\n', 0, 0)
 
 
 if __name__ == '__main__':

@@ -74,7 +74,7 @@ class SiteInformations(object):
 			else:
 				favicon = ''
 		else:
-			module.speak('No language or title')
+			module.tell('No language or title', severity=-1)
 			title = links = description = score = favicon = ''
 
 		return links, title, description, keywords, language, score, favicon, homepage

@@ -5,7 +5,7 @@ import json
 
 from package.ftp_manager import FTPManager
 from package.data import DIR_INDEX, FTP_INDEX
-from package.module import speak
+from package.module import tell
 
 class FTPSwiftea(FTPManager):
 	"""Class to manage the ftp connexion for crawler."""
@@ -18,7 +18,7 @@ class FTPSwiftea(FTPManager):
 
 		:return: inverted-indexs and True if an error occured
 		"""
-		speak('Get inverted-indexs from server')
+		tell('Get inverted-indexs from server')
 		error_msg = None, True
 		inverted_index = dict()
 		self.connexion()
@@ -46,7 +46,7 @@ class FTPSwiftea(FTPManager):
 					path_index = language + '/' + first_letter + '/' + filename
 					response = self.download(DIR_INDEX + path_index, filename)
 					if 'Error' in response:
-						speak('Failed to download inverted-index ' + path_index + ', ' + response, 22)
+						tell('Failed to download inverted-index ' + path_index + ', ' + response, 22)
 						return error_msg
 					else:
 						with open(DIR_INDEX + path_index, 'r', encoding='utf-8') as myfile:
@@ -55,11 +55,10 @@ class FTPSwiftea(FTPManager):
 			if self.cd('..').startswith('Error'): return error_msg
 		self.disconnect()
 		if inverted_index == dict():
-			speak('No inverted-index on ftp')
+			tell('No inverted-index on ftp', severity=0)
 		else:
-			speak('Transfer complete')
+			tell('Transfer complete', severity=0)
 		return inverted_index, False
-
 
 	def send_inverted_index(self, inverted_index):
 		"""Send inverted-indexs.
@@ -68,7 +67,7 @@ class FTPSwiftea(FTPManager):
 		:type inverted_index: dict
 		:return: True if an error occured
 		"""
-		speak('Send inverted-indexs')
+		tell('Send inverted-indexs')
 		self.connexion()
 		if self.cd(FTP_INDEX).startswith('Error'): return True
 		for language in inverted_index:
@@ -94,12 +93,12 @@ class FTPSwiftea(FTPManager):
 						json.dump(index, myfile, ensure_ascii=False)
 					response = self.upload(DIR_INDEX + path_index, two_letters + '.sif')
 					if 'Error' in response:
-						speak('Failed to send inverted-indexs ' + path_index + ', ' + response, 21)
+						tell('Failed to send inverted-indexs ' + path_index + ', ' + response, 21)
 						return True
 				if self.cd('..').startswith('Error'): return True
 			if self.cd('..').startswith('Error'): return True
 		self.disconnect()
-		speak('Transfer complete')
+		tell('Transfer complete', severity=0)
 		return False
 
 

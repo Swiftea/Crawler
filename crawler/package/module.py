@@ -10,7 +10,7 @@ import sys
 
 import package.data as data
 
-def speak(message, EC=None):
+def tell(message, error_code=None, severity=1):
 	"""Manage newspaper.
 
 	This function print in console that program doing and save a copy in
@@ -18,38 +18,57 @@ def speak(message, EC=None):
 
 	:param message: message to print and write
 	:type message: str
-	:param EC: (optional) error code, if given call errors() with given message
-	:type EC: int
+	:param error_code: (optional) error code, if given call errors() with given message
+	:type error_code: int
+	:param severity: 1 is default severity, -1 add 4 spaces befor message,
+	0 add 2 spaces befor the message, 2 uppercase and underline message.
+	:type severity: int
 	"""
-	if EC:
-		print(str(EC) + ' ' + message)
-		with open(data.FILE_NEWS, 'a') as myfile:
-			myfile.write(str(EC) + ' ' + message + '\n')
-		errors(EC, message)
+	msg_to_print = message[:131]
+	message = message.capitalize()
+	if error_code:
+		errors(message, error_code)
 	else:
-		print(message)
+		error_code = ''
+
+	if severity == -1:
+		print('    ' + message[:127].lower())
 		with open(data.FILE_NEWS, 'a') as myfile:
-			myfile.write(message + '\n')
+			myfile.write('    ' + strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
+	elif severity == 0:
+		print('  ' + message[:129].lower())
+		with open(data.FILE_NEWS, 'a') as myfile:
+			myfile.write('  ' + strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
+	elif severity == 1:
+		print(msg_to_print.capitalize())
+		with open(data.FILE_NEWS, 'a') as myfile:
+			myfile.write(strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
+	elif severity == 2:
+		print(msg_to_print.upper())
+		print(''.center(len(msg_to_print), '='))
+		with open(data.FILE_NEWS, 'a') as myfile:
+			size_msg = myfile.write(strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
+			myfile.write(''.center(size_msg, '='))
 
-def errors(EC, message):
-	"""Write the error report with time in errors file.
+def errors(message, error_code):
+	"""Write the error report in errors file.
 
-	Normaly call by speak() when a EC parameter is given
+	Normaly call by tell() when a error_code parameter is given
 
 	:param message: message to print and write
 	:type message: str
-	:param EC: error code
-	:type EC: int
+	:param error_code: error code
+	:type error_code: int
 	"""
 	with open(data.FILE_ERROR, 'a') as myfile:
-		myfile.write(str(EC) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ' : ' + message + '\n')
+		myfile.write(str(error_code) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ': ' + message + '\n')
 
 def quit_program():
 	"""Function who manage end of prgoram.
 
-	Call speak() with 'end' and exit
+	Call tell() with 'end' and exit
 	"""
-	speak('end\n', 0)
+	tell('end\n', 0)
 	sys.exit()
 
 
@@ -454,7 +473,7 @@ def no_connexion(url='http://swiftea.alwaysdata.net'):  # Web connexion
 	try:
 		requests.get(url)
 	except requests.exceptions.RequestException:
-		speak('No connexion')
+		tell('No connexion')
 		return True
 	else:
 		return False

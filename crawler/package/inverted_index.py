@@ -2,7 +2,6 @@
 
 from time import time
 
-from package.module import speak
 from package.data import ALPHABET
 
 class InvertedIndex(object):

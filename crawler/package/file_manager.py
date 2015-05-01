@@ -9,7 +9,7 @@ from configparser import ConfigParser
 import json
 
 from package.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX
-from package.module import speak, stats_links, rebuild_links, convert_keys
+from package.module import tell, stats_links, rebuild_links, convert_keys
 
 class FileManager(object):
 	"""File manager for Swiftea-Crawler.
@@ -48,18 +48,15 @@ class FileManager(object):
 			self.reading_line_number = int(self.config['DEFAULT']['reading_line_number'])
 			self.max_links = int(self.config['DEFAULT']['max_links'])
 
-
 	def check_stop_crawling(self):
 		"""Check if the user want to stop program."""
 		self.config.read_file(open(FILE_CONFIG))
 		self.run = self.config['DEFAULT']['run']
 
-
 	def get_max_links(self):
 		"""Get back the maximal number of links in a file from configuration file."""
 		self.config.read_file(open(FILE_CONFIG))
 		self.max_links = int(self.config['DEFAULT']['max_links'])
-
 
 	def save_config(self):
 		"""Save all configurations in config file."""
@@ -96,7 +93,6 @@ class FileManager(object):
 
 		self.ckeck_size_links(links)
 
-
 	def ckeck_size_links(self, links):
 		"""Check number of links in file.
 
@@ -105,10 +101,10 @@ class FileManager(object):
 		"""
 		if len(links) > self.max_links:  # Check the size
 			self.writing_file_number += 1
-			speak(
-				'More {0} links : {1} : writing file {2}.'.format(
+			tell(
+				'More than {0} links : {1} : writing file {2}.'.format(
 				str(self.max_links), str(len(links)),
-				str(self.writing_file_number))
+				str(self.writing_file_number)), severity=-1
 			)
 
 
@@ -126,7 +122,7 @@ class FileManager(object):
 				list_links = myfile.read().splitlines()  # List of urls
 		except FileNotFoundError:
 			# No link file
-			speak('Reading file is not found in get_url: ' + filename, 4)
+			tell('Reading file is not found in get_url: ' + filename, 4)
 			return 'stop'
 		else:
 			url = list_links[self.reading_line_number]
@@ -136,10 +132,10 @@ class FileManager(object):
 				self.reading_line_number = 0
 				if self.reading_file_number != 0:  # Or > 0 ? wich is better ?
 					remove(filename)
-					speak('File ' + filename + ' removed')
+					tell('File ' + filename + ' removed', severity=-1)
 				self.reading_file_number += 1
 				# The program have read all the links: next reading_file_number
-				speak('Next reading file: ' + str(self.reading_file_number))
+				tell('Next reading file: ' + str(self.reading_file_number), severity=-1)
 			return url
 
 
@@ -151,10 +147,9 @@ class FileManager(object):
 		:param inverted_index: inverted-index
 		:type inverted_index: dict
 		"""
-		speak('Save inverted-index in save file')
+		tell('Save inverted-index in save file')
 		with open(FILE_INDEX, 'w') as myfile:
 			json.dump(inverted_index, myfile, ensure_ascii=False)
-
 
 	def get_inverted_index(self):
 		"""Get inverted-index in local.
@@ -164,12 +159,11 @@ class FileManager(object):
 
 		:return: inverted-index
 		"""
-		speak('Get inverted-index form save file')
+		tell('Get inverted-index form save file')
 		with open(FILE_INDEX, 'r') as myfile:
 			inverted_index = json.load(myfile)
 		remove(FILE_INDEX)
 		return convert_keys(inverted_index)
-
 
 	def read_inverted_index(self):
 		"""Get inverted-index in local.
@@ -179,7 +173,7 @@ class FileManager(object):
 
 		:return: inverted-index
 		"""
-		speak('Get inverted-index in local')
+		tell('Get inverted-index in local')
 		inverted_index = dict()
 		for language in listdir(DIR_INDEX):
 			inverted_index[language] = dict()

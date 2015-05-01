@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from package.module import speak, convert_secure, url_is_secure
+from package.module import tell, convert_secure, url_is_secure
 from package.database_manager import DatabaseManager
 from package.data import CRAWL_DELAY
 
@@ -31,7 +31,7 @@ class DatabaseSwiftea(DatabaseManager):
 		"""
 		result, response = self.send_command("SELECT popularity, last_crawl FROM index_url WHERE url = %s", (webpage_infos['url'],), True)
 		if 'error' in response:
-			speak('Popularity and last_crawl query failed: ' + response, 16)
+			tell('Popularity and last_crawl query failed: ' + response, 16)
 			return True
 		if result != ():
 			# Url found in database, there is a answer:
@@ -42,7 +42,7 @@ class DatabaseSwiftea(DatabaseManager):
 				if error:
 					return True
 			else:
-				speak('No updates, recently crawled')
+				tell('No updates, recently crawled', severity=0)
 		else:
 			# Url not found in database, the url don't exists in the database, we add it:
 			error = self.insert(webpage_infos)
@@ -60,14 +60,14 @@ class DatabaseSwiftea(DatabaseManager):
 		:type popularity: int
 		:return: true is an arror occured
 		"""
-		speak('Updating : ' + infos['url'])
+		tell('Updating ' + infos['url'])
 		response = self.send_command(
 """UPDATE index_url
 SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, score=%s, homepage=%s, favicon=%s
 WHERE url = %s """, (infos['title'], infos['description'], infos['language'], popularity, infos['score'],\
 	infos['homepage'], infos['favicon'], infos['url']))
 		if 'error' in  response[1]:
-			speak('Failed to update: ' + response[1], 16)
+			tell('Failed to update: ' + response[1], 16)
 			return True
 		else:
 			return False
@@ -80,13 +80,13 @@ WHERE url = %s """, (infos['title'], infos['description'], infos['language'], po
 		:type infos: dict()
 		:return: true is an arror occured
 		"""
-		speak('Adding : ' + infos['url'])
+		tell('Adding ' + infos['url'])
 		response = self.send_command(
 """INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, homepage, favicon)
 VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 (infos['title'], infos['description'], infos['url'], infos['language'], infos['score'], infos['homepage'], infos['favicon']))
 		if 'error' in  response[1]:
-			speak('Failed to add: ' + response[1], 16)
+			tell('Failed to add: ' + response[1], 16)
 			return True
 		else:
 			return False
@@ -103,7 +103,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		"""
 		result, response = self.send_command("SELECT id FROM {} WHERE url = %s".format(table), (url,))
 		if 'error' in  response[1]:
-			speak('Failed to get id: ' + response, 18)
+			tell('Failed to get id: ' + response, 18)
 			return None
 		else:
 			return str(result[0])
@@ -120,10 +120,10 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		:type table: str
 		:return: status message
 		"""
-		speak('Delete doc from {}: '.format(table) + url)
+		tell('Delete from {} doc: '.format(table) + url)
 		response = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url,))
 		if 'error' in  response[1]:
-			speak('Doc not removed: {0}, {1}'.format(url, response[1]), 17)
+			tell('Doc not removed: {0}, {1}'.format(url, response[1]), 17)
 		return response[1]
 
 
@@ -134,7 +134,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		"""
 		result, response = self.send_command("SELECT url FROM suggestions LIMIT 5", fetchall=True)
 		if 'error' in  response[1]:
-			speak('Failed to get url: ' + response, 16)
+			tell('Failed to get url: ' + response, 16)
 			return None
 		else:
 			suggested_links = list()
@@ -156,7 +156,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		"""
 		result, response = self.send_command("SELECT EXISTS(SELECT * FROM {} WHERE url=%s)".format(table), (url,))
 		if 'error' in  response:
-			speak('Failed to check row: ' + response)
+			tell('Failed to check row: ' + response)
 			return None
 		if result[0] == 1:
 			return True
@@ -175,17 +175,17 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		:type old_url: str
 		:return: url to add and url to delete
 		"""
-		speak('url to send: ' + old_url)
+		tell('url to send: ' + old_url, severity=-1)
 		new_url = convert_secure(old_url)
 		new_exists = self.doc_exists(new_url)
 
 		if url_is_secure(old_url):
 			# old_url start with https
 			if new_exists:  # Start with http
-				speak('insecure exists')
+				tell('insecure exists', severity=-1)
 				return old_url, new_url
 			else:
-				speak('return secure, old')
+				tell('return secure, old', severity=-1)
 				return old_url, None
 		else:
 			# old_url is insecure, start with http
@@ -193,8 +193,8 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 				if self.doc_exists(old_url):  # Insecure exists
 					return new_url, old_url
 				else:
-					speak('return secure, new')
+					tell('return secure, new', severity=-1)
 					return new_url, None
 			else:
-				speak('return insecure, old')
+				tell('return insecure, old', severity=-1)
 				return old_url, None
