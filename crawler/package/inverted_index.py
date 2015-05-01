@@ -3,7 +3,7 @@
 from time import time
 
 from package.module import speak
-from package.data import INDEXING_TIMEOUT, ALPHABET
+from package.data import ALPHABET
 
 class InvertedIndex(object):
 	"""Manage inverted-index for crawler.
@@ -27,11 +27,9 @@ class InvertedIndex(object):
 		"""Define STOPWORDS."""
 		self.STOPWORDS = STOPWORDS
 
-
 	def setInvertedIndex(self, inverted_index):
 		"""Define inverted-indexs at the beginning."""
 		self.inverted_index = inverted_index
-
 
 	def getInvertedIndex(self):
 		""":return: inverted-indexs"""
@@ -47,41 +45,32 @@ class InvertedIndex(object):
 		:type doc_id: int
 		:param language: language of word
 		:type language: str
-		:return: true if time out
 		"""
 		language = language.upper()
 		nb_words = len(keywords)
 		beginning = time()
 		for word in keywords:
-			if time() - beginning < INDEXING_TIMEOUT:
-				word_infos = {'word': word, 'language': language, 'occurence': keywords.count(word)}
-				if word[0] in ALPHABET:
-					word_infos['first_letter'] = word[0].upper()
-					# First char is a letter
-					if word[1] in ALPHABET:
-						# Second char is a letter
-						word_infos['filename'] = word[:2]
-					else:
-						# second char isn't a letter
-						word_infos['filename'] = word_infos['first_letter'].lower() + '-sp'
+			word_infos = {'word': word, 'language': language, 'occurence': keywords.count(word)}
+			if word[0] in ALPHABET:
+				word_infos['first_letter'] = word[0].upper()
+				# First char is a letter
+				if word[1] in ALPHABET:
+					# Second char is a letter
+					word_infos['filename'] = word[:2]
 				else:
-					# First char isn't a letter
-					word_infos['first_letter'] = 'SP'
-					if word[1] in ALPHABET:
-						# Second char is a letter
-						word_infos['filename'] = 'sp-' + word[1]
-					else:
-						# Second char isn't a letter
-						word_infos['filename'] = 'sp-sp'
-
-				self.add_word(word_infos, doc_id, nb_words)
-
+						# second char isn't a letter
+					word_infos['filename'] = word_infos['first_letter'].lower() + '-sp'
 			else:
-				speak('Indexing too long : pass', 23)
-				return True
+				# First char isn't a letter
+				word_infos['first_letter'] = 'SP'
+				if word[1] in ALPHABET:
+					# Second char is a letter
+					word_infos['filename'] = 'sp-' + word[1]
+				else:
+					# Second char isn't a letter
+					word_infos['filename'] = 'sp-sp'
 
-		return False
-
+			self.add_word(word_infos, doc_id, nb_words)
 
 	def add_word(self, word_infos, doc_id, nb_words):
 		"""Add a word in inverted-index.
@@ -119,7 +108,6 @@ class InvertedIndex(object):
 
 		self.inverted_index[language][first_letter][filename] = inverted_index
 
-
 	def delete_word(self, word, language, first_letter, filename):
 		"""Delete a word in inverted-index.
 
@@ -135,7 +123,6 @@ class InvertedIndex(object):
 		if self.inverted_index[language][first_letter][filename].get(word) is not None:
 			del self.inverted_index[language][first_letter][filename][word]
 
-
 	def delete_id_word(self, word_infos, doc_id):
 		"""Delete a id of a word in inverted-index
 
@@ -150,7 +137,6 @@ class InvertedIndex(object):
 			word_infos['first_letter'], word_infos['filename']
 		if self.inverted_index[language][first_letter][filename][word].get(doc_id) is not None:
 			del self.inverted_index[language][first_letter][filename][word][doc_id]
-
 
 	def delete_doc_id(self, doc_id):
 		"""Delete a id in inverted-index.

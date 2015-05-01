@@ -174,9 +174,7 @@ class Crawler(object):
 			if doc_id is None:
 				self.safe_quit()
 			speak('Indexing : {0} {1}'.format(doc_id, webpage_infos['url']))
-			timeout = self.index_manager.add_doc(webpage_infos['keywords'], doc_id, webpage_infos['language'])
-			if timeout:
-				self.database.del_one_doc(webpage_infos['url'], 'index_url')
+			self.index_manager.add_doc(webpage_infos['keywords'], doc_id, webpage_infos['language'])
 
 	def send_inverted_index(self):
 		"""Send inverted-index generate by indexing to ftp server."""
