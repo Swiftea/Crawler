@@ -49,7 +49,10 @@ class WebConnexion(object):
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
 				url = self.param_duplicate(request)
-				return request.text, nofollow, score, url
+				if url:  # Redirected url don't pass in clean_link, too many params or too long.
+					return request.text, nofollow, score, url
+				else:
+					return 'ignore', False, 0, None
 			else:
 				speak('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed))

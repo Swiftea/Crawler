@@ -22,36 +22,32 @@ class DatabaseSwiftea(DatabaseManager):
 		DatabaseManager.__init__(self, host, user, password, name)
 
 
-	def send_infos(self, infos):
+	def send_doc(self, webpage_infos):
 		"""send documents informations to database.
 
 		:param infos: informations to send to database
 		:type infos: list
 		:return: true if an error occured
 		"""
-		for webpage_infos in infos:
-			# http and https duplicate
-			url = self.https_duplicate(webpage_infos['url'])
-			result, response = self.send_command("SELECT popularity, last_crawl FROM index_url WHERE url = %s", (url,), True)
-			if 'error' in response:
-				speak('Popularity and last_crawl query failed: ' + response, 16)
-				return True
-			if result != ():
-				# Url found in database, there is a answer :
-				last_crawl = result[0][1]  # datetime.datetime object
-				if (datetime.now() - last_crawl) > CRAWL_DELAY:
-					# The program already crawled this website
-					error = self.update(webpage_infos, result[0][0]+1)
-					if error:
-						return True
-				else:
-					speak('No updates, recently crawled')
-			else:
-				# Url not found in database, the url don't exists in the database, we add it:
-				error = self.insert(webpage_infos)
+		result, response = self.send_command("SELECT popularity, last_crawl FROM index_url WHERE url = %s", (webpage_infos['url'],), True)
+		if 'error' in response:
+			speak('Popularity and last_crawl query failed: ' + response, 16)
+			return True
+		if result != ():
+			# Url found in database, there is a answer:
+			last_crawl = result[0][1]  # datetime.datetime object
+			if (datetime.now() - last_crawl) > CRAWL_DELAY:
+				# The program already crawled this website
+				error = self.update(webpage_infos, result[0][0]+1)
 				if error:
 					return True
-		# End of loop
+			else:
+				speak('No updates, recently crawled')
+		else:
+			# Url not found in database, the url don't exists in the database, we add it:
+			error = self.insert(webpage_infos)
+			if error:
+				return True
 		return False  # All is correct
 
 
@@ -124,7 +120,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		:type table: str
 		:return: status message
 		"""
-		speak('Delete doc: ' + url)
+		speak('Delete doc from {}: '.format(table) + url)
 		response = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url,))
 		if 'error' in  response[1]:
 			speak('Doc not removed: {0}, {1}'.format(url, response[1]), 17)
@@ -170,24 +166,35 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 	def https_duplicate(self, old_url):
 		"""Avoid https and http duplicate.
 
-		If old url is secure (https), delete insecure url if exists,
+		If old url is secure (https), must delete insecure url if exists,
 		then return secure url (old url).
-		If old url is insecure (http), delete it if secure url exists,
-		then return sucre url (new url)
+		If old url is insecure (http), must delete it if secure url exists,
+		then return secure url (new url)
 
 		:param old_url: old url
 		:type old_url: str
-		:return: new url
+		:return: url to add and url to delete
 		"""
+		speak('url to send: ' + old_url)
 		new_url = convert_secure(old_url)
 		new_exists = self.doc_exists(new_url)
+
 		if url_is_secure(old_url):
-			# old_url is secure
-			if new_exists:  # Insecure url exists
-				self.del_one_doc(new_url)
-			return old_url
+			# old_url start with https
+			if new_exists:  # Start with http
+				speak('insecure exists')
+				return old_url, new_url
+			else:
+				speak('return secure, old')
+				return old_url, None
 		else:
-			# old_url is insecure
-			if new_exists and self.doc_exists(old_url):  # Secure url exists
-				self.del_one_doc(old_url)
-			return new_url
+			# old_url is insecure, start with http
+			if new_exists:  # Secure url exists
+				if self.doc_exists(old_url):  # Insecure exists
+					return new_url, old_url
+				else:
+					speak('return secure, new')
+					return new_url, None
+			else:
+				speak('return insecure, old')
+				return old_url, None

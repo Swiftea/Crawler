@@ -6,7 +6,6 @@ from urllib.parse import urlparse
 from time import strftime
 from os import path, mkdir, remove, listdir
 import requests
-from urllib.parse import urlparse
 import sys
 
 import package.data as data
@@ -355,7 +354,7 @@ def clean_link(url, base_url=None):
 		if infos_url.query != '':
 			new += '?' + infos_url.query
 
-		if len(new) > 8:
+		if len(new) > 8 and new.count('&') < 5 and len(new) < 255:
 			return new
 		else:
 			return None

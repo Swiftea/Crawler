@@ -6,7 +6,7 @@ try:
 	import package.private_data as pvdata
 except ImportError:
 	pass
-from package.module import speak, quit_program, create_dirs, is_index, create_doc, def_links, dir_size
+from package.module import speak, quit_program, create_dirs, is_index, create_doc, def_links, dir_size, remove_duplicates
 from package.data import DIR_INDEX
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
@@ -62,6 +62,8 @@ class Crawler(object):
 					if url == 'stop':
 						self.safe_quit()
 					self.crawl_webpage(url)
+					# Remove duplicates:
+					self.infos = remove_duplicates(self.infos)
 
 				# End of crawling loop
 
@@ -109,10 +111,14 @@ class Crawler(object):
 			quit_program()
 		elif html_code == 'ignore':  # There was something wrong and maybe a redirection.
 			self.delete_if_exists(url)
-			if url != new_url:
-				self.delete_if_exists(new_url)
+			if new_url:
+				if url != new_url:
+					self.delete_if_exists(new_url)
+			else:
+				speak('Bad redirection')
 		else:
 			if url != new_url:
+				speak('Redirect to: ' + new_url)
 				self.delete_if_exists(url)
 			webpage_infos = {}
 			webpage_infos['url'] = new_url
@@ -151,7 +157,13 @@ class Crawler(object):
 
 	def send_to_db(self):
 		"""Send all informations about crawled webpages to database."""
-		error = self.database.send_infos(self.infos)
+		for webpage_infos in self.infos:
+			url_to_add, url_to_del = self.database.https_duplicate(webpage_infos['url'])
+			webpage_infos['url'] = url_to_add
+			if url_to_del:
+				self.delete_if_exists(url_to_del)
+			speak('new url: ' + webpage_infos['url'])
+			error = self.database.send_doc(webpage_infos)
 		if error:
 			self.safe_quit()
 
