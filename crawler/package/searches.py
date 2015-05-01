@@ -3,7 +3,6 @@
 """After parse source code, data extracted must be classify and clean.
 Here is a class who use the html parser and manage all results."""
 
-import package.data as data
 import package.module as module
 from package.parsers import MyParser
 
@@ -33,7 +32,7 @@ class SiteInformations(object):
 
 		self.parser.feed(code)
 
-		title = module.clean_text(self.parser.title)  # Find title and clean it
+		title = module.clean_text(self.parser.title.capitalize())  # Find title and clean it
 
 		keywords = module.clean_text(self.parser.keywords.lower()).split()
 		begining_size = len(keywords)  # Stats
@@ -43,7 +42,7 @@ class SiteInformations(object):
 			language = self.parser.language
 			score += 1
 		else:
-			language = self.detect_language(keywords)
+			language = self.detect_language(keywords, url)
 
 		if language in self.STOPWORDS and self.parser.title != '':
 			keywords = self.clean_keywords(keywords, language)
@@ -51,9 +50,9 @@ class SiteInformations(object):
 
 			# Description:
 			if self.parser.description == '':
-				description = module.clean_text(self.parser.first_title)
+				description = module.clean_text(self.parser.first_title.capitalize())
 			else:
-				description = module.clean_text(self.parser.description)
+				description = module.clean_text(self.parser.description.capitalize())
 
 			# Css:
 			if self.parser.css:
@@ -81,7 +80,7 @@ class SiteInformations(object):
 		return links, title, description, keywords, language, score, favicon, homepage
 
 
-	def detect_language(self, keywords):
+	def detect_language(self, keywords, url):
 		"""Detect language of webpage if not given.
 
 		:param keywords: keywords of webpage used for detecting
@@ -106,6 +105,8 @@ class SiteInformations(object):
 		else:
 			language = ''
 
+		with open('output/detect_language', 'a') as myfile:
+			myfile.write(language + ': ' + url + '\n')
 		return language
 
 
