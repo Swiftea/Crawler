@@ -77,8 +77,11 @@ class TestCrawlerFunctions(TestCrawlerBase):
 
     def test_stats(self):
         stats_links(30)
-        stats_stop_words(40, 20)
-        stats_stop_words(20, 0)
+        stats_stop_words(100, 10)
+        stats_stop_words(0, 0)
+        stats_webpages(10, 30)
+        stats_dl_index(10, 30)
+        stats_ul_index(10, 30)
 
     def test_url_is_secure(self):
         assert url_is_secure(self.url) == False

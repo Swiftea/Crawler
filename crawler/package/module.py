@@ -169,32 +169,6 @@ def dir_size(source):
 	return total_size
 
 
-def stats_stop_words(begining, end):
-	"""Write the percentage of deleted word with stopwords for statistics.
-
-	:param begining: size of keywords list before cleaning
-	:type begining: int
-	:param end: size of keywords list after cleaning
-	:type end: int
-
-	"""
-	if end != 0:
-		stats = str(((begining-end) * 100) / end)
-	else:
-		stats = '0'
-	with open(data.FILE_STATS2, 'a') as myfile:
-		myfile.write(stats + '\n')
-
-def stats_links(stat):
-	"""Write the number of links for statistics.
-
-	:param stat: number of list in a webpage
-	:type stat: int
-
-	"""
-	with open(data.FILE_STATS, 'a') as myfile:
-		myfile.write(str(stat) + '\n')  # Write the number of links found
-
 def average(content):  # Stats
 	"""Calculate average.
 
@@ -208,6 +182,71 @@ def average(content):  # Stats
 		total += float(value)
 	moy = total / len(content)
 	return moy
+
+def stats_stop_words(begining, end):
+	"""Write the percentage of deleted word with stopwords for statistics.
+
+	:param begining: size of keywords list before cleaning
+	:type begining: int
+	:param end: size of keywords list after cleaning
+	:type end: int
+
+	"""
+	if begining != 0:
+		stats = str(((begining - end) * 100) / begining)
+	else:
+		stats = '100'
+	with open(data.DIR_DATA + 'stat_stopwords', 'a') as myfile:
+		myfile.write(stats + '\n')
+
+def stats_links(stats):
+	"""Write the number of links for statistics.
+
+	:param stat: number of list in a webpage
+	:type stat: int
+
+	"""
+	with open(data.DIR_DATA + 'stat_links', 'a') as myfile:
+		myfile.write(str(stats) + '\n')  # Write the number of links found
+
+def stats_webpages(begining, end):
+	"""Write the time in second to crawl 10 webpages.
+
+	:param begining: time before starting crawl 10 webpages
+	:type begining: int
+	:param end: time after crawled 10 webpages
+	:type end: int
+
+	"""
+	delta = end - begining  # Time to crawl ten webpages
+	time = delta / 10  # Time in second to crawl 10 webpages
+	nb_webpages = 60 / time  # number of webpages crawled in 1 minute
+	with open(data.DIR_DATA + 'stat_webpages', 'a') as myfile:
+		myfile.write(str(nb_webpages) + '\n')
+
+def stats_dl_index(begining, end):
+	"""Write the time to download inverted-index.
+
+	:param begining: time download inverted-index
+	:type begining: int
+	:param end: time after download inverted-index
+	:type end: int
+
+	"""
+	with open(data.DIR_DATA + 'stat_dl_index', 'a') as myfile:
+		myfile.write(str(end - begining) + '\n')
+
+def stats_ul_index(begining, end):
+	"""Write the time to upload inverted-index.
+
+	:param begining: time before send inverted-index
+	:type begining: int
+	:param end: time after send inverted-index
+	:type end: int
+
+	"""
+	with open(data.DIR_DATA + 'stat_up_index', 'a') as myfile:
+		myfile.write(str(end - begining) + '\n')
 
 
 def get_stopwords(path='http://swiftea.alwaysdata.net/data/stopwords/'):  # Search

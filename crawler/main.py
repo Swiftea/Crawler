@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
-from time import strftime
+from time import strftime, time
 
 try:
 	import package.private_data as pvdata
 except ImportError:
 	pass
-from package.module import tell, quit_program, create_dirs, is_index, create_doc, def_links, dir_size, remove_duplicates
+import package.module as module
 from package.data import DIR_INDEX
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
@@ -20,8 +20,8 @@ class Crawler(object):
 	def __init__(self):
 		self.site_informations = SiteInformations()
 		if self.site_informations.STOPWORDS is None:
-			tell('No stopwords, quit program')
-			quit_program()
+			module.tell('No stopwords, quit program')
+			module.quit_program()
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
 		self.get_inverted_index()
@@ -41,17 +41,20 @@ class Crawler(object):
 		on server to know if it's necessary to download it.
 
 		"""
-		if is_index():
+		if module.is_index():
 			self.inverted_index = self.file_manager.get_inverted_index()
 		else:
 			if self.ftp_manager.compare_indexs():
+				begining = time()
 				self.inverted_index, error = self.ftp_manager.get_inverted_index()
+				if not error:
+					module.stats_dl_index(begining, time())
 			else:
 				self.inverted_index = self.file_manager.read_inverted_index()
 				error = False
 			if error and self.file_manager.reading_file_number != 0:
-				tell('Failed to download inverted-index ' + self.inverted_index, 1)
-				quit_program()
+				module.tell('Failed to download inverted-index ' + self.inverted_index, 1)
+				module.quit_program()
 
 	def start(self):
 		"""Start main loop of crawling.
@@ -66,9 +69,10 @@ class Crawler(object):
 		run = True
 		while run:
 			for _ in range(50):
-				tell('Crawl', severity=2)
+				module.tell('Crawl', severity=2)
+				begining = time()
 				while len(self.infos) < 10:
-					tell('Reading {0}, link {1}'.format(
+					module.tell('Reading {0}, link {1}'.format(
 						str(self.file_manager.reading_file_number),
 						str(self.file_manager.reading_line_number+1)), severity=0)
 					# Get the url of the website :
@@ -77,14 +81,16 @@ class Crawler(object):
 						self.safe_quit()
 					self.crawl_webpage(url)
 					# Remove duplicates:
-					self.infos = remove_duplicates(self.infos)
+					self.infos = module.remove_duplicates(self.infos)
 
 				# End of crawling loop
 
-				tell('{} new documents ! '.format(self.crawled_websites), severity=-1)
+				module.tell('{} new documents ! '.format(self.crawled_websites), severity=-1)
 
 				self.send_to_db()
 				self.indexing()
+
+				module.stats_webpages(begining, time())
 
 				self.infos.clear()  # Reset the list of dict of informations of websites.
 				self.file_manager.check_stop_crawling()
@@ -92,7 +98,7 @@ class Crawler(object):
 				self.file_manager.save_config()
 				#self.file_manager.check_size_file()
 				if self.file_manager.run == 'false':
-					tell('User wants stop program')
+					module.tell('User wants stop program')
 					self.safe_quit()
 					run = False
 					break
@@ -101,8 +107,8 @@ class Crawler(object):
 			if run:
 				self.suggestions()
 				self.send_inverted_index()
-				if dir_size(DIR_INDEX) > 7000000:
-					tell('Index is too big for current server', severity=-1)
+				if module.dir_size(DIR_INDEX) > 7000000:
+					module.tell('Index is too big for current server', severity=-1)
 					self.safe_quit()
 					run = False
 
@@ -116,24 +122,24 @@ class Crawler(object):
 		:type url: str
 
 		"""
-		tell('Crawling ' + url)
+		module.tell('Crawling ' + url)
 		# Get webpage's html code:
 		html_code, nofollow, score, new_url = self.web_connexion.get_code(url)
 		if html_code is None:
 			self.delete_if_exists(url)  # Failed to get code, must delete from database.
 		elif html_code == 'no connexion':
 			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
-			quit_program()
+			module.quit_program()
 		elif html_code == 'ignore':  # There was something wrong and maybe a redirection.
 			self.delete_if_exists(url)
 			if new_url:
 				if url != new_url:
 					self.delete_if_exists(new_url)
 			else:
-				tell('Bad redirection', severity=0)
+				module.tell('Bad redirection', severity=0)
 		else:
 			if url != new_url:
-				tell('Redirect to ' + new_url, severity=0)
+				module.tell('Redirect to ' + new_url, severity=0)
 				self.delete_if_exists(url)
 			webpage_infos = {}
 			webpage_infos['url'] = new_url
@@ -169,7 +175,7 @@ class Crawler(object):
 		elif doc_exists is None:
 			self.safe_quit()
 		else:
-			tell('Ignore: ' + url, severity=-1)
+			module.tell('Ignore: ' + url, severity=-1)
 
 	def send_to_db(self):
 		"""Send all informations about crawled webpages to database.
@@ -177,13 +183,13 @@ class Crawler(object):
 		Can delete some documents to avoid http and https duplicates.
 
 		"""
-		tell('Send to database', severity=2)
+		module.tell('Send to database', severity=2)
 		for webpage_infos in self.infos:
 			url_to_add, url_to_del = self.database.https_duplicate(webpage_infos['url'])
 			webpage_infos['url'] = url_to_add
 			if url_to_del:
 				self.delete_if_exists(url_to_del)
-			tell('New url: ' + webpage_infos['url'], severity=-1)
+			module.tell('New url: ' + webpage_infos['url'], severity=-1)
 			error = self.database.send_doc(webpage_infos)
 			if error:
 				self.safe_quit()
@@ -194,21 +200,24 @@ class Crawler(object):
 		get id of each documents and index them.
 
 		"""
-		tell('Indexing', severity=2)
+		module.tell('Indexing', severity=2)
 		for webpage_infos in self.infos:
 			doc_id = self.database.get_doc_id(webpage_infos['url'])
 			if doc_id is None:
 				self.safe_quit()
-			tell('Indexing {0} {1}'.format(doc_id, webpage_infos['url']))
+			module.tell('Indexing {0} {1}'.format(doc_id, webpage_infos['url']))
 			self.index_manager.add_doc(webpage_infos['keywords'], doc_id, webpage_infos['language'])
 
 	def send_inverted_index(self):
 		"""Send inverted-index generate by indexing to ftp server."""
+		begining = time()
 		error = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		if error:
-			tell('Failed to send inverted-index ' + error, 2)
+			module.tell('Failed to send inverted-index ' + error, 2)
 			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
-			quit_program()
+			module.quit_program()
+		else:
+			module.stats_ul_index(begining, time())
 
 	def suggestions(self):
 		"""Suggestions:
@@ -219,13 +228,13 @@ class Crawler(object):
 		"""
 		suggestions = self.database.suggestions()
 		if suggestions is not None:
-			tell('Failed to get suggestions')
+			module.tell('Failed to get suggestions')
 		else:
 			suggestions = self.site_informations.clean_links(suggestions)
 			if len(suggestions) > 0:
-				tell('Suggestions', severity=2)
+				module.tell('Suggestions', severity=2)
 			else:
-				tell('No suggestions', severity=0)
+				module.tell('No suggestions', severity=0)
 			for url in suggestions:
 				self.crawl_website(url)
 			self.send_to_db()
@@ -235,13 +244,13 @@ class Crawler(object):
 	def safe_quit(self):
 		"""Save inverted-index and quit."""
 		self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
-		tell('Programm will quit', severity=2)
-		tell('end\n', 0, 0)
+		module.tell('Programm will quit', severity=2)
+		module.tell('end\n', 0, 0)
 
 
 if __name__ == '__main__':
-	create_dirs()
-	create_doc()
-	def_links()
+	module.create_dirs()
+	module.create_doc()
+	module.def_links()
 	crawler = Crawler()
 	crawler.start()
