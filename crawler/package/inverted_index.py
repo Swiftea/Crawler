@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-from time import time
-
 from package.data import ALPHABET
 
 class InvertedIndex(object):
@@ -54,7 +52,6 @@ class InvertedIndex(object):
 		"""
 		language = language.upper()
 		nb_words = len(keywords)
-		beginning = time()
 		for word in keywords:
 			word_infos = {'word': word, 'language': language, 'occurence': keywords.count(word)}
 			if word[0] in ALPHABET:

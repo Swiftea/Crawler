@@ -51,8 +51,10 @@ class FTPSwiftea(FTPManager):
 					else:
 						with open(DIR_INDEX + path_index, 'r', encoding='utf-8') as myfile:
 							inverted_index[language][first_letter][filename[:-4]] = json.load(myfile)
+
 				if self.cd('..').startswith('Error'): return error_msg
 			if self.cd('..').startswith('Error'): return error_msg
+
 		self.disconnect()
 		if inverted_index == dict():
 			tell('No inverted-index on ftp', severity=0)
@@ -70,6 +72,7 @@ class FTPSwiftea(FTPManager):
 		"""
 		tell('Send inverted-index')
 		self.connexion()
+
 		if self.cd(FTP_INDEX).startswith('Error'): return ''
 		for language in inverted_index:
 			list_language = self.listdir()
@@ -78,6 +81,7 @@ class FTPSwiftea(FTPManager):
 				self.mkd(language)
 			if not path.isdir(DIR_INDEX + language):
 				mkdir(DIR_INDEX + language)
+
 			if self.cd(language).startswith('Error'): return ''
 			for first_letter in inverted_index[language]:
 				list_first_letter = self.listdir()
@@ -86,6 +90,7 @@ class FTPSwiftea(FTPManager):
 					self.mkd(first_letter)
 				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
 					mkdir(DIR_INDEX + language + '/' + first_letter)
+
 				if self.cd(first_letter).startswith('Error'): return ''
 				for two_letters in inverted_index[language][first_letter]:
 					index = inverted_index[language][first_letter][two_letters]
@@ -95,8 +100,10 @@ class FTPSwiftea(FTPManager):
 					response = self.upload(DIR_INDEX + path_index, two_letters + '.sif')
 					if 'Error' in response:
 						return path_index + ': ' + response
+
 				if self.cd('..').startswith('Error'): return ''
 			if self.cd('..').startswith('Error'): return ''
+
 		self.disconnect()
 		tell('Transfer complete', severity=0)
 		return False

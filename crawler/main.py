@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from time import strftime, time
+from time import time
 
 try:
 	import package.private_data as pvdata
@@ -80,8 +80,6 @@ class Crawler(object):
 					if url == 'stop':
 						self.safe_quit()
 					self.crawl_webpage(url)
-					# Remove duplicates:
-					self.infos = module.remove_duplicates(self.infos)
 
 				# End of crawling loop
 
@@ -149,9 +147,10 @@ class Crawler(object):
 				) = self.site_informations.get_infos(new_url, html_code, nofollow, score)
 
 			if webpage_infos['title'] != '':
-				self.infos.append(webpage_infos)
-				self.crawled_websites += 1
-				self.file_manager.save_links(links)
+				if webpage_infos not in self.infos:
+					self.infos.append(webpage_infos)
+					self.crawled_websites += 1
+					self.file_manager.save_links(links)
 			else:
 				self.delete_if_exists(new_url)
 

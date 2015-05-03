@@ -124,8 +124,7 @@ class FileManager(object):
 			with open(filename, 'r', errors='replace',
 				encoding='utf8') as myfile:
 				list_links = myfile.read().splitlines()  # List of urls
-		except FileNotFoundError:
-			# No link file
+		except FileNotFoundError:  # pylint:disable=Undefined-variable
 			tell('Reading file is not found in get_url: ' + filename, 4)
 			return 'stop'
 		else:

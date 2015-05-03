@@ -44,7 +44,7 @@ class DatabaseSwiftea(DatabaseManager):
 				if error:
 					return True
 			else:
-				tell('No updates, recently crawled', severity=0)
+				tell('Recently crawled: ' + webpage_infos['url'], severity=0)
 		else:
 			# Url not found in database, the url don't exists in the database, we add it:
 			error = self.insert(webpage_infos)

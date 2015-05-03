@@ -63,7 +63,7 @@ class WebConnexion(object):
 	def search_encoding(self, headers, code):
 		"""Searche encoding of webpage in source code.
 
-		If an encoding is found in source code, score is .5, but if not
+		If an encoding is found in source code, score is 1, but if not
 		score is 0 and encoding is utf-8.
 
 		:param headers: hearders of requests

@@ -9,7 +9,7 @@ def stats():
 	try:
 		with open(data.DIR_DATA + 'stat_stopwords', 'r') as myfile:
 			content = myfile.read().split()
-	except FileNotFoundError:  # noqa
+	except FileNotFoundError:  # pylint:disable=undefined-variable
 		stat_stopwords = 'File ' + data.DIR_DATA + 'stat_stopwords' + ' not found.'
 	else:
 		stat_stopwords = 'Average percentage of removed words: ' + str(average(content))
@@ -19,7 +19,7 @@ def stats():
 	try:
 		with open(data.DIR_DATA + 'stat_links', 'r') as myfile:
 			content = myfile.read().split()
-	except FileNotFoundError:  # noqa
+	except FileNotFoundError:  # pylint:disable=undefined-variable
 		stat_links = ('File ' +  data.DIR_DATA + 'stat_links' + ' not found.')
 	else:
 		stat_links = ('Average links in webpage: ' + str(average(content)))
@@ -29,7 +29,7 @@ def stats():
 	try:
 		with open(data.DIR_DATA + 'stat_webpages', 'r') as myfile:
 			content = myfile.read().split()
-	except FileNotFoundError:  # noqa
+	except FileNotFoundError:  # pylint:disable=Undefined-variable
 		stat_webpages = 'File ' +  data.DIR_DATA + 'stat_webpages' + ' not found.'
 	else:
 		stat_webpages = 'Time to crawl ten webpages: ' + str(average(content))
@@ -37,7 +37,7 @@ def stats():
 	try:
 		with open(data.DIR_DATA + 'stat_dl_index', 'r') as myfile:
 			content = myfile.read().split()
-	except FileNotFoundError:  # noqa
+	except FileNotFoundError:  # pylint:disable=Undefined-variable
 		stat_dl_index = 'File ' +  data.DIR_DATA + 'stat_dl_index' + ' not found.'
 	else:
 		stat_dl_index = 'Time upload inverted-index: ' + str(average(content))
@@ -45,7 +45,7 @@ def stats():
 	try:
 		with open(data.DIR_DATA + 'stat_up_index', 'r') as myfile:
 			content = myfile.read().split()
-	except FileNotFoundError:  # noqa
+	except FileNotFoundError:  # pylint:disable=Undefined-variable
 		stat_up_index = 'File ' +  data.DIR_DATA + 'stat_up_index' + ' not found.'
 	else:
 		stat_up_index = 'Time download inverted-index: ' + str(average(content))

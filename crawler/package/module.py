@@ -85,7 +85,6 @@ def create_dirs():
 	if not path.isdir(data.DIR_INDEX):
 		mkdir(data.DIR_INDEX)
 
-
 def create_doc():
 	"""Create doc file if it doesn't exist and if it was modified."""
 	if not path.exists(data.FILE_DOC):
@@ -98,7 +97,6 @@ def create_doc():
 			remove(data.FILE_DOC)
 		with open(data.FILE_DOC, 'w') as myfile:
 			myfile.write(data.ERROR_CODE_DOC)
-
 
 def def_links():
 	"""Create directory of links if it doesn't exist
