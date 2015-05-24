@@ -349,7 +349,8 @@ def remove_useless_chars(keyword):  # Search
 				keyword = keyword[:-2]
 		else:
 			return None
-		if len(keyword)
+		if len(keyword) <= 1:
+			return None
 
 	return keyword
 

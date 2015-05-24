@@ -32,7 +32,7 @@ class WebConnexion(object):
 		nofollow, url = is_nofollow(url)
 		result = self.send_request(url)
 		if not isinstance(result, requests.models.Response):
-			return result, False, 0, None
+			return result, False, 0, url
 		else:
 			request = result
 			del result
@@ -41,10 +41,7 @@ class WebConnexion(object):
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
 				new_url = self.duplicate_content(request)
-				if new_url:
-					return request.text, nofollow, score, all_urls(request, new_url)
-				else:
-					return 'ignore', False, 0, all_urls(request, request.url)
+				return request.text, nofollow, score, all_urls(request, new_url)
 			else:
 				tell('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed), severity=0)
@@ -64,7 +61,7 @@ class WebConnexion(object):
 			if no_connexion():
 				return 'no connexion'
 			else:
-				return None
+				return 'ignore'
 		else:
 			return request
 
