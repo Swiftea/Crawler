@@ -32,7 +32,10 @@ class InvertedIndex(object):
 		:type inverted_index: dict
 
 		"""
-		self.inverted_index = inverted_index
+		if isinstance(inverted_index, dict):
+			self.inverted_index = inverted_index
+		else:
+			self.inverted_index = dict()
 
 	def getInvertedIndex(self):
 		""":return: inverted-index"""

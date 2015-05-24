@@ -24,9 +24,9 @@ class Crawler(object):
 			module.quit_program()
 		self.file_manager = FileManager()
 		self.ftp_manager = FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
-		self.get_inverted_index()
+		inverted_index = self.get_inverted_index()
 		self.index_manager = InvertedIndex()
-		self.index_manager.setInvertedIndex(self.inverted_index)
+		self.index_manager.setInvertedIndex(inverted_index)
 		self.index_manager.setStopwords(self.site_informations.STOPWORDS)
 		self.database = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER, pvdata.PASSWORD, pvdata.NAME_DB)
 		self.web_connexion = WebConnexion()
@@ -42,19 +42,23 @@ class Crawler(object):
 
 		"""
 		if module.is_index():
-			self.inverted_index = self.file_manager.get_inverted_index()
+			inverted_index = self.file_manager.get_inverted_index()
 		else:
 			if self.ftp_manager.compare_indexs():
 				begining = time()
-				self.inverted_index, error = self.ftp_manager.get_inverted_index()
+				inverted_index, error = self.ftp_manager.get_inverted_index()
 				if not error:
 					module.stats_dl_index(begining, time())
 			else:
-				self.inverted_index = self.file_manager.read_inverted_index()
+				inverted_index = self.file_manager.read_inverted_index()
 				error = False
-			if error and self.file_manager.reading_file_number != 0:
-				module.tell('Failed to download inverted-index ' + self.inverted_index, 1)
-				module.quit_program()
+			if error:
+				if self.file_manager.reading_file_number != 0:
+					module.tell('Failed to download inverted-index ' + inverted_index, 1)
+					module.quit_program()
+				else:
+					module.tell("New inverted-index")
+		return inverted_index
 
 	def start(self):
 		"""Start main loop of crawling.
@@ -122,59 +126,57 @@ class Crawler(object):
 		"""
 		module.tell('Crawling ' + url)
 		# Get webpage's html code:
-		html_code, nofollow, score, new_url = self.web_connexion.get_code(url)
+		html_code, nofollow, score, all_urls = self.web_connexion.get_code(url)
 		if html_code is None:
-			self.delete_if_exists(url)  # Failed to get code, must delete from database.
+			self.delete_if_exists(all_urls)  # Failed to get code, must delete from database.
 		elif html_code == 'no connexion':
 			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 			module.quit_program()
 		elif html_code == 'ignore':  # There was something wrong and maybe a redirection.
-			self.delete_if_exists(url)
-			if new_url:
-				if url != new_url:
-					self.delete_if_exists(new_url)
-			else:
-				module.tell('Bad redirection', severity=0)
+			self.delete_if_exists(all_urls)
 		else:
-			if url != new_url:
-				module.tell('Redirect to ' + new_url, severity=0)
-				self.delete_if_exists(url)
-			webpage_infos = {}
-			webpage_infos['url'] = new_url
+			if url != all_urls[0]:
+				module.tell('Redirect to ' + all_urls[0], severity=0)
+				self.delete_if_exists(all_urls[1:])
+			webpage_infos = dict()
+			webpage_infos['url'] = all_urls[0]
 			(links, webpage_infos['title'], webpage_infos['description'],
 				webpage_infos['keywords'], webpage_infos['language'],
 				webpage_infos['score'], webpage_infos['favicon'], webpage_infos['homepage']
-				) = self.site_informations.get_infos(new_url, html_code, nofollow, score)
+				) = self.site_informations.get_infos(all_urls[0], html_code, nofollow, score)
 
 			if webpage_infos['title'] != '':
-				if webpage_infos not in self.infos:
+				if module.can_add_doc(self.infos, webpage_infos):  # Duplicate only with url
 					self.infos.append(webpage_infos)
 					self.crawled_websites += 1
 					self.file_manager.save_links(links)
 			else:
-				self.delete_if_exists(new_url)
+				self.delete_if_exists(all_urls)
 
-	def delete_if_exists(self, url):
+	def delete_if_exists(self, urls):  # Must check for !nofollow!
 		"""Delete bad doc if exists.
 
 		Check if doc exists in database and delete it from database and inverted-index.
 
 		:param url: url to delete
-		:type url: str
+		:type url: str or list
 
 		"""
-		doc_exists = self.database.doc_exists(url)
-		if doc_exists:
-			doc_id = self.database.get_doc_id(url)
-			if doc_id:
-				self.database.del_one_doc(url)
-				self.index_manager.delete_doc_id(doc_id)
-			else:
+		if isinstance(urls, str):
+			urls = [urls]
+		for url in urls:
+			doc_exists = self.database.doc_exists(url)
+			if doc_exists:
+				doc_id = self.database.get_doc_id(url)
+				if doc_id:
+					self.database.del_one_doc(url)
+					self.index_manager.delete_doc_id(doc_id)
+				else:
+					self.safe_quit()
+			elif doc_exists is None:
 				self.safe_quit()
-		elif doc_exists is None:
-			self.safe_quit()
-		else:
-			module.tell('Ignore: ' + url, severity=-1)
+			else:
+				module.tell('Ignore: ' + url, severity=-1)
 
 	def send_to_db(self):
 		"""Send all informations about crawled webpages to database.
@@ -233,7 +235,7 @@ class Crawler(object):
 			if len(suggestions) > 0:
 				module.tell('Suggestions', severity=2)
 			else:
-				module.tell('No suggestions', severity=0)
+				module.tell('No suggestions')
 			for url in suggestions:
 				self.crawl_website(url)
 			self.send_to_db()

@@ -85,7 +85,7 @@ class FTPManager(FTP):
 		try:
 			response = self.cwd(path)
 		except all_errors as error:
-			return 'Error: ' + error
+			return 'Error: ' + str(error)
 		else:
 			return response
 
@@ -94,18 +94,21 @@ class FTPManager(FTP):
 		a list whose first element is the error response."""
 		try:
 			result = self.nlst()
-		except  all_errors as error:
-			return ['Error: ' + error]
+		except all_errors as error:
+			return ['Error: ' + str(error)]
 		else:
-			return result
+			if result != []:
+				return result
+			else:
+				return ['Empty list']
 
-	def infos_listdir(self, **kargs):
+	def infos_listdir(self, **facts):
 		"""Return the result of mlsd command of ftplib or
 		a list whose first element is the error response."""
 		try:
-			result = self.mlsd(**kargs)
+			result = self.mlsd(**facts)
 		except  all_errors as error:
-			return 'Error: ' + error
+			return 'Error: ' + str(error)
 		else:
 			return result
 

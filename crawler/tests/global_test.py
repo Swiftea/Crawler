@@ -14,16 +14,16 @@ from package.inverted_index import InvertedIndex
 from package.ftp_swiftea import FTPSwiftea
 from package.searches import SiteInformations
 from package.file_manager import FileManager
-import tests.tests_data as tests_data
+import tests.test_data as test_data
 
 def def_links():
     with open(data.DIR_LINKS + '0', 'w') as myfile:
-        myfile.write(tests_data.base_links)
+        myfile.write(test_data.base_links)
 
 
 class TestDatabaseSwiftea(DatabaseSwiftea):
 
-    suggestions = tests_data.suggestions
+    suggestions = test_data.suggestions
 
     def __init__(self, host, user, password, name):
         DatabaseSwiftea.__init__(self, host, user, password, name)
@@ -73,7 +73,7 @@ class TestFTPSwiftea(FTPSwiftea):
         return {}, False
 
     def send_inverted_index(self, inverted_index):
-        #assert inverted_index == tests_data.inverted_index
+        #assert inverted_index == test_data.inverted_index
         assert 1
 
     def compare_indexs(self):
@@ -90,7 +90,7 @@ class TestWebConnexion(WebConnexion):
         WebConnexion.__init__(self)
 
     def get_code(self, url):
-        return tests_data.code1, False, 1, url
+        return test_data.code1, False, 1, url
 
 
 class TestCrawler(Crawler):
@@ -100,12 +100,12 @@ class TestCrawler(Crawler):
             tell('No stopwords, quit program')
             quit_program()
         self.file_manager = FileManager()
-        self.ftp_manager = TestFTPSwiftea(tests_data.HOST_FTP, tests_data.USER, tests_data.PASSWORD)
+        self.ftp_manager = TestFTPSwiftea(test_data.HOST_FTP, test_data.USER, test_data.PASSWORD)
         self.get_inverted_index()
         self.index_manager = InvertedIndex()
         self.index_manager.setInvertedIndex(self.inverted_index)
         self.index_manager.setStopwords(self.site_informations.STOPWORDS)
-        self.database = TestDatabaseSwiftea(tests_data.HOST_DB, tests_data.USER, tests_data.PASSWORD, tests_data.NAME_DB)
+        self.database = TestDatabaseSwiftea(test_data.HOST_DB, test_data.USER, test_data.PASSWORD, test_data.NAME_DB)
         self.web_connexion = TestWebConnexion()
 
         self.infos = list()
@@ -116,6 +116,7 @@ class TestCrawler(Crawler):
         tell('Programm will quit')
         tell('end\n', 0)
 
+"""
 
 class TestGlobal(object):
     def test_crawler(self):
@@ -140,4 +141,4 @@ class TestGlobal(object):
             config.write(configfile)
 
         crawler.start()
-        tests_data.reset()
+        test_data.reset()"""

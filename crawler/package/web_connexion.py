@@ -11,7 +11,7 @@ from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
 
 from package.data import USER_AGENT, HEADERS, TIMEOUT
-from package.module import tell, no_connexion, is_nofollow, clean_link
+from package.module import tell, no_connexion, is_nofollow, clean_link, duplicate_content, all_urls
 from package.parsers import Parser_encoding
 
 class WebConnexion(object):
@@ -30,35 +30,43 @@ class WebConnexion(object):
 
 		"""
 		nofollow, url = is_nofollow(url)
-		try:
-			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-		except requests.packages.urllib3.exceptions.ReadTimeoutError:
-			tell('Read timeout error (urllib3): ' + url, 3)
-			return None, False, 0, None
-		except requests.exceptions.Timeout:
-			tell('Timeout error: ' + url, 4)
-			return None, False, 0, None
-		except requests.exceptions.RequestException as error:
-			tell('Connexion failed: {}, {}'.format(str(error), url), 5)
-			if no_connexion():
-				return 'no connexion', None, 0, None
-			else:
-				return None, False, 0, None
+		result = self.send_request(url)
+		if not isinstance(result, requests.models.Response):
+			return result, False, 0, None
 		else:
+			request = result
+			del result
 			allowed = self.check_robots_perm(url)
 			if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
-				url = self.param_duplicate(request)
-				if url:  # Redirected url don't pass in clean_link, too many params or too long.
-					return request.text, nofollow, score, url
+				new_url = self.duplicate_content(request)
+				if new_url:
+					return request.text, nofollow, score, all_urls(request, new_url)
 				else:
-					return 'ignore', False, 0, None
+					return 'ignore', False, 0, all_urls(request, request.url)
 			else:
 				tell('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed), severity=0)
-				return 'ignore', False, 0, request.url
+				return 'ignore', False, 0, all_urls(request, request.url)
 
+	def send_request(self, url):
+		try:
+			request = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+		except requests.packages.urllib3.exceptions.ReadTimeoutError:
+			tell('Read timeout error (urllib3): ' + url, 3)
+			return None
+		except requests.exceptions.Timeout:
+			tell('Timeout error: ' + url, 4)
+			return None
+		except requests.exceptions.RequestException as error:
+			tell('Connexion failed: {}, {}'.format(str(error), url), 5)
+			if no_connexion():
+				return 'no connexion'
+			else:
+				return None
+		else:
+			return request
 
 	def search_encoding(self, headers, code):
 		"""Searche encoding of webpage in source code.
@@ -112,25 +120,28 @@ class WebConnexion(object):
 			allowed = True
 		return allowed
 
-	def param_duplicate(self, request):
+	def duplicate_content(self, request1):
 		"""Avoid param duplicate.
 
-		Compare the size of source code with params and whitout.
-		Return url whitout params if it's the smae size.
+		Compare source codes with params and whitout.
+		Return url whitout params if it's the same content.
+
+		Take all history ?
 
 		:param request: request
 		:type request: requests.models.Response
 		:return: url
 
 		"""
-		infos_url = urlparse(request.url)
+		infos_url = urlparse(request1.url)
 		if infos_url.query != '':
-			size_with_param = len(request.text)
 			new_url = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
-			size_without_param = len(requests.get(new_url).text)
-			if size_with_param == size_without_param:
-				return clean_link(new_url)
+			request2 = self.send_request(new_url)
+			request2.encoding = self.search_encoding(request2.headers, request2.text)[0]
+			if duplicate_content(request1.text, request2.text):
+				tell("Same content")  # Tests
+				return clean_link(request1.url)
 			else:
-				return clean_link(request.url)
+				return clean_link(request2.url)
 		else:
-			return clean_link(request.url)
+			return clean_link(request1.url)

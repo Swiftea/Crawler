@@ -10,7 +10,7 @@ import sys
 
 import package.data as data
 
-def tell(message, error_code=None, severity=1):
+def tell(message, error_code='', severity=1):
 	"""Manage newspaper.
 
 	Print in console that program doing and save a copy with time in event file.
@@ -24,12 +24,10 @@ def tell(message, error_code=None, severity=1):
 	:type severity: int
 
 	"""
-	msg_to_print = message[:131]
+	msg_to_print = message[:132]
 	message = message.capitalize()
-	if error_code:
+	if error_code != '':
 		errors(message, error_code)
-	else:
-		error_code = ''
 
 	if severity == -1:
 		print('    ' + message[:127].lower())
@@ -165,6 +163,22 @@ def dir_size(source):
 		elif path.isdir(itempath):
 			total_size += dir_size(itempath)
 	return total_size
+
+
+def can_add_doc(docs, new_doc):
+	"""to avoid documents duplicate, look for all url doc.
+
+	:param docs: the documents to check
+	:type docs: list
+	:param new_doc: the doc to add
+	:type new_doc: dict
+	:return: True if can add the doc
+
+	"""
+	for doc in docs:
+		if doc['url'] == new_doc['url']:
+			return False
+	return True
 
 
 def average(content):  # Stats
@@ -304,13 +318,6 @@ def get_base_url(url):  # Search
 	base_url = infos_url.scheme + '://' + infos_url.netloc
 	return base_url
 
-def check_size_keyword(keyword):  # Search
-	"""Return True if size of given keyword is over than 2."""
-	if len(keyword) > 2:
-		return True
-	else:
-		return False
-
 def remove_useless_chars(keyword):  # Search
 	"""Remove useless chars in keyword.
 
@@ -324,23 +331,27 @@ def remove_useless_chars(keyword):  # Search
 	"""
 	while (keyword.startswith(data.START_CHARS) or keyword.endswith(data.END_CHARS) or keyword[1] == '\'' or
 		keyword[1] == data.MIDLE_CHARS or keyword[-2] == '\'' or keyword[-2] == data.MIDLE_CHARS):
-		if keyword.startswith(data.START_CHARS):
-			keyword = keyword[1:]
+
+		if len(keyword) > 1:
+			if keyword.startswith(data.START_CHARS):
+				keyword = keyword[1:]
+		else:
+			return None
 		if keyword.endswith(data.END_CHARS):
 			keyword = keyword[:-1]
-		if check_size_keyword(keyword):
+		if len(keyword) > 2:
 			if keyword[1] == '\'' or keyword[1] == data.MIDLE_CHARS:
 				keyword = keyword[2:]
-		if check_size_keyword(keyword):
+		else:
+			return None
+		if len(keyword) > 2:
 			if keyword[-2] == '\'' or keyword[-2] == data.MIDLE_CHARS:
 				keyword = keyword[:-2]
 		else:
 			return None
+		if len(keyword)
 
-	if check_size_keyword(keyword):
-		return keyword
-	else:
-		return None
+	return keyword
 
 def is_letters(keyword):  # Search
 	"""Return True if one char at least is a letter.
@@ -399,7 +410,7 @@ def is_homepage(url):  # Search
 	else:
 		return False
 
-def clean_link(url, base_url=None):
+def clean_link(url, base_url=None):  # Search
 	"""Clean a link.
 
 	Rebuild url with base url, pass mailto and javascript,
@@ -444,6 +455,19 @@ def clean_link(url, base_url=None):
 			return None
 	else:
 		return None
+
+def capitalize(text):
+	"""Upper the first letter of given text
+
+	:param text: text
+	:type text: str
+	:return: text
+
+	"""
+	if len(text) > 0:
+		return text[0].upper() + text[1:]
+	else:
+		return ''
 
 
 def meta(attrs):  # Parser
@@ -581,3 +605,64 @@ def convert_secure(url):  # Web connexion
 		return url[:4] + url [5:]
 	else:
 		return url[:4] + 's' + url [4:]
+
+def duplicate_content(code1, code2):  # Web connexion
+	if code1 != code2:
+		size_code1, size_code2 = len(code1), len(code2)
+		# Percent of similar words
+		similar_words = 0
+		if size_code1 < size_code2:
+			keywords_code2 = code2.split()
+			for keyword in code1.split():
+				if keyword in keywords_code2:
+					similar_words += 1
+			percent = similar_words * 100 / len(keywords_code2)
+		else:
+			keywords_code1 = code1.split()
+			for keyword in code2.split():
+				if keyword in keywords_code1:
+					similar_words += 1
+			percent = similar_words * 100 / len(keywords_code1)
+
+		if percent >= 95:
+			is_duplicate = True
+		elif percent >= 65 and percent < 95:
+			# advanced verification to confirm or not
+			# difference percent of size
+			difference = 15
+			if size_code1 > size_code2:
+				percent_difference = (size_code1 - size_code2) * 100 / size_code1
+				if percent_difference <= difference:
+					is_duplicate = True
+				else:
+					is_duplicate = False
+			else:
+				percent_difference = (size_code2 - size_code1) * 100 / size_code2
+				if percent_difference <= difference:
+					is_duplicate = True
+				else:
+					is_duplicate = False
+		else:
+			is_duplicate = False
+	else:
+		is_duplicate = True
+
+	return is_duplicate
+
+def all_urls(request, first=None):
+	"""Return all urls from request.history.
+
+	:param request: request
+	:type request: requests.models.Response
+	:param first: list start with the url if given
+	:type first: str
+	:return: list of redirected urls, first is the last one
+
+	"""
+	if first:
+		urls = [clean_link(first)]
+	else:
+		urls = [request.url]
+	for req in request.history:
+		urls.append(clean_link(req.url))
+	return remove_duplicates(urls)

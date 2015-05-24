@@ -12,13 +12,11 @@ import package.module as module
 from package.module import *
 import package.data as data
 from package.data import *
-from package.searches import SiteInformations
-from package.inverted_index import InvertedIndex
 from package.parsers import Parser_encoding, MyParser
 from package.web_connexion import WebConnexion
 from package.file_manager import FileManager
 from package.database_swiftea import DatabaseSwiftea
-import tests.tests_data as tests_data
+import tests.test_data as test_data
 
 class TestCrawlerBase(object):
     """Base class for all crawler test classes."""
@@ -38,9 +36,9 @@ class TestCrawlerBase(object):
         self.parser_encoding = Parser_encoding()
         self.objet = 'title'
         self.title = 'letter'
-        self.code1 = tests_data.code1
-        self.code2 = tests_data.code2
-        self.code3 = tests_data.code3
+        self.code1 = test_data.code1
+        self.code2 = test_data.code2
+        self.code3 = test_data.code3
         self.reqrobots = RobotsCache()
         self.headers = {'status': '200 OK', 'content-type': 'text/html; charset=utf-8', 'vary': 'X-PJAX, Accept-Encoding'}
         self.config = ConfigParser()
@@ -65,6 +63,7 @@ class TestCrawlerFunctions(TestCrawlerBase):
 
     def test_speak(self):
         tell('A test message', 0)
+        tell('Beg test', severity=2)
 
     def test_get_stopwords(self):
         get_stopwords()
@@ -92,87 +91,6 @@ class TestCrawlerFunctions(TestCrawlerBase):
         assert convert_secure('https://www.example.en') == self.url
 
 
-class TestSearches(TestCrawlerBase):
-    def test_get_base_url(self):
-        assert get_base_url(self.url + '/page1.php') == self.url
-
-    def test_clean_text(self):
-        text = clean_text('Sample text with non-desired \r whitespaces \t chars \n')
-        assert '\n' not in text and '\r' not in text and '\t' not in text
-
-    def test_split_keywords(self):
-        is_list, keywords = split_keywords('jean/pierre')
-        assert is_list == True
-        assert keywords == ['jean', 'pierre']
-        is_list, keywords = split_keywords('fichier.ext')
-        assert keywords == ['fichier', 'ext']
-        is_list, keywords = split_keywords('fichier')
-        assert is_list == False
-        assert keywords == 'fichier'
-
-    def test_letter_repeat(self):
-        assert letter_repeat('file') == False
-        assert letter_repeat('*****') == True
-        assert letter_repeat('aaaaa') == True
-
-    def test_is_letters(self):
-        assert is_letters('file') == True
-        assert is_letters('fi*le') == True
-        assert is_letters('****') == False
-        assert is_letters('2015') == False
-
-    def test_check_size_keyword(self):
-        assert check_size_keyword('keyword') == True
-        assert check_size_keyword('in') == False
-        assert check_size_keyword('the') == True
-
-    def test_remove_duplicates(self):
-        assert remove_duplicates(['word', 'word']) == ['word']
-
-    def test_is_homepage(self):
-        assert is_homepage('http://www.bfmtv.com') == True
-        assert is_homepage('http://www.bfmtv.com/page.html') == False
-        assert is_homepage('https://github.com') == True
-        assert is_homepage('http://bfmbusiness.bfmtv.com') == False
-
-
-    def test_remove_useless_chars(self):
-        assert remove_useless_chars('(file’s)...') == 'file'
-        assert remove_useless_chars('2.0') == '2.0'
-        assert remove_useless_chars("fi'") is None
-        assert remove_useless_chars("fi's") is None
-
-    def test_clean_link(self):
-        assert clean_link('http://www.example.fr?w=word#big_title') == 'http://www.example.fr?w=word'
-
-
-    def test_clean_links(self):
-        links = ['page.php', 'http://www.example.fr/', 'mailto:test@test.fr',
-            '//www.example.fr?w=word', 'http://www.example.en/page1/index.html',
-            '/page1', 'http:/', 'https://a.net', '://www.sportetstyle.fr']
-        links = SiteInformations.clean_links(self, links, self.url)
-        assert links == ['http://www.example.en/page.php', 'http://www.example.fr',
-            'http://www.example.fr?w=word', 'http://www.example.en/page1', 'https://a.net', 'http://www.sportetstyle.fr']
-
-    def test_clean_keywords(self):
-        # 'jean/pierre', 'fichier.ext'
-        keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
-        'quoi...', '*****', 'epee,...', '2.0', 'fi\'s']
-        keywords = SiteInformations.clean_keywords(self, keywords, 'fr')
-        assert keywords == ['bureau', 'word', 'example', 'oiseau', 'quoi', 'epee']
-
-    def test_detect_language(self):
-        keywords = "un texte d'exemple pour tester la fonction".split()
-        assert SiteInformations.detect_language(self, keywords, self.url) == 'fr'
-        keywords = "un texte d'exemple sans stopwords".split()
-        assert SiteInformations.detect_language(self, keywords, self.url) == ''
-
-    def test_clean_favicon(self):
-        assert SiteInformations.clean_favicon(self, '/icon.ico', self.url) == 'http://www.example.en/icon.ico'
-        assert SiteInformations.clean_favicon(self, '//example.fr/icon.ico', self.url) == 'http://example.fr/icon.ico'
-        assert SiteInformations.clean_favicon(self, 'icon.ico', self.url) == 'http://www.example.en/icon.ico'
-
-
 class TestWebConnexion(TestCrawlerBase):
     def test_is_nofollow(self):
         nofollow, url = is_nofollow(self.url + '!nofollow!')
@@ -185,6 +103,12 @@ class TestWebConnexion(TestCrawlerBase):
     def test_no_connexion(self):
         assert no_connexion(self.url) == True
         assert no_connexion() == False
+
+    def test_all_urls(self):
+        request = req.get("https://fr.wikipedia.org")
+        assert all_urls(request, request.url) == ["https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Accueil_principal", "https://fr.wikipedia.org"]
+        request = req.get("http://www.wordreference.com/")
+        assert all_urls(request, request.url) == ["http://www.wordreference.com"]
 
 
     def test_search_encoding(self):
@@ -199,11 +123,6 @@ class TestWebConnexion(TestCrawlerBase):
         assert WebConnexion.check_robots_perm(self, self.url) == True
         assert WebConnexion.check_robots_perm(self, 'http://wiki.bilboplanet.com') == True
         assert WebConnexion.check_robots_perm(self, 'http://premium.lefigaro.fr') == True
-
-    def test_param_duplicate(self):
-        assert WebConnexion.param_duplicate(self, req.get('http://www.01net.com')) == 'http://www.01net.com'
-        assert WebConnexion.param_duplicate(self, req.get('http://www.01net.com/?page=12')) == 'http://www.01net.com'
-        assert WebConnexion.param_duplicate(self, req.get('https://www.google.fr/webhp?tab=Xw')) == 'https://www.google.fr/webhp?tab=Xw'
 
 
 class TestParser(TestCrawlerBase):
@@ -262,84 +181,6 @@ class TestParser(TestCrawlerBase):
         assert parser.encoding == 'UTF-16 LE'
 
 
-class TestIndex(TestCrawlerBase):
-    def test_getInvertedIndex(self):
-        assert InvertedIndex.getInvertedIndex(self) == {'EN': {
-        'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
-        'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
-        'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
-
-    def test_setInvertedIndex(self):
-        InvertedIndex.setInvertedIndex(self, self.inverted_index)
-        assert InvertedIndex.getInvertedIndex(self) == self.inverted_index
-
-    def test_setStopwords(self):
-        InvertedIndex.setStopwords(self, {'fr':('mot', 'pour', 'autre')})
-        assert self.STOPWORDS == {'fr':('mot', 'pour', 'autre')}
-
-    def test_add_word(self):
-        # Add language:
-        word_infos = {'word': 'fiesta', 'language': 'ES', 'first_letter': 'F', 'filename': 'fi', 'occurence': 6}
-        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
-        # Add letter:
-        word_infos = {'word': 'avion', 'language': 'FR', 'first_letter': 'A', 'filename': 'av', 'occurence': 6}
-        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
-        # Add letter:
-        word_infos = {'word': 'voler', 'language': 'FR', 'first_letter': 'V', 'filename': 'vo', 'occurence': 7}
-        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
-        # Add filename:
-        word_infos = {'word': 'aboutir', 'language': 'FR', 'first_letter': 'A', 'filename': 'ab', 'occurence': 7}
-        InvertedIndex.add_word(self, word_infos, doc_id=56, nb_words=40)
-        # add word:
-        word_infos = {'word': 'aviation', 'language': 'FR', 'first_letter': 'A', 'filename': 'av', 'occurence': 7}
-        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
-        # add doc_id:
-        word_infos = {'word': 'aviation', 'language': 'FR', 'first_letter': 'A', 'filename': 'av', 'occurence': 4}
-        InvertedIndex.add_word(self, word_infos, doc_id=10, nb_words=30)
-        # add sp first letter:
-        word_infos = {'word': 'ùaviation', 'language': 'FR', 'first_letter': 'SP', 'filename': 'sp-a', 'occurence': 7}
-        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
-        # add sp filename:
-        word_infos = {'word': 'aùviation', 'language': 'FR', 'first_letter': 'A', 'filename': 'a-sp', 'occurence': 7}
-        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
-        # Update:
-        word_infos = {'word': 'avion', 'language': 'FR', 'first_letter': 'A', 'filename': 'av', 'occurence': 7}
-        InvertedIndex.add_word(self, word_infos, doc_id=9, nb_words=40)
-
-        assert self.inverted_index == {'EN': {
-        'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
-        'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
-        'V': {'vo': {'voler': {9: 7/40}}},
-        'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}},
-        'A': {'av': {'avion': {9: 7/40}, 'aviation': {9: 7/40, 10: 0.1333333}}, 'ab': {'aboutir': {56: 7/40}}, 'a-sp': {'aùviation': {9: 7/40}}},
-        'SP': {'sp-a': {'ùaviation': {9: 7/40}}}}, 'ES': {'F': {'fi': {'fiesta': {9: 6/40}}}}}
-
-    def test_delete_word(self):
-        InvertedIndex.delete_word(self, 'above', 'EN', 'A', 'ab')
-        assert self.inverted_index == {'EN': {
-        'A': {'ab': {'abort': {1: .3, 2: .1}}},
-        'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
-        'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
-
-    def test_delete_id_word(self):
-        word_infos = {'word': 'boule', 'language': 'FR', 'first_letter': 'B', 'filename': 'bo'}
-        InvertedIndex.delete_id_word(self, word_infos, 2)
-        assert self.inverted_index == {'EN': {
-        'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
-        'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
-        'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25}}}}}
-
-    def test_delete_doc_id(self):
-        InvertedIndex.delete_doc_id(self, 2)
-        assert self.inverted_index == {'EN': {
-        'A': {'ab': {'above': {1: .3}, 'abort': {1: .3}}},
-        'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
-        'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25}}}}}
-        InvertedIndex.delete_doc_id(self, 1)
-        print(self.inverted_index)
-        assert self.inverted_index == {'EN': {'W': {'wo': {'word': {30: .4}}}}}
-
-
 class TestFileManager(TestCrawlerBase):
     def test_init(self):
         FileManager.__init__(self)
@@ -386,4 +227,4 @@ class TestFileManager(TestCrawlerBase):
 
 class TestReset(object):
     def test_reset(self):
-        tests_data.reset()
+        test_data.reset()

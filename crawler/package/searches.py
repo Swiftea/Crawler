@@ -33,7 +33,7 @@ class SiteInformations(object):
 
 		self.parser.feed(code)
 
-		title = module.clean_text(self.parser.title.capitalize())  # Find title and clean it
+		title = module.clean_text(module.capitalize(self.parser.title))  # Find title and clean it
 
 		keywords = module.clean_text(self.parser.keywords.lower()).split()
 		begining_size = len(keywords)  # Stats
@@ -51,9 +51,9 @@ class SiteInformations(object):
 
 			# Description:
 			if self.parser.description == '':
-				description = module.clean_text(self.parser.first_title.capitalize())
+				description = module.clean_text(module.capitalize(self.parser.first_title))
 			else:
-				description = module.clean_text(self.parser.description.capitalize())
+				description = module.clean_text(module.capitalize(self.parser.description))
 
 			# Css:
 			if self.parser.css:
@@ -163,7 +163,7 @@ class SiteInformations(object):
 		stopwords = self.STOPWORDS[language]
 		new_keywords = []
 		for keyword in keywords:
-			if module.check_size_keyword(keyword):
+			if keyword != '':
 				if module.letter_repeat(keyword):
 					continue
 				keyword = module.remove_useless_chars(keyword)
