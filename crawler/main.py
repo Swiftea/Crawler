@@ -10,6 +10,7 @@ from crawling import web_connexion, site_informations
 from database.database_swiftea import DatabaseSwiftea
 from index import inverted_index, ftp_swiftea, index
 from swiftea_bot.file_manager import FileManager
+from swiftea_bot.data import DIR_INDEX
 import swiftea_bot.module as module
 
 class Crawler(object):
@@ -104,7 +105,7 @@ class Crawler(object):
 			if run:
 				self.suggestions()
 				self.send_inverted_index()
-				if module.dir_size(data.DIR_INDEX) > 7000000:
+				if module.dir_size(DIR_INDEX) > 7000000:
 					module.tell('Index is too big for current server', severity=-1)
 					self.safe_quit()
 					run = False

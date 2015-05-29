@@ -7,8 +7,6 @@ the sencond one only for encoding."""
 from html.parser import HTMLParser
 from html.entities import name2codepoint, html5
 
-import swiftea_bot.data as data
-
 class ExtractData(HTMLParser):
 	"""Html parser for extract data.
 

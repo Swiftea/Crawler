@@ -1,2 +1,2 @@
 ignore-paths:
-    - crawler/package/data.py
+    - crawler/swiftea_bot/data.py

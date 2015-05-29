@@ -82,7 +82,7 @@ class SiteInformations(object):
 		return links, title, description, keywords, language, score, favicon, homepage
 
 
-	def detect_language(self, keywords, url):
+	def detect_language(self, keywords):
 		"""Detect language of webpage if not given.
 
 		:param keywords: keywords of webpage used for detecting
