@@ -1,0 +1,204 @@
+#!/usr/bin/python3
+
+import requests as req
+from reppy.cache import RobotsCache
+
+from crawling.connexion import *
+from crawling.searches import *
+from crawling.web_connexion import WebConnexion
+from crawling.site_informations import SiteInformations
+from crawling.parsers import *
+import tests.test_data as test_data
+
+class CrawlingBaseTest(object):
+	"""Base class for all crawler test classes."""
+	def setup_method(self, _):
+		"""Configure the app."""
+		self.url = "http://aetfiws.alwaysdata.net"
+		self.code1 = test_data.CODE1
+		self.code2 = test_data.CODE2
+		self.code3 = test_data.CODE3
+		self.parser = ExtractData()
+		self.parser_encoding = ExtractEncoding()
+		self.STOPWORDS = {'fr':('mot', 'pour')}
+		self.objet = 'title'
+		self.title = 'letter'
+		self.headers = {'status': '200 OK', 'content-type': 'text/html; charset=utf-8', 'vary': 'X-PJAX, Accept-Encoding'}
+		self.reqrobots = RobotsCache()
+
+
+class TestConnexion(CrawlingBaseTest):
+	def test_no_connexion(self):
+		assert no_connexion(self.url) == True
+		assert no_connexion() == False
+
+	def test_is_nofollow(self):
+		nofollow, url = is_nofollow(self.url + '!nofollow!')
+		assert nofollow == True
+		assert url == self.url
+		nofollow, url = is_nofollow(self.url)
+		assert nofollow == False
+		assert url == self.url
+
+	def test_duplicate_content(self):
+		assert 1
+
+	def test_all_urls(self):
+		request = req.get("https://fr.wikipedia.org")
+		assert all_urls(request, request.url) == ["https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Accueil_principal", "https://fr.wikipedia.org"]
+		request = req.get("http://www.wordreference.com/")
+		assert all_urls(request, request.url) == ["http://www.wordreference.com"]
+
+	def test_get_stopwords(self):
+		get_stopwords()
+		get_stopwords(self.url)
+
+
+class TestWebConnexion(CrawlingBaseTest):
+	def test_search_encoding(self):
+		assert  WebConnexion.search_encoding(self, {}, self.code3) == ('utf-8', 0)
+		assert WebConnexion.search_encoding(self, self.headers, self.code3) == ('utf-8', 1)
+		assert WebConnexion.search_encoding(self, {}, self.code1) == ('utf-8', 1)
+		assert WebConnexion.search_encoding(self, {}, self.code2) == ('UTF-16 LE', 1)
+
+	def test_check_robots_perm(self):
+		assert WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com') == True
+		assert WebConnexion.check_robots_perm(self, 'https://www.facebook.com') == False
+		assert WebConnexion.check_robots_perm(self, self.url) == True
+		assert WebConnexion.check_robots_perm(self, 'http://wiki.bilboplanet.com') == True
+		assert WebConnexion.check_robots_perm(self, 'http://premium.lefigaro.fr') == True
+
+	def test_duplicate_content(self):
+		assert 1
+
+	def test_send_request(self):
+		assert 1
+
+
+class TestSearches(CrawlingBaseTest):
+	def test_clean_text(self):
+		text = clean_text('Sample text with non-desired \r whitespaces \t chars \n')
+		assert '\n' not in text and '\r' not in text and '\t' not in text
+
+	def test_get_base_url(self):
+		assert get_base_url(self.url + '/page1.php') == self.url
+
+	def test_split_keywords(self):
+		is_list, keywords = split_keywords('jean/pierre')
+		assert is_list == True
+		assert keywords == ['jean', 'pierre']
+		is_list, keywords = split_keywords('fichier.ext')
+		assert keywords == ['fichier', 'ext']
+		is_list, keywords = split_keywords('fichier')
+		assert is_list == False
+		assert keywords == 'fichier'
+
+	def test_letter_repeat(self):
+		assert letter_repeat('file') == False
+		assert letter_repeat('*****') == True
+		assert letter_repeat('aaaaa') == True
+
+	def test_is_letters(self):
+		assert is_letters('file') == True
+		assert is_letters('fi*le') == True
+		assert is_letters('****') == False
+		assert is_letters('2015') == False
+
+	def test_is_homepage(self):
+		assert is_homepage('http://www.bfmtv.com') == True
+		assert is_homepage('http://www.bfmtv.com/page.html') == False
+		assert is_homepage('https://github.com') == True
+		assert is_homepage('http://bfmbusiness.bfmtv.com') == False
+
+	def test_capitalize(self):
+		assert capitalize('ceci est un Titre') == 'Ceci est un Titre'
+		assert capitalize('') == ''
+
+	def test_remove_useless_chars(self):
+		assert remove_useless_chars('(file’s)...') == 'file'
+		assert remove_useless_chars('2.0') == '2.0'
+
+	def test_clean_link(self):
+		assert clean_link('http://www.example.fr?w=word#big_title') == 'http://www.example.fr?w=word'
+
+
+class TestSiteInformations(CrawlingBaseTest):
+	def test_clean_links(self):
+		links = ['page.php', 'http://aetfiws.alwaysdata.net/', 'mailto:test@test.fr',
+			'//www.example.fr?w=word', 'http://aetfiws.alwaysdata.net/page1/index.html',
+			'/page1', 'http:/', '://www.sportetstyle.fr']
+		links = SiteInformations.clean_links(self, links, self.url)
+		assert links == ['http://aetfiws.alwaysdata.net/page.php', self.url,
+			'http://www.example.fr?w=word', 'http://aetfiws.alwaysdata.net/page1',
+			'http://www.sportetstyle.fr']
+
+	def test_clean_keywords(self):
+		# 'jean/pierre', 'fichier.ext'
+		keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
+		'quoi...', '*****', 'epee,...', '2.0', 'o\'clock']
+		keywords = SiteInformations.clean_keywords(self, keywords, 'fr')
+		assert keywords == ['le', 'bureau', 'word', 'example', 'oiseau', 'quoi', 'epee', 'clock']
+
+	def test_detect_language(self):
+		keywords = "un texte d'exemple pour tester la fonction".split()
+		assert SiteInformations.detect_language(self, keywords, self.url) == 'fr'
+		keywords = "un texte d'exemple sans stopwords".split()
+		assert SiteInformations.detect_language(self, keywords, self.url) == ''
+
+	def test_clean_favicon(self):
+		favicon = 'http://aetfiws.alwaysdata.net/icon.ico'
+		assert SiteInformations.clean_favicon(self, '/icon.ico', self.url) == favicon
+		assert SiteInformations.clean_favicon(self, '//aetfiws.alwaysdata.net/icon.ico', self.url) == favicon
+		assert SiteInformations.clean_favicon(self, 'icon.ico', self.url) == favicon
+
+
+class TestParsers(CrawlingBaseTest):
+	def test_can_append(self):
+		assert can_append('about/ninf.php', 'noindex, nofollow') == None
+		assert can_append('about/ninf.php', 'nofollow') == 'about/ninf.php!nofollow!'
+		assert can_append('about/ninf.php', '') == 'about/ninf.php'
+		assert can_append(None, '') is None
+
+	def test_meta(self):
+		language, description, objet = meta([('name', 'description'), ('content', 'Communauté du Libre partage')])
+		assert description == 'Communauté du Libre partage'
+		assert objet == 'description'
+		language, description, objet = meta([('name', 'language'), ('content', 'fr')])
+		assert language == 'fr'
+		language, description, objet = meta([('http-equiv', 'content-language'), ('content', 'en')])
+		assert language == 'en'
+
+
+	def test_handle_entityref(self):
+		ExtractData.handle_entityref(self, 'eacute')
+		assert self.title == 'letteré'
+		ExtractData.handle_entityref(self, 'agrave')
+		assert self.title == 'letteréà'
+
+	def test_handle_charref(self):
+		pass
+
+
+	def test_parser(self):
+		self.parser.feed(self.code1)
+		assert self.parser.links == ['demo', 'index', 'about/nf.php!nofollow!']
+		assert clean_text(self.parser.first_title) == 'Gros titre'
+		assert clean_text(self.parser.keywords) == 'Gros titre Moyen titre petit titre strong em'
+		assert self.parser.css == True
+		assert self.parser.description == 'Moteur de recherche'
+		assert self.parser.language == 'en'
+		assert self.parser.favicon == 'public/favicon.ico'
+		assert self.parser.title == 'Swiftea'
+
+		self.parser.feed(self.code2)
+		assert self.parser.language == 'en'
+		assert self.parser.favicon == 'public/favicon2.ico'
+
+		self.parser.feed(self.code3)
+		assert self.parser.language == 'fr'
+
+	def test_parser_encoding(self):
+		self.parser_encoding.feed(self.code1)
+		assert self.parser_encoding.encoding == 'utf-8'
+		self.parser_encoding.feed(self.code2)
+		assert self.parser_encoding.encoding == 'UTF-16 LE'

@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
@@ -5,12 +7,12 @@ from setuptools.command.test import test as TestCommand
 class PyTest(TestCommand):
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_args = ['--strict', '--verbose', '--tb=long', 'crawler/tests']
+        self.test_args = []
         self.test_suite = True
 
     def run_tests(self):
-        import pytest
-        errno = pytest.main(self.test_args)
+        from crawler.tests.run_tests import tests
+        errno = tests()
         sys.exit(errno)
 
 def read(filename):

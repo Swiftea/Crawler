@@ -14,7 +14,7 @@ It can't be run by contributors because it needs private_data.py wich is not upl
    :numbered:
 
    doc_modules
-   doc_package
+   doc_packages
    doc_tests
 
 

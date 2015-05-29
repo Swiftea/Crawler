@@ -3,14 +3,19 @@
 from os import path, mkdir
 import json
 
-from package.ftp_manager import FTPManager
-from package.data import DIR_INDEX, FTP_INDEX
-from package.module import tell
+from index.ftp_manager import FTPManager
+from swiftea_bot.data import DIR_INDEX, FTP_INDEX
+from swiftea_bot.module import tell
 
 class FTPSwiftea(FTPManager):
 	"""Class to manage the ftp connexion for crawler."""
 	def __init__(self, host, user, password):
 		FTPManager.__init__(self, host, user, password)
+		self.language = int()
+		self.ftp_index = FTP_INDEX
+
+	def set_ftp_index(self, ftp_index):
+		self.ftp_index = ftp_index
 
 
 	def get_inverted_index(self):
@@ -23,11 +28,12 @@ class FTPSwiftea(FTPManager):
 		error_msg = '', True
 		inverted_index = dict()
 		self.connexion()
-		if self.cd(FTP_INDEX).startswith('Error'): return error_msg
+		if self.cd(self.ftp_index).startswith('Error'): return error_msg
 
 		list_language = self.listdir()
 		if list_language[0].startswith('Error'): return error_msg
 		for language in list_language:
+			self.language = language
 			if self.cd(language).startswith('Error'): return error_msg
 			if not path.isdir(DIR_INDEX + language):
 				mkdir(DIR_INDEX + language)
@@ -36,6 +42,7 @@ class FTPSwiftea(FTPManager):
 			list_first_letter = self.listdir()
 			if list_first_letter[0].startswith('Error'): return error_msg
 			for first_letter in list_first_letter:
+				self.tell_progress(first_letter, False)
 				if self.cd(first_letter).startswith('Error'): return error_msg
 				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
 					mkdir(DIR_INDEX +  language + '/' + first_letter)
@@ -73,7 +80,7 @@ class FTPSwiftea(FTPManager):
 		tell('Send inverted-index')
 		self.connexion()
 
-		if self.cd(FTP_INDEX).startswith('Error'): return ''
+		if self.cd(self.ftp_index).startswith('Error'): return ''
 		for language in inverted_index:
 			list_language = self.listdir()
 			if list_language[0].startswith('Error'): return ''
@@ -84,6 +91,7 @@ class FTPSwiftea(FTPManager):
 
 			if self.cd(language).startswith('Error'): return ''
 			for first_letter in inverted_index[language]:
+				self.tell_progress(first_letter)
 				list_first_letter = self.listdir()
 				if list_first_letter[0].startswith('Error'): return ''
 				if first_letter not in list_first_letter:
@@ -109,6 +117,12 @@ class FTPSwiftea(FTPManager):
 		return False
 
 
+	def tell_progress(self, letter, upload=True):
+		message = 'Uploading' if upload else 'Downloading'
+		message += ' ' + letter + ' in ' + self.language
+		tell(message)
+
+
 	def compare_indexs(self):
 		"""Compare inverted-index in local and in server.
 
@@ -119,7 +133,7 @@ class FTPSwiftea(FTPManager):
 		if path.exists(local_file):
 			local_size = path.getsize(local_file)
 			self.connexion()
-			if self.cd(FTP_INDEX).startswith('Error'): return False
+			if self.cd(self.ftp_index).startswith('Error'): return False
 			server_size = 0
 			list_language = self.listdir()
 			if list_language[0].startswith('Error'): return True

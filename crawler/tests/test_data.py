@@ -2,9 +2,9 @@
 
 from shutil import rmtree
 
-from package.data import DIR_DATA, DIR_OUTPUT, DIR_LINKS, DIR_CONFIG
+from swiftea_bot.data import DIR_DATA, DIR_OUTPUT, DIR_LINKS, DIR_CONFIG
 
-base_links = """http://swiftea.alwaysdata.net/0
+BASE_LINKS = """http://swiftea.alwaysdata.net/0
 http://swiftea.alwaysdata.net/1
 http://swiftea.alwaysdata.net/2
 http://swiftea.alwaysdata.net/3
@@ -21,9 +21,11 @@ http://swiftea.alwaysdata.net/13
 http://swiftea.alwaysdata.net/14
 """
 
-suggestions = ['http://suggestions.net/page1.html', 'http://suggestions.net/page2.html']
+URL = "http://aetfiws.alwaysdata.net"
 
-code1 = """<!DOCTYPE html>
+SUGGESTIONS = ['http://suggestions.net/page1.html', 'http://suggestions.net/page2.html']
+
+CODE1 = """<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -50,7 +52,7 @@ code1 = """<!DOCTYPE html>
 </html>
 """
 
-code2 = """<!DOCTYPE html>
+CODE2 = """<!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="content-language" content="en">
@@ -62,7 +64,7 @@ code2 = """<!DOCTYPE html>
 </html>
 """
 
-code3 = """<!DOCTYPE html>
+CODE3 = """<!DOCTYPE html>
 <html>
     <head>
         <meta name="language" content="fr">
@@ -72,13 +74,10 @@ code3 = """<!DOCTYPE html>
 </html>
 """
 
-inverted_index = {'EN': {'T': {'ti': {'titre': {0: 0.375}}}, 'S': {'st': {'strong': {0: 0.125}}, 'sw': {'swiftea': {0: 0.125}}}, 'P': {'pe': {'petit': {0: 0.125}}}, 'G': {'gr': {'gros': {0: 0.125}}}, 'M': {'mo': {'moyen': {0: 0.125}}}}}
-
-USER = ''
-PASSWORD = ''
-HOST_FTP = 'ftp'
-HOST_DB = 'mysql'
-NAME_DB = 'bdd'
+INVERTED_INDEX = {'EN': {
+'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
+'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
+'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
 
 def reset():
     rmtree(DIR_DATA)

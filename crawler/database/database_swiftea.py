@@ -2,9 +2,10 @@
 
 from datetime import datetime
 
-from package.module import tell, convert_secure, url_is_secure
-from package.database_manager import DatabaseManager
-from package.data import CRAWL_DELAY
+from swiftea_bot.module import tell
+from swiftea_bot.data import CRAWL_DELAY
+from database.database_manager import DatabaseManager
+from database.database import url_is_secure, convert_secure
 
 class DatabaseSwiftea(DatabaseManager):
 	"""Class to manage Swiftea database.

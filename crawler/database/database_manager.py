@@ -4,7 +4,7 @@ from socket import timeout
 
 import pymysql
 
-from package.data import TIMEOUT
+from swiftea_bot.data import TIMEOUT
 
 class DatabaseManager(object):
 	"""Class to manage query to Database using PyMySQL.
@@ -33,6 +33,15 @@ class DatabaseManager(object):
 		self.password = password  # Password
 		self.name = name  # Database name
 		self.cursor = self.conn = None
+
+	def set_name(self, name):
+		"""Set base name
+
+		:param name: new base name
+		:type name: str
+
+		"""
+		self.name = name
 
 
 	def connexion(self):

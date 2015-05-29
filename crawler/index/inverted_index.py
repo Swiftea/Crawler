@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from package.data import ALPHABET
+from swiftea_bot.data import ALPHABET
 
 class InvertedIndex(object):
 	"""Manage inverted-index for crawler.

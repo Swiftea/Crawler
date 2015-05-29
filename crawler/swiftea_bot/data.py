@@ -61,3 +61,22 @@ ERROR_CODE_DOC = """Error codes
 13: Failed to get url in database
 14: Failed to check row
 """
+
+BASE_LINKS = """http://www.planet-libre.org
+https://zestedesavoir.com
+http://www.01net.com
+https://www.youtube.com
+http://www.lefigaro.fr
+http://www.lemonde.fr
+http://www.lepoint.fr
+http://www.sport.fr
+http://www.jeuxvideo.com
+http://www.rueducommerce.fr
+http://www.actu-environnement.com
+https://fr.wikipedia.org
+https://fr.news.yahoo.com
+http://www.live.com
+http://www.yahoo.com
+http://www.lequipe.fr
+http://swiftea.alwaysdata.net
+http://trukastuss.over-blog.com"""

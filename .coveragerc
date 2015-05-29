@@ -1,5 +1,2 @@
 [run]
 source = crawler
-
-[html]
-directory = crawler/tests/coverage_html_report

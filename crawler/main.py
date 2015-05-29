@@ -3,33 +3,28 @@
 from time import time
 
 try:
-	import package.private_data as pvdata
+	import swiftea_bot.private_data as pvdata
 except ImportError:
 	pass
-import package.module as module
-from package.data import DIR_INDEX
-from package.web_connexion import WebConnexion
-from package.file_manager import FileManager
-from package.database_swiftea import DatabaseSwiftea
-from package.searches import SiteInformations
-from package.inverted_index import InvertedIndex
-from package.ftp_swiftea import FTPSwiftea
+from crawling import web_connexion, site_informations
+from database.database_swiftea import DatabaseSwiftea
+from index import inverted_index, ftp_swiftea, index
+from swiftea_bot.file_manager import FileManager
+import swiftea_bot.module as module
 
 class Crawler(object):
 	"""Crawler main class."""
 	def __init__(self):
-		self.site_informations = SiteInformations()
+		self.site_informations = site_informations.SiteInformations()
 		if self.site_informations.STOPWORDS is None:
 			module.tell('No stopwords, quit program')
 			module.quit_program()
 		self.file_manager = FileManager()
-		self.ftp_manager = FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
-		inverted_index = self.get_inverted_index()
-		self.index_manager = InvertedIndex()
-		self.index_manager.setInvertedIndex(inverted_index)
+		self.ftp_manager = ftp_swiftea.FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
+		self.index_manager = inverted_index.InvertedIndex()
 		self.index_manager.setStopwords(self.site_informations.STOPWORDS)
 		self.database = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER, pvdata.PASSWORD, pvdata.NAME_DB)
-		self.web_connexion = WebConnexion()
+		self.web_connexion = web_connexion.WebConnexion()
 
 		self.infos = list()
 		self.crawled_websites = 0
@@ -48,17 +43,17 @@ class Crawler(object):
 				begining = time()
 				inverted_index, error = self.ftp_manager.get_inverted_index()
 				if not error:
-					module.stats_dl_index(begining, time())
+					index.stats_dl_index(begining, time())
 			else:
 				inverted_index = self.file_manager.read_inverted_index()
 				error = False
 			if error:
 				if self.file_manager.reading_file_number != 0:
-					module.tell('Failed to download inverted-index ' + inverted_index, 1)
+					module.tell('Failed to download inverted-index ' + index, 1)
 					module.quit_program()
 				else:
 					module.tell("New inverted-index")
-		return inverted_index
+		self.index_manager.setInvertedIndex(inverted_index)
 
 	def start(self):
 		"""Start main loop of crawling.
@@ -109,7 +104,7 @@ class Crawler(object):
 			if run:
 				self.suggestions()
 				self.send_inverted_index()
-				if module.dir_size(DIR_INDEX) > 7000000:
+				if module.dir_size(data.DIR_INDEX) > 7000000:
 					module.tell('Index is too big for current server', severity=-1)
 					self.safe_quit()
 					run = False
@@ -136,7 +131,7 @@ class Crawler(object):
 			self.delete_if_exists(all_urls)
 		else:
 			if url != all_urls[0]:
-				module.tell('Redirect to ' + all_urls[0], severity=0)
+				module.tell('Redirect to ' + all_urls[0], severity=0)  # Or same content
 				self.delete_if_exists(all_urls[1:])
 			webpage_infos = dict()
 			webpage_infos['url'] = all_urls[0]
@@ -153,7 +148,7 @@ class Crawler(object):
 			else:
 				self.delete_if_exists(all_urls)
 
-	def delete_if_exists(self, urls):  # Must check for !nofollow!
+	def delete_if_exists(self, urls):
 		"""Delete bad doc if exists.
 
 		Check if doc exists in database and delete it from database and inverted-index.
@@ -218,7 +213,7 @@ class Crawler(object):
 			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 			module.quit_program()
 		else:
-			module.stats_ul_index(begining, time())
+			index.stats_ul_index(begining, time())
 
 	def suggestions(self):
 		"""Suggestions:
@@ -228,7 +223,7 @@ class Crawler(object):
 
 		"""
 		suggestions = self.database.suggestions()
-		if suggestions is not None:
+		if suggestions is None:
 			module.tell('Failed to get suggestions')
 		else:
 			suggestions = self.site_informations.clean_links(suggestions)
@@ -254,4 +249,5 @@ if __name__ == '__main__':
 	module.create_doc()
 	module.def_links()
 	crawler = Crawler()
+	crawler.get_inverted_index()
 	crawler.start()

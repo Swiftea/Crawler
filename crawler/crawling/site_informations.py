@@ -3,16 +3,16 @@
 """After parse source code, data extracted must be classify and clean.
 Here is a class who use the html parser and manage all results."""
 
-import package.module as module
-from package.parsers import MyParser
+from swiftea_bot.module import tell, remove_duplicates
+from crawling import parsers, searches
+from crawling.connexion import get_stopwords
 
 class SiteInformations(object):
 	"""Class to manage searches in source codes."""
 	def __init__(self):
 		"""Build searches manager."""
-		self.parser = MyParser()
-		self.STOPWORDS = module.get_stopwords()
-
+		self.parser = parsers.ExtractData()
+		self.STOPWORDS = get_stopwords()
 
 	def get_infos(self, url, code, nofollow, score):
 		"""Manager all searches of webpage's informations.
@@ -29,13 +29,13 @@ class SiteInformations(object):
 			score, number of words
 
 		"""
-		homepage = 1 if module.is_homepage(url) else 0
+		homepage = 1 if searches.is_homepage(url) else 0
 
 		self.parser.feed(code)
 
-		title = module.clean_text(module.capitalize(self.parser.title))  # Find title and clean it
+		title = searches.clean_text(searches.capitalize(self.parser.title))  # Find title and clean it
 
-		keywords = module.clean_text(self.parser.keywords.lower()).split()
+		keywords = searches.clean_text(self.parser.keywords.lower()).split()
 		begining_size = len(keywords)  # Stats
 
 		# Language:
@@ -51,23 +51,24 @@ class SiteInformations(object):
 
 			# Description:
 			if self.parser.description == '':
-				description = module.clean_text(module.capitalize(self.parser.first_title))
+				description = searches.clean_text(searches.capitalize(self.parser.first_title))
 			else:
-				description = module.clean_text(module.capitalize(self.parser.description))
+				description = searches.clean_text(searches.capitalize(self.parser.description))
 
 			# Css:
 			if self.parser.css:
 				score += 1
 
-			module.stats_stop_words(begining_size, len(keywords))  # stats
+			searches.stats_stop_words(begining_size, len(keywords))  # stats
 
-			base_url = module.get_base_url(url)
+			base_url = searches.get_base_url(url)
 
 			# Links:
 			if nofollow:
 				links = list()
 			else:
 				links = self.clean_links(self.parser.links, base_url)
+				searches.stats_links(len(links))
 
 			# Favicon:
 			if self.parser.favicon != '':
@@ -75,7 +76,7 @@ class SiteInformations(object):
 			else:
 				favicon = ''
 		else:
-			module.tell('No language or title', severity=-1)
+			tell('No language or title', severity=-1)
 			title = links = description = score = favicon = ''
 
 		return links, title, description, keywords, language, score, favicon, homepage
@@ -106,8 +107,6 @@ class SiteInformations(object):
 		else:
 			language = ''
 
-		with open('output/detect_language', 'a') as myfile:
-			myfile.write(language + ': ' + url + '\n')
 		return language
 
 
@@ -120,15 +119,15 @@ class SiteInformations(object):
 		:return: cleanen links without duplicate
 
 		"""
-		links = module.remove_duplicates(links)
+		links = remove_duplicates(links)
 		new_links = list()
 
 		for url in links:
-			new_url = module.clean_link(url, base_url)
+			new_url = searches.clean_link(url, base_url)
 			if new_url:
 				new_links.append(new_url)
 
-		return module.remove_duplicates(new_links)
+		return remove_duplicates(new_links)
 
 
 	def clean_favicon(self, favicon, base_url):
@@ -164,15 +163,15 @@ class SiteInformations(object):
 		new_keywords = []
 		for keyword in keywords:
 			if keyword != '':
-				if module.letter_repeat(keyword):
+				if searches.letter_repeat(keyword):
 					continue
-				keyword = module.remove_useless_chars(keyword)
+				keyword = searches.remove_useless_chars(keyword)
 				if keyword is None:
 					continue
-				if not module.is_letters(keyword):
+				if not searches.is_letters(keyword):
 					continue
 
-				is_list, keywords = module.split_keywords(keyword)
+				is_list, keywords = searches.split_keywords(keyword)
 				if is_list:
 					keywords = self.clean_keywords(keywords, language)
 

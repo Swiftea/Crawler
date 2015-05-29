@@ -3,12 +3,13 @@
 from socket import timeout
 from ftplib import FTP, all_errors
 
-from package.data import TIMEOUT
+from swiftea_bot.data import TIMEOUT
 
 class MyFtpError(Exception):
 	"""How to use it: raise MyFtpError('Error message')"""
 	def __init__(self, value):
 		self.value = value
+
 	def __str__(self):
 		return repr(self.value)
 

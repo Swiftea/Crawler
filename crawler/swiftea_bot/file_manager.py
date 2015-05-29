@@ -8,8 +8,8 @@ from os import path, remove, listdir
 from configparser import ConfigParser
 import json
 
-from package.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX
-from package.module import tell, stats_links, convert_keys, remove_duplicates
+from swiftea_bot.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX
+from swiftea_bot.module import tell, remove_duplicates, convert_keys
 
 class FileManager(object):
 	"""File manager for Swiftea-Crawler.
@@ -81,14 +81,13 @@ class FileManager(object):
 		:type links: list
 
 		"""
-		stats_links(len(links))
 		filename = DIR_LINKS + str(self.writing_file_number)
 		if not path.exists(filename):
 			with open(filename, 'w', errors='replace', encoding='utf8') as myfile:
 				myfile.write('\n'.join(links))
 		else:
 			with open(filename, 'r+', errors='replace', encoding='utf8') as myfile:
-				old_links = myfile.read().split('\n')
+				old_links = myfile.read().splitlines()
 				myfile.seek(0)
 				links = remove_duplicates(old_links + links)
 				myfile.write('\n'.join(links))
@@ -121,8 +120,7 @@ class FileManager(object):
 		"""
 		filename = DIR_LINKS + str(self.reading_file_number)
 		try:
-			with open(filename, 'r', errors='replace',
-				encoding='utf8') as myfile:
+			with open(filename, 'r', errors='replace', encoding='utf8') as myfile:
 				list_links = myfile.read().splitlines()  # List of urls
 		except FileNotFoundError:  # pylint:disable=Undefined-variable
 			tell('Reading file is not found in get_url: ' + filename, 4)

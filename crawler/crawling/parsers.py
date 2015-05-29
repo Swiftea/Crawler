@@ -7,9 +7,9 @@ the sencond one only for encoding."""
 from html.parser import HTMLParser
 from html.entities import name2codepoint, html5
 
-from package.module import meta, can_append
+import swiftea_bot.data as data
 
-class MyParser(HTMLParser):
+class ExtractData(HTMLParser):
 	"""Html parser for extract data.
 
 	self.objet : the type of text for title, description and keywords\n
@@ -145,7 +145,61 @@ class MyParser(HTMLParser):
 			self.title += letter
 
 
-class Parser_encoding(HTMLParser):
+def meta(attrs):  # Parser
+	"""Manager searches in meat tag.
+
+	Can find:
+		<meta name='description' content='my description'/>\n
+		<meta name='language' content='en'/>\n
+		<meta http-equiv='content-language' content='en'/>\n
+
+	:apram attrs: attributes of meta tag
+	:type attrs: list
+	:return: language, description, objet
+
+	"""
+	objet = description = language = str()
+	name = dict(attrs).get('name', '').lower()
+	content = dict(attrs).get('content')
+	if content:
+		if name == 'description':
+			description = content
+			objet = 'description'
+		elif name == 'language':
+			language = content.lower().strip()[:2]
+
+	httpequiv = dict(attrs).get('http-equiv')
+	contentlanguage = dict(attrs).get('content')
+	if httpequiv and contentlanguage:
+		if httpequiv.lower() == 'content-language':
+			language = contentlanguage.lower().strip()[:2]
+
+	return language, description, objet
+
+def can_append(url, rel):  # Parser
+	"""Check rel attrs to know if crawler can take this the link.
+
+	Add !nofollow! at the end of the url if can't follow links of url.
+
+	:param url: url to add
+	:type url: str
+	:param rel: rel attrs in a tag
+	:type rel: str
+	:return: None if can't add it, otherwise return url
+
+	"""
+	if url:
+		if 'noindex' not in rel:
+			if 'nofollow' in rel:
+				url += '!nofollow!'
+			return url
+		else:
+			return None
+	else:
+		return None
+
+
+class ExtractEncoding(HTMLParser):
 	"""Html parser for extract encoding from source code."""
 	def __init__(self):
 		HTMLParser.__init__(self)

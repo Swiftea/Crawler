@@ -10,15 +10,16 @@ from urllib.parse import urlparse
 from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
 
-from package.data import USER_AGENT, HEADERS, TIMEOUT
-from package.module import tell, no_connexion, is_nofollow, clean_link, duplicate_content, all_urls
-from package.parsers import Parser_encoding
+from swiftea_bot.data import USER_AGENT, HEADERS, TIMEOUT
+from swiftea_bot.module import tell
+from crawling import parsers, connexion
+from crawling.searches import clean_link
 
 class WebConnexion(object):
 	"""Manage the web connexion with the page to crawl."""
 	def __init__(self):
 		self.reqrobots = RobotsCache()
-		self.parser_encoding = Parser_encoding()
+		self.parser_encoding = parsers.ExtractEncoding()
 
 
 	def get_code(self, url):
@@ -29,7 +30,7 @@ class WebConnexion(object):
 		:return: source code, True if no take links, score and new url (redirection)
 
 		"""
-		nofollow, url = is_nofollow(url)
+		nofollow, url = connexion.is_nofollow(url)
 		result = self.send_request(url)
 		if not isinstance(result, requests.models.Response):
 			return result, False, 0, url
@@ -41,11 +42,11 @@ class WebConnexion(object):
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
 				new_url = self.duplicate_content(request)
-				return request.text, nofollow, score, all_urls(request, new_url)
+				return request.text, nofollow, score, connexion.all_urls(request, new_url)
 			else:
 				tell('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed), severity=0)
-				return 'ignore', False, 0, all_urls(request, request.url)
+				return 'ignore', False, 0, connexion.all_urls(request, request.url)
 
 	def send_request(self, url):
 		try:
@@ -58,7 +59,7 @@ class WebConnexion(object):
 			return None
 		except requests.exceptions.RequestException as error:
 			tell('Connexion failed: {}, {}'.format(str(error), url), 5)
-			if no_connexion():
+			if connexion.no_connexion():
 				return 'no connexion'
 			else:
 				return 'ignore'
@@ -135,10 +136,10 @@ class WebConnexion(object):
 			new_url = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
 			request2 = self.send_request(new_url)
 			request2.encoding = self.search_encoding(request2.headers, request2.text)[0]
-			if duplicate_content(request1.text, request2.text):
-				tell("Same content")  # Tests
-				return clean_link(request1.url)
-			else:
+			if connexion.duplicate_content(request1.text, request2.text):
+				tell("Same content: " + request1.url + " and " + request2.url)   # Tests
 				return clean_link(request2.url)
+			else:
+				return clean_link(request1.url)
 		else:
 			return clean_link(request1.url)
