@@ -103,11 +103,11 @@ class FTPManager(FTP):
 			else:
 				return ['Empty list']
 
-	def infos_listdir(self, **facts):
+	def infos_listdir(self, path, facts):
 		"""Return the result of mlsd command of ftplib or
 		a list whose first element is the error response."""
 		try:
-			result = self.mlsd(**facts)
+			result = self.mlsd(path, facts)
 		except  all_errors as error:
 			return 'Error: ' + str(error)
 		else:

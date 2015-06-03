@@ -143,7 +143,7 @@ class ExtractData(HTMLParser):
 			self.title += letter
 
 
-def meta(attrs):  # Parser
+def meta(attrs):
 	"""Manager searches in meat tag.
 
 	Can find:
@@ -174,7 +174,7 @@ def meta(attrs):  # Parser
 
 	return language, description, objet
 
-def can_append(url, rel):  # Parser
+def can_append(url, rel):
 	"""Check rel attrs to know if crawler can take this the link.
 
 	Add !nofollow! at the end of the url if can't follow links of url.

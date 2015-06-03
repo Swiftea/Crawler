@@ -11,7 +11,7 @@ from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
 
 from swiftea_bot.data import USER_AGENT, HEADERS, TIMEOUT
-from swiftea_bot.module import tell
+from swiftea_bot.module import tell, remove_duplicates
 from crawling import parsers, connexion
 from crawling.searches import clean_link
 
@@ -33,7 +33,7 @@ class WebConnexion(object):
 		nofollow, url = connexion.is_nofollow(url)
 		result = self.send_request(url)
 		if not isinstance(result, requests.models.Response):
-			return result, False, 0, url
+			return None, result, None, None, url
 		else:
 			request = result
 			del result
@@ -41,12 +41,19 @@ class WebConnexion(object):
 			if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
-				new_url = self.duplicate_content(request)
-				return request.text, nofollow, score, connexion.all_urls(request, new_url)
+				new_url, code = self.duplicate_content(request, url)  # new_url is clean and maybe without params
+				all_urls = connexion.all_urls(request)  # List of urls to delete
+				if new_url in all_urls:  # new_url don't be delete
+					all_urls.remove(new_url)
+				return new_url, code, nofollow, score, all_urls
 			else:
 				tell('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed), severity=0)
-				return 'ignore', False, 0, connexion.all_urls(request, request.url)
+				# All redirections urls, the first and the last:
+				all_urls = connexion.all_urls(request)
+				all_urls.append(request.url)
+				all_urls.append(url)
+				return None, 'ignore', None, None, remove_duplicates(all_urls)
 
 	def send_request(self, url):
 		try:
@@ -118,28 +125,30 @@ class WebConnexion(object):
 			allowed = True
 		return allowed
 
-	def duplicate_content(self, request1):
+	def duplicate_content(self, request1, url):
 		"""Avoid param duplicate.
 
 		Compare source codes with params and whitout.
 		Return url whitout params if it's the same content.
-
-		Take all history ?
 
 		:param request: request
 		:type request: requests.models.Response
 		:return: url
 
 		"""
-		infos_url = urlparse(request1.url)
+		url1 = clean_link(request1.url)
+		if url1 is None:
+			return url, request1.text
+		infos_url = urlparse(url1)
 		if infos_url.query != '':
 			new_url = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
 			request2 = self.send_request(new_url)
 			request2.encoding = self.search_encoding(request2.headers, request2.text)[0]
+			url2 = clean_link(request2.url)
 			if connexion.duplicate_content(request1.text, request2.text):
-				tell("Same content: " + request1.url + " and " + request2.url)   # Tests
-				return clean_link(request2.url)
+				tell("Same content: " + url1 + " and " + url2)   # Tests
+				return url2, request2.text
 			else:
-				return clean_link(request1.url)
+				return url1, request1.text
 		else:
-			return clean_link(request1.url)
+			return url1, request1.text

@@ -122,7 +122,8 @@ class Crawler(object):
 		"""
 		module.tell('Crawling ' + url)
 		# Get webpage's html code:
-		html_code, nofollow, score, all_urls = self.web_connexion.get_code(url)
+		new_url, html_code, nofollow, score, all_urls = self.web_connexion.get_code(url)
+		print(all_urls)
 		if html_code is None:
 			self.delete_if_exists(all_urls)  # Failed to get code, must delete from database.
 		elif html_code == 'no connexion':
@@ -131,15 +132,14 @@ class Crawler(object):
 		elif html_code == 'ignore':  # There was something wrong and maybe a redirection.
 			self.delete_if_exists(all_urls)
 		else:
-			if url != all_urls[0]:
-				module.tell('Redirect to ' + all_urls[0], severity=0)  # Or same content
-				self.delete_if_exists(all_urls[1:])
+			module.tell('New url: ' + new_url, severity=0)
+			self.delete_if_exists(all_urls)
 			webpage_infos = dict()
-			webpage_infos['url'] = all_urls[0]
+			webpage_infos['url'] = new_url
 			(links, webpage_infos['title'], webpage_infos['description'],
 				webpage_infos['keywords'], webpage_infos['language'],
 				webpage_infos['score'], webpage_infos['favicon'], webpage_infos['homepage']
-				) = self.site_informations.get_infos(all_urls[0], html_code, nofollow, score)
+				) = self.site_informations.get_infos(new_url, html_code, nofollow, score)
 
 			if webpage_infos['title'] != '':
 				if module.can_add_doc(self.infos, webpage_infos):  # Duplicate only with url
@@ -147,7 +147,7 @@ class Crawler(object):
 					self.crawled_websites += 1
 					self.file_manager.save_links(links)
 			else:
-				self.delete_if_exists(all_urls)
+				self.delete_if_exists(new_url)
 
 	def delete_if_exists(self, urls):
 		"""Delete bad doc if exists.

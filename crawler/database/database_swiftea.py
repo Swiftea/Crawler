@@ -192,10 +192,10 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 		if url_is_secure(old_url):
 			# old_url start with https
 			if new_exists:  # Start with http
-				tell('insecure exists', severity=-1)
+				#tell('insecure exists', severity=-1)
 				return old_url, new_url
 			else:
-				tell('return secure, old', severity=-1)
+				#tell('return secure, old', severity=-1)
 				return old_url, None
 		else:
 			# old_url is insecure, start with http
@@ -203,8 +203,8 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 				if self.doc_exists(old_url):  # Insecure exists
 					return new_url, old_url
 				else:
-					tell('return secure, new', severity=-1)
+					#tell('return secure, new', severity=-1)
 					return new_url, None
 			else:
-				tell('return insecure, old', severity=-1)
+				#tell('return insecure, old', severity=-1)
 				return old_url, None

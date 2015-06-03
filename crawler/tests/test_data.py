@@ -4,21 +4,7 @@ from shutil import rmtree
 
 from swiftea_bot.data import DIR_DATA, DIR_OUTPUT, DIR_LINKS, DIR_CONFIG
 
-BASE_LINKS = """http://swiftea.alwaysdata.net/0
-http://swiftea.alwaysdata.net/1
-http://swiftea.alwaysdata.net/2
-http://swiftea.alwaysdata.net/3
-http://swiftea.alwaysdata.net/4
-http://swiftea.alwaysdata.net/5
-http://swiftea.alwaysdata.net/6
-http://swiftea.alwaysdata.net/7
-http://swiftea.alwaysdata.net/8
-http://swiftea.alwaysdata.net/9
-http://swiftea.alwaysdata.net/10
-http://swiftea.alwaysdata.net/11
-http://swiftea.alwaysdata.net/12
-http://swiftea.alwaysdata.net/13
-http://swiftea.alwaysdata.net/14
+BASE_LINKS = """http://google.com
 """
 
 URL = "http://aetfiws.alwaysdata.net"

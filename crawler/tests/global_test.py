@@ -5,9 +5,9 @@ from configparser import ConfigParser
 from os import mkdir, remove
 
 from main import Crawler
-from swiftea_bot.data import DIR_LINKS, FILE_CONFIG, MAX_LINKS, BASE_LINKS, FILE_BASELINKS, DIR_CONFIG
+from swiftea_bot.data import DIR_LINKS, FILE_CONFIG, MAX_LINKS, FILE_BASELINKS, DIR_CONFIG
 from swiftea_bot.module import create_dirs, create_doc
-from tests.test_data import reset
+from tests.test_data import reset, BASE_LINKS
 
 class RedirectOutput(object):
 	def __init__(self, file):
@@ -17,7 +17,6 @@ class RedirectOutput(object):
 		self.output.write(text)
 		self.output.flush()
 
-global crawler
 
 class TestGlobal(object):
 	def test_crawler(self):
@@ -45,6 +44,9 @@ class TestGlobal(object):
 		with open(FILE_CONFIG, 'w') as configfile:
 			config.write(configfile)
 		crawler.start()
+
+		crawler.send_inverted_index()
+
 		reset()
 		sys.stdout = defstdout
 		sys.stderr = defstderr

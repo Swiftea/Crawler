@@ -141,9 +141,9 @@ class TestSiteInformations(CrawlingBaseTest):
 
 	def test_detect_language(self):
 		keywords = "un texte d'exemple pour tester la fonction".split()
-		assert SiteInformations.detect_language(self, keywords, self.url) == 'fr'
+		assert SiteInformations.detect_language(self, keywords) == 'fr'
 		keywords = "un texte d'exemple sans stopwords".split()
-		assert SiteInformations.detect_language(self, keywords, self.url) == ''
+		assert SiteInformations.detect_language(self, keywords) == ''
 
 	def test_clean_favicon(self):
 		favicon = 'http://aetfiws.alwaysdata.net/icon.ico'

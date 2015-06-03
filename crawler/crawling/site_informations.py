@@ -43,7 +43,7 @@ class SiteInformations(object):
 			language = self.parser.language
 			score += 1
 		else:
-			language = self.detect_language(keywords, url)
+			language = self.detect_language(keywords)
 
 		if language in self.STOPWORDS and self.parser.title != '':
 			keywords = self.clean_keywords(keywords, language)

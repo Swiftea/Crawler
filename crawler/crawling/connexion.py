@@ -82,7 +82,7 @@ def duplicate_content(code1, code2):
 
 	return is_duplicate
 
-def all_urls(request, first=None):
+def all_urls(request):
 	"""Return all urls from request.history.
 
 	:param request: request
@@ -92,12 +92,13 @@ def all_urls(request, first=None):
 	:return: list of redirected urls, first is the last one
 
 	"""
-	if first:
-		urls = [clean_link(first)]
-	else:
-		urls = [request.url]
+	list_urls = [clean_link(request.url)]
 	for req in request.history:
-		urls.append(clean_link(req.url))
+		list_urls.append(clean_link(req.url))
+	urls = list()
+	for url in list_urls:
+		if url:
+			urls.append(url)
 	return remove_duplicates(urls)
 
 def get_stopwords(path='http://swiftea.alwaysdata.net/data/stopwords/'):
