@@ -135,7 +135,8 @@ def is_index():
 		return False
 
 def dir_size(source):
-	total_size = path.getsize(source)
+	#total_size = path.getsize(source)
+	total_size = int()
 	for item in listdir(source):
 		itempath = path.join(source, item)
 		if path.isfile(itempath):

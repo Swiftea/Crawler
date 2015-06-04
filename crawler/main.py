@@ -145,7 +145,8 @@ class Crawler(object):
 				if module.can_add_doc(self.infos, webpage_infos):  # Duplicate only with url
 					self.infos.append(webpage_infos)
 					self.crawled_websites += 1
-					self.file_manager.save_links(links)
+					links = self.file_manager.save_links(links)
+					self.file_manager.ckeck_size_links(links)
 			else:
 				self.delete_if_exists(new_url)
 

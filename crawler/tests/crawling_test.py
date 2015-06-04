@@ -3,6 +3,7 @@
 import requests as req
 from reppy.cache import RobotsCache
 
+from swiftea_bot.data import HEADERS
 from crawling.connexion import *
 from crawling.searches import *
 from crawling.web_connexion import WebConnexion
@@ -41,13 +42,14 @@ class TestConnexion(CrawlingBaseTest):
 		assert url == self.url
 
 	def test_duplicate_content(self):
-		assert 1
+		assert duplicate_content('un premier code', 'un deuxieme code') == True
+		assert duplicate_content('un premier code un peu plus grand', 'un deuxieme code') == False
 
 	def test_all_urls(self):
 		request = req.get("https://fr.wikipedia.org")
-		assert all_urls(request, request.url) == ["https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Accueil_principal", "https://fr.wikipedia.org"]
+		assert all_urls(request) == ["https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Accueil_principal", "https://fr.wikipedia.org"]
 		request = req.get("http://www.wordreference.com/")
-		assert all_urls(request, request.url) == ["http://www.wordreference.com"]
+		assert all_urls(request) == ["http://www.wordreference.com"]
 
 	def test_get_stopwords(self):
 		get_stopwords()
@@ -65,14 +67,16 @@ class TestWebConnexion(CrawlingBaseTest):
 		assert WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com') == True
 		assert WebConnexion.check_robots_perm(self, 'https://www.facebook.com') == False
 		assert WebConnexion.check_robots_perm(self, self.url) == True
-		assert WebConnexion.check_robots_perm(self, 'http://wiki.bilboplanet.com') == True
+		assert WebConnexion.check_robots_perm(self, 'http://www.bilboplanet.com') == True
 		assert WebConnexion.check_robots_perm(self, 'http://premium.lefigaro.fr') == True
 
-	def test_duplicate_content(self):
-		assert 1
-
 	def test_send_request(self):
-		assert 1
+		WebConnexion.send_request(self, 'https://zestedesavoir.com')
+		assert WebConnexion.send_request(self, 'https://uneurlbidon.com') == 'ignore'
+
+	def test_duplicate_content(self):
+		request = req.get('https://zestedesavoir.com')
+		WebConnexion.duplicate_content(self, request, 'https://zestedesavoir.com')
 
 
 class TestSearches(CrawlingBaseTest):
@@ -117,9 +121,21 @@ class TestSearches(CrawlingBaseTest):
 	def test_remove_useless_chars(self):
 		assert remove_useless_chars('(file’s)...') == 'file'
 		assert remove_useless_chars('2.0') == '2.0'
+		assert remove_useless_chars('\'') == None
+		assert remove_useless_chars('(l') == None
+		assert remove_useless_chars('l\'e') == None
+		assert remove_useless_chars('e\'l\'e') == None
+
 
 	def test_clean_link(self):
 		assert clean_link('http://www.example.fr?w=word#big_title') == 'http://www.example.fr?w=word'
+
+	def test_stats_stop_words(self):
+		stats_stop_words(100, 50)
+		stats_stop_words(0, 0)
+
+	def test_stats_links(self):
+		stats_links(50)
 
 
 class TestSiteInformations(CrawlingBaseTest):
@@ -135,7 +151,7 @@ class TestSiteInformations(CrawlingBaseTest):
 	def test_clean_keywords(self):
 		# 'jean/pierre', 'fichier.ext'
 		keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
-		'quoi...', '*****', 'epee,...', '2.0', 'o\'clock']
+		'quoi...', '*****', 'epee,...', '2.0', 'o\'clock',]
 		keywords = SiteInformations.clean_keywords(self, keywords, 'fr')
 		assert keywords == ['le', 'bureau', 'word', 'example', 'oiseau', 'quoi', 'epee', 'clock']
 

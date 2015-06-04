@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
+from swiftea_bot.data import DIR_DATA
 import swiftea_bot.data
 import stats
 import main
 from swiftea_bot.module import *
 from swiftea_bot.file_manager import *
-from tests.test_data import URL, INVERTED_INDEX
+from tests.test_data import URL, INVERTED_INDEX, BASE_LINKS
 
 class SwifteaBotBaseTest(object):
 	def setup_method(self, _):
@@ -41,13 +42,25 @@ class TestModule(SwifteaBotBaseTest):
 		open(FILE_INDEX, 'w').close()
 		assert is_index() == True
 
-# dir_size, can_add_doc
+	def test_dir_size(self):
+		mkdir('test_dir')
+		mkdir('test_dir/dir')
+		with open('test_dir/file', 'w') as myfile:
+			myfile.write('01234')  # Write five octets
+		with open('test_dir/dir/file', 'w') as myfile:
+			myfile.write('01234')  # Write five octets
+		assert dir_size('test_dir') == 10
+
+	def test_can_add_doc(self):
+		docs = [{'url': self.url}]
+		assert can_add_doc(docs, {'url': self.url}) == False
+		assert can_add_doc(docs, {'url': self.url + '/page'}) == True
 
 	def test_remove_duplicates(self):
 		assert remove_duplicates(['word', 'word']) == ['word']
 
-# stats_webpages, convert_keys
-
+	def test_stats_webpages(self):
+		stats_webpages(100, 1200)
 
 class TestFileManager(SwifteaBotBaseTest):
 	def test_init(self):
@@ -65,12 +78,16 @@ class TestFileManager(SwifteaBotBaseTest):
 	def test_save_config(self):
 		FileManager.save_config(self)
 
+	def test_save_links(self):
+		mkdir(DIR_LINKS)
+		FileManager.save_links(self, BASE_LINKS.split())
+		FileManager.save_links(self, BASE_LINKS[5:].split())
+
 	def test_ckeck_size_links(self):
 		self.max_links = 2
 		FileManager.ckeck_size_links(self, self.links)
 
 	def test_get_url(self):
-		mkdir(DIR_LINKS)
 		with open(DIR_LINKS + '1', 'w') as myfile:
 			myfile.write(self.url + '\nhttp://example.en/page qui parle de ça')
 		assert FileManager.get_url(self) == self.url
@@ -91,3 +108,10 @@ class TestFileManager(SwifteaBotBaseTest):
 			myfile.write('{"abondamment": {"1610": 0.005618}}')
 		inverted_index = FileManager.read_inverted_index(self)
 		assert inverted_index == {'FR': {'A': {'ab': {'abondamment': {1610: 0.005618}}}}}
+
+class TestStats(SwifteaBotBaseTest):
+	def test_stats(self):
+		stats.stats()
+
+	def test_compress_stats(self):
+		stats.compress_stats(DIR_DATA + 'stat_webpages')

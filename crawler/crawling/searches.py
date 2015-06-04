@@ -194,7 +194,7 @@ def stats_stop_words(begining, end):
 	else:
 		stats = '100'
 	with open(DIR_DATA + 'stat_stopwords', 'a') as myfile:
-		myfile.write(stats + '\n')
+		myfile.write(str(begining) + ' ' + str(end) + ' ' + stats + '%\n')
 
 def stats_links(stats):
 	"""Write the number of links for statistics.

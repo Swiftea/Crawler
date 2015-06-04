@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from index.index import stats_dl_index, stats_ul_index
 from index.inverted_index import InvertedIndex
 from tests.test_data import INVERTED_INDEX
 
@@ -12,10 +13,10 @@ class IndexBaseTest(object):
 
 class TestIndex(IndexBaseTest):
 	def test_stats_dl_index(self):
-		pass
+		stats_dl_index(100, 130)
 
 	def test_stats_ul_index(self):
-		pass
+		stats_ul_index(100, 130)
 
 class TestInvertedIndex(IndexBaseTest):
 	def test_getInvertedIndex(self):

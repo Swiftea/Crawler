@@ -4,8 +4,24 @@ from shutil import rmtree
 
 from swiftea_bot.data import DIR_DATA, DIR_OUTPUT, DIR_LINKS, DIR_CONFIG
 
-BASE_LINKS = """http://google.com
-"""
+BASE_LINKS = """http://www.planet-libre.org
+https://zestedesavoir.com
+http://www.01net.com
+https://www.youtube.com
+http://www.lefigaro.fr
+http://www.lemonde.fr
+http://www.lepoint.fr
+http://www.sport.fr
+http://www.jeuxvideo.com
+http://www.rueducommerce.fr
+http://www.actu-environnement.com
+https://fr.wikipedia.org
+https://fr.news.yahoo.com
+http://www.live.com
+http://www.yahoo.com
+http://www.lequipe.fr
+http://swiftea.alwaysdata.net
+http://trukastuss.over-blog.com"""
 
 URL = "http://aetfiws.alwaysdata.net"
 
@@ -70,3 +86,4 @@ def reset():
     rmtree(DIR_CONFIG)
     rmtree(DIR_OUTPUT)
     rmtree(DIR_LINKS)
+    rmtree('test_dir')

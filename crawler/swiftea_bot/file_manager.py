@@ -92,7 +92,7 @@ class FileManager(object):
 				links = remove_duplicates(old_links + links)
 				myfile.write('\n'.join(links))
 
-		self.ckeck_size_links(links)
+		return links
 
 	def ckeck_size_links(self, links):
 		"""Check number of links in file.
