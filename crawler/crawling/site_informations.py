@@ -3,6 +3,8 @@
 """After parse source code, data extracted must be classify and clean.
 Here is a class who use the html parser and manage all results."""
 
+from urllib.parse import urlparse
+
 from swiftea_bot.module import tell, remove_duplicates
 from crawling import parsers, searches
 from crawling.connexion import get_stopwords
@@ -48,7 +50,7 @@ class SiteInformations(object):
 		if language in self.STOPWORDS and self.parser.title != '':
 			keywords = self.clean_keywords(keywords, language)
 			keywords.extend(self.clean_keywords(title.lower().split(), language))
-			keywords.extend(self.clean_keywords(self.split_url(url, language), language))
+			keywords.extend(self.clean_keywords(self.split_url(url), language))
 
 			# Description:
 			if self.parser.description == '':
@@ -69,9 +71,7 @@ class SiteInformations(object):
 				links = list()
 			else:
 				links = self.clean_links(self.parser.links, base_url)
-				searches.stats_links(len(links))
-
-			# Favicon:
+				searches.stats_lin
 			if self.parser.favicon != '':
 				favicon = self.clean_favicon(self.parser.favicon, base_url)
 			else:
@@ -181,7 +181,7 @@ class SiteInformations(object):
 		return new_keywords
 
 
-	def split_url(self, url, language):
+	def split_url(self, url):
 		"""Split url into keywords.
 
 		:param url: url to split
@@ -189,25 +189,16 @@ class SiteInformations(object):
 		:return: list of keywords
 
 		"""
-		stopwords = self.STOPWORDS[language]
+		infos_url = urlparse(url.lower())
+		netloc = infos_url.netloc.rfind('.')
+		path = infos_url.path.rfind('.')
+		url = infos_url.netloc[:netloc] + infos_url.path[:path] + '/' + infos_url.fragment
 		keywords = list()
 		for word in url.split():
 			for word in word.split('-'):
 				for word in word.split('_'):
 					for word in word.split('.'):
 						for word in word.split('/'):
-							keywords.append(word)
-		new_keywords = list()
-		for keyword in keywords:
-			split = False
-			for stopword in stopwords:
-				if stopword in keyword:
-					print(keyword.split(stopword))
-					new_keywords += keyword.split(stopword)
-					split = True
-					break
-			if not split:
-				if keyword != '' and keyword != 'http:':
-					print(keyword)
-					new_keywords.append(keyword)
-		return remove_duplicates(new_keywords)
+							if word != '':
+								keywords.append(word)
+		return keywords

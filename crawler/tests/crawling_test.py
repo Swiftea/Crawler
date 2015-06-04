@@ -168,7 +168,7 @@ class TestSiteInformations(CrawlingBaseTest):
 		assert SiteInformations.clean_favicon(self, 'icon.ico', self.url) == favicon
 
 	def test_split_url(self):
-		assert SiteInformations.split_url(self, self.url + '/page-qui_parledevoiture.html', 'fr') == ['aetfiws', 'alwaysdata', 'net', 'page', 'qui', 'parle', 'voiture', 'html']
+		assert SiteInformations.split_url(self, self.url + '/page-qui_parledevoiture.html') == ['aetfiws', 'alwaysdata', 'page', 'qui', 'parledevoiture']
 
 
 class TestParsers(CrawlingBaseTest):
