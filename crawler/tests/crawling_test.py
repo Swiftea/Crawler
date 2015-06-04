@@ -21,7 +21,7 @@ class CrawlingBaseTest(object):
 		self.code3 = test_data.CODE3
 		self.parser = ExtractData()
 		self.parser_encoding = ExtractEncoding()
-		self.STOPWORDS = {'fr':('mot', 'pour')}
+		self.STOPWORDS = {'fr':('mot', 'pour', 'de')}
 		self.objet = 'title'
 		self.title = 'letter'
 		self.headers = {'status': '200 OK', 'content-type': 'text/html; charset=utf-8', 'vary': 'X-PJAX, Accept-Encoding'}
@@ -166,6 +166,9 @@ class TestSiteInformations(CrawlingBaseTest):
 		assert SiteInformations.clean_favicon(self, '/icon.ico', self.url) == favicon
 		assert SiteInformations.clean_favicon(self, '//aetfiws.alwaysdata.net/icon.ico', self.url) == favicon
 		assert SiteInformations.clean_favicon(self, 'icon.ico', self.url) == favicon
+
+	def test_split_url(self):
+		assert SiteInformations.split_url(self, self.url + '/page-qui_parledevoiture.html', 'fr') == ['aetfiws', 'alwaysdata', 'net', 'page', 'qui', 'parle', 'voiture', 'html']
 
 
 class TestParsers(CrawlingBaseTest):

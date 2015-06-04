@@ -80,7 +80,6 @@ class FTPSwiftea(FTPManager):
 		:return: True if an error occured
 
 		"""
-		assert 0
 		tell('Send inverted-index')
 		self.connexion()
 

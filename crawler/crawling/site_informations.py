@@ -48,6 +48,7 @@ class SiteInformations(object):
 		if language in self.STOPWORDS and self.parser.title != '':
 			keywords = self.clean_keywords(keywords, language)
 			keywords.extend(self.clean_keywords(title.lower().split(), language))
+			keywords.extend(self.clean_keywords(self.split_url(url, language), language))
 
 			# Description:
 			if self.parser.description == '':
@@ -178,3 +179,35 @@ class SiteInformations(object):
 				if keyword not in stopwords:
 					new_keywords.append(keyword)
 		return new_keywords
+
+
+	def split_url(self, url, language):
+		"""Split url into keywords.
+
+		:param url: url to split
+		:type url: str
+		:return: list of keywords
+
+		"""
+		stopwords = self.STOPWORDS[language]
+		keywords = list()
+		for word in url.split():
+			for word in word.split('-'):
+				for word in word.split('_'):
+					for word in word.split('.'):
+						for word in word.split('/'):
+							keywords.append(word)
+		new_keywords = list()
+		for keyword in keywords:
+			split = False
+			for stopword in stopwords:
+				if stopword in keyword:
+					print(keyword.split(stopword))
+					new_keywords += keyword.split(stopword)
+					split = True
+					break
+			if not split:
+				if keyword != '' and keyword != 'http:':
+					print(keyword)
+					new_keywords.append(keyword)
+		return remove_duplicates(new_keywords)

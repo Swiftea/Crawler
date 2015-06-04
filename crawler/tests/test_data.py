@@ -86,4 +86,5 @@ def reset():
     rmtree(DIR_CONFIG)
     rmtree(DIR_OUTPUT)
     rmtree(DIR_LINKS)
-    rmtree('test_dir')
+    try: rmtree('test_dir')
+    except: pass
