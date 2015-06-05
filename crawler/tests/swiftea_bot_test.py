@@ -109,6 +109,12 @@ class TestFileManager(SwifteaBotBaseTest):
 		inverted_index = FileManager.read_inverted_index(self)
 		assert inverted_index == {'FR': {'A': {'ab': {'abondamment': {1610: 0.005618}}}}}
 
+	def test_save_docs(self):
+		FileManager.save_docs(self, [{'url': self.url}])
+
+	def test_get_docs(self):
+		assert FileManager.get_docs(self) == [{'url': self.url}]
+
 class TestStats(SwifteaBotBaseTest):
 	def test_stats(self):
 		stats.stats()
