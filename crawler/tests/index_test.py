@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from index.index import stats_dl_index, stats_ul_index
+from index.index import stats_dl_index, stats_ul_index, count_files
 from index.inverted_index import InvertedIndex
 from tests.test_data import INVERTED_INDEX
 
@@ -17,6 +17,9 @@ class TestIndex(IndexBaseTest):
 
 	def test_stats_ul_index(self):
 		stats_ul_index(100, 130)
+
+	def test_count_files(self):
+		assert count_files(self.inverted_index) == 4
 
 class TestInvertedIndex(IndexBaseTest):
 	def test_getInvertedIndex(self):

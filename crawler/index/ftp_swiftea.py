@@ -3,6 +3,7 @@
 from os import path, mkdir, listdir
 import json
 
+from index.index import count_files
 from index.ftp_manager import FTPManager
 from swiftea_bot.data import DIR_INDEX, FTP_INDEX
 from swiftea_bot.module import tell
@@ -25,12 +26,12 @@ class FTPSwiftea(FTPManager):
 		:return: inverted-index and True if an error occured
 
 		"""
+		self.count_files()
 		tell('Get inverted-index from server')
 		error_msg = '', True
 		inverted_index = dict()
 		self.connexion()
 		if self.cd(self.ftp_index).startswith('Error'): return error_msg
-		self.count_files(DIR_INDEX, True)
 
 		list_language = self.listdir()
 		if list_language[0].startswith('Error'): return error_msg
@@ -81,10 +82,10 @@ class FTPSwiftea(FTPManager):
 
 		"""
 		tell('Send inverted-index')
+		self.count_files(inverted_index)
 		self.connexion()
 
 		if self.cd(self.ftp_index).startswith('Error'): return ''
-		self.count_files(self.ftp_index, False)
 		for language in inverted_index:
 			list_language = self.listdir()
 			if list_language[0].startswith('Error'): return ''
@@ -125,32 +126,17 @@ class FTPSwiftea(FTPManager):
 	def tell_progress(self, upload=True):
 		message = 'Uploading' if upload else 'Downloading'
 		if self.nb_files != 0:
-			percent = round(self.downuploaded_files * 100 / self.nb_files, 1)
+			percent = round(self.downuploaded_files * 100 / self.nb_files, 2)
+			message += ' {}% ({}/{})'.format(percent, self.downuploaded_files, self.nb_files)
+			tell(message)
 		else:
-			print('ZeroDivisionError')
-			percent = 0
-		message += ' {}% ({}/{})'.format(percent, self.downuploaded_files, self.nb_files)
-		tell(message)
+			tell('No progress data')
 
-
-	def count_files(self, dir_path, local):
-		print(dir_path)
-		tell('Counting files...')
-		self.nb_files = 0
-		if local:
-			for item in listdir(dir_path):
-				if path.isfile(dir_path + item):
-					self.nb_files += 1
-				else:
-					self.nb_files += self.count_files(path.join(dir_path, item), True)
+	def count_files(self, index=''):
+		if not isinstance(index, str):
+			self.nb_files = count_files(index)
 		else:
-			for info in self.infos_listdir(dir_path, ['type']):
-				if info[1]['type'] == 'file':
-					self.nb_files += 1
-				elif info[1]['type'] == 'dir':
-					self.count_files(path.join(dir_path, info[0]), False)
-		return self.nb_files
-
+			self.nb_files = 0
 
 	def compare_indexs(self):
 		"""Compare inverted-index in local and in server.

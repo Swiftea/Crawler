@@ -4,6 +4,19 @@
 
 from swiftea_bot.data import DIR_DATA
 
+def count_files(index):
+	"""Return number of file to download are uplaod
+
+	:return: int
+
+	"""
+	nb_files = int()
+	for language in index:
+		for first_letter in index[language]:
+			for two_letters in index[language][first_letter]:
+				nb_files += 1
+	return nb_files
+
 def stats_dl_index(begining, end):
 	"""Write the time to download inverted-index.
 

@@ -2,6 +2,9 @@
 
 from time import time
 import atexit
+from os import listdir
+from shutil import rmtree
+
 
 try:
 	import swiftea_bot.private_data as pvdata
@@ -73,10 +76,10 @@ class Crawler(object):
 		"""
 		run = True
 		while run:
-			for _ in range(50):
+			for _ in range(1):  # 50
 				module.tell('Crawl', severity=2)
 				begining = time()
-				while len(self.infos) < 10:
+				while len(self.infos) < 1:  # 10
 					module.tell('Reading {0}, link {1}'.format(
 						str(self.file_manager.reading_file_number),
 						str(self.file_manager.reading_line_number+1)), severity=0)
@@ -218,6 +221,8 @@ class Crawler(object):
 			module.quit_program()
 		else:
 			index.stats_ul_index(begining, time())
+		for path in listdir(DIR_INDEX):
+			rmtree(path)
 
 	def suggestions(self):
 		"""Suggestions:
