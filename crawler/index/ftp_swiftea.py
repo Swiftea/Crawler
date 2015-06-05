@@ -134,7 +134,7 @@ class FTPSwiftea(FTPManager):
 
 
 	def count_files(self, dir_path, local):
-		print(path)
+		print(dir_path)
 		tell('Counting files...')
 		self.nb_files = 0
 		if local:

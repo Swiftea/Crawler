@@ -5,6 +5,7 @@
 from swiftea_bot.data import DIR_DATA
 
 def stats():
+	"""
 	try:
 		with open(DIR_DATA + 'stat_stopwords', 'r') as myfile:
 			content = myfile.read().split()
@@ -15,6 +16,8 @@ def stats():
 		if len(content) > 10000:
 			compress_stats(DIR_DATA + 'stat_stopwords')
 	result = stat_stopwords + '\n'
+	"""
+	result = ''
 	try:
 		with open(DIR_DATA + 'stat_links', 'r') as myfile:
 			content = myfile.read().split()
@@ -39,7 +42,7 @@ def stats():
 	except FileNotFoundError:
 		stat_dl_index = 'File ' +  DIR_DATA + 'stat_dl_index' + ' not found.'
 	else:
-		stat_dl_index = 'Time upload inverted-index: ' + str(average(content))
+		stat_dl_index = 'Time download inverted-index: ' + str(average(content))
 	result += stat_dl_index + '\n'
 	try:
 		with open(DIR_DATA + 'stat_up_index', 'r') as myfile:
@@ -47,7 +50,7 @@ def stats():
 	except FileNotFoundError:
 		stat_up_index = 'File ' +  DIR_DATA + 'stat_up_index' + ' not found.'
 	else:
-		stat_up_index = 'Time download inverted-index: ' + str(average(content))
+		stat_up_index = 'Time upload inverted-index: ' + str(average(content))
 	result += stat_up_index + '\n'
 	return result
 
@@ -69,7 +72,7 @@ def average(content):
 	for value in content:
 		total += float(value)
 	moy = total / len(content)
-	return moy
+	return round(moy, 2)
 
 if __name__ == '__main__':
 	print(stats())

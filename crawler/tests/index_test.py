@@ -28,9 +28,6 @@ class TestInvertedIndex(IndexBaseTest):
 		InvertedIndex.setInvertedIndex(self, '')
 		assert InvertedIndex.getInvertedIndex(self) == dict()
 
-	def test_setStopwords(self):
-		InvertedIndex.setStopwords(self, {'fr':('mot', 'pour', 'autre')})
-		assert self.STOPWORDS == {'fr':('mot', 'pour', 'autre')}
 
 	def test_add_word(self):
 		# Add language:

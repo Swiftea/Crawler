@@ -8,7 +8,7 @@ from os import path, remove, listdir
 from configparser import ConfigParser
 import json
 
-from swiftea_bot.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX
+from swiftea_bot.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX, FILE_DOCS
 from swiftea_bot.module import tell, remove_duplicates, convert_keys
 
 class FileManager(object):
@@ -187,3 +187,33 @@ class FileManager(object):
 					with open(DIR_INDEX + language + '/' + first_letter + '/' + filename, 'r', encoding='utf-8') as myfile:
 						inverted_index[language][first_letter][filename[:-4]] = json.load(myfile)
 		return convert_keys(inverted_index)
+
+
+	def save_docs(self, docs):
+		"""Save docs.
+
+		:param docs: docs to save
+		:type docs: list
+
+		"""
+		if docs != []:
+			with open(FILE_DOCS, 'w') as myfile:
+				json.dump(docs, myfile, ensure_ascii=False)
+				tell('Save docs in save file')
+		else:
+			tell('Docs empty')
+
+	def get_docs(self):
+		"""Get docs saved from save_docs.
+
+		:return: docs
+
+		"""
+		tell('Get docs form save file')
+		try:
+			with open(FILE_DOCS, 'r') as myfile:
+				docs = json.load(myfile)
+		except FileNotFoundError:
+			return list()
+		remove(FILE_DOCS)
+		return docs

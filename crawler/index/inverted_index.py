@@ -18,12 +18,6 @@ class InvertedIndex(object):
 	"""
 	def __init__(self):
 		self.inverted_index = dict()
-		self.STOPWORDS = dict()
-
-
-	def setStopwords(self, STOPWORDS):
-		"""Define stopwords."""
-		self.STOPWORDS = STOPWORDS
 
 	def setInvertedIndex(self, inverted_index):
 		"""Define inverted-index at the beginning.

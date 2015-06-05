@@ -71,7 +71,7 @@ class SiteInformations(object):
 				links = list()
 			else:
 				links = self.clean_links(self.parser.links, base_url)
-				searches.stats_lin
+				searches.stats_links(len(links))
 			if self.parser.favicon != '':
 				favicon = self.clean_favicon(self.parser.favicon, base_url)
 			else:

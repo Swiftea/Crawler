@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from time import time
+import atexit
 
 try:
 	import swiftea_bot.private_data as pvdata
@@ -23,11 +24,15 @@ class Crawler(object):
 		self.file_manager = FileManager()
 		self.ftp_manager = ftp_swiftea.FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
 		self.index_manager = inverted_index.InvertedIndex()
-		self.index_manager.setStopwords(self.site_informations.STOPWORDS)
 		self.database = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER, pvdata.PASSWORD, pvdata.NAME_DB)
 		self.web_connexion = web_connexion.WebConnexion()
 
-		self.infos = list()
+		self.get_inverted_index()
+		self.infos = self.file_manager.get_docs()
+		if self.infos != []:
+			module.tell('Send and index saved docs')
+			self.send_to_db()
+			self.indexing()
 		self.crawled_websites = 0
 
 	def get_inverted_index(self):
@@ -123,11 +128,9 @@ class Crawler(object):
 		module.tell('Crawling ' + url)
 		# Get webpage's html code:
 		new_url, html_code, nofollow, score, all_urls = self.web_connexion.get_code(url)
-		print(all_urls)
 		if html_code is None:
 			self.delete_if_exists(all_urls)  # Failed to get code, must delete from database.
 		elif html_code == 'no connexion':
-			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 			module.quit_program()
 		elif html_code == 'ignore':  # There was something wrong and maybe a redirection.
 			self.delete_if_exists(all_urls)
@@ -212,7 +215,6 @@ class Crawler(object):
 		error = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		if error:
 			module.tell('Failed to send inverted-index ' + error, 2)
-			self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 			module.quit_program()
 		else:
 			index.stats_ul_index(begining, time())
@@ -241,15 +243,19 @@ class Crawler(object):
 
 	def safe_quit(self):
 		"""Save inverted-index and quit."""
-		self.file_manager.save_inverted_index(self.index_manager.getInvertedIndex())
 		module.tell('Programm will quit', severity=2)
 		module.tell('end\n', 0, 0)
 
+
+def save(crawler):
+	crawler.file_manager.save_inverted_index(crawler.index_manager.getInvertedIndex())
+	crawler.file_manager.save_docs(crawler.infos)
 
 if __name__ == '__main__':
 	module.create_dirs()
 	module.create_doc()
 	module.def_links()
 	crawler = Crawler()
-	crawler.get_inverted_index()
+	atexit.register(save, crawler)
+	#crawler.get_inverted_index()
 	crawler.start()

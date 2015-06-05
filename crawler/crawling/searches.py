@@ -99,6 +99,9 @@ def split_keywords(keyword):
 	if '/' in keyword:
 		keyword = keyword.split('/')  # str -> list
 		is_list = True
+	if '-' in keyword:
+		keyword = keyword.split('-')  # str -> list
+		is_list = True
 	return is_list, keyword
 
 def is_homepage(url):
@@ -194,7 +197,7 @@ def stats_stop_words(begining, end):
 	else:
 		stats = '100'
 	with open(DIR_DATA + 'stat_stopwords', 'a') as myfile:
-		myfile.write(str(begining) + ' ' + str(end) + ' ' + stats + '%\n')
+		myfile.write(stats)
 
 def stats_links(stats):
 	"""Write the number of links for statistics.
