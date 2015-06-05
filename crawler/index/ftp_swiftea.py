@@ -26,33 +26,32 @@ class FTPSwiftea(FTPManager):
 		:return: inverted-index and True if an error occured
 
 		"""
-		self.count_files()
 		tell('Get inverted-index from server')
-		error_msg = '', True
 		inverted_index = dict()
 		self.connexion()
-		if self.cd(self.ftp_index).startswith('Error'): return error_msg
+		if self.cd(self.ftp_index).startswith('Error'): return 'cd error: ' + self.ftp_index, True
+		self.count_files()
 
 		list_language = self.listdir()
-		if list_language[0].startswith('Error'): return error_msg
+		if list_language[0].startswith('Error'): return 'listdir error', True
 		for language in list_language:
 			self.language = language
-			if self.cd(language).startswith('Error'): return error_msg
+			if self.cd(language).startswith('Error'): return 'cd error:' + language, True
 			if not path.isdir(DIR_INDEX + language):
 				mkdir(DIR_INDEX + language)
 			inverted_index[language] = dict()
 
 			list_first_letter = self.listdir()
-			if list_first_letter[0].startswith('Error'): return error_msg
+			if list_first_letter[0].startswith('Error'): return 'listdir error', True
 			for first_letter in list_first_letter:
 				self.tell_progress(False)
-				if self.cd(first_letter).startswith('Error'): return error_msg
+				if self.cd(first_letter).startswith('Error'): return 'cd error:' + first_letter, True
 				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
 					mkdir(DIR_INDEX +  language + '/' + first_letter)
 				inverted_index[language][first_letter] = dict()
 
 				list_filename = self.listdir()
-				if list_filename[0].startswith('Error'): return error_msg
+				if list_filename[0].startswith('Error'): return 'listdir error', True
 				for filename in list_filename:
 					self.downuploaded_files += 1
 					path_index = language + '/' + first_letter + '/' + filename
@@ -63,8 +62,8 @@ class FTPSwiftea(FTPManager):
 						with open(DIR_INDEX + path_index, 'r', encoding='utf-8') as myfile:
 							inverted_index[language][first_letter][filename[:-4]] = json.load(myfile)
 
-				if self.cd('..').startswith('Error'): return error_msg
-			if self.cd('..').startswith('Error'): return error_msg
+				if self.cd('..').startswith('Error'): return 'cd error: ..', True
+			if self.cd('..').startswith('Error'): return 'cd error: ..', True
 
 		self.disconnect()
 		if inverted_index == dict():
@@ -85,26 +84,26 @@ class FTPSwiftea(FTPManager):
 		self.count_files(inverted_index)
 		self.connexion()
 
-		if self.cd(self.ftp_index).startswith('Error'): return ''
+		if self.cd(self.ftp_index).startswith('Error'): return 'cd error: ' + self.ftp_index
 		for language in inverted_index:
 			list_language = self.listdir()
-			if list_language[0].startswith('Error'): return ''
+			if list_language[0].startswith('Error'): return 'listdir error'
 			if language not in list_language:
 				self.mkd(language)
 			if not path.isdir(DIR_INDEX + language):
 				mkdir(DIR_INDEX + language)
 
-			if self.cd(language).startswith('Error'): return ''
+			if self.cd(language).startswith('Error'): return 'cd error: ' + language
 			for first_letter in inverted_index[language]:
 				self.tell_progress()
 				list_first_letter = self.listdir()
-				if list_first_letter[0].startswith('Error'): return ''
+				if list_first_letter[0].startswith('Error'): return 'listdir error'
 				if first_letter not in list_first_letter:
 					self.mkd(first_letter)
 				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
 					mkdir(DIR_INDEX + language + '/' + first_letter)
 
-				if self.cd(first_letter).startswith('Error'): return ''
+				if self.cd(first_letter).startswith('Error'): return 'cd error: ' + first_letter
 				for two_letters in inverted_index[language][first_letter]:
 					self.downuploaded_files += 1
 					index = inverted_index[language][first_letter][two_letters]
@@ -115,8 +114,8 @@ class FTPSwiftea(FTPManager):
 					if 'Error' in response:
 						return path_index + ': ' + response
 
-				if self.cd('..').startswith('Error'): return ''
-			if self.cd('..').startswith('Error'): return ''
+				if self.cd('..').startswith('Error'): return 'cd error: ..'
+			if self.cd('..').startswith('Error'): return 'cd error: ..'
 
 		self.disconnect()
 		tell('Transfer complete', severity=0)
@@ -136,7 +135,7 @@ class FTPSwiftea(FTPManager):
 		if not isinstance(index, str):
 			self.nb_files = count_files(index)
 		else:
-			self.nb_files = 0
+			self.nb_files = self.countfiles()
 
 	def compare_indexs(self):
 		"""Compare inverted-index in local and in server.

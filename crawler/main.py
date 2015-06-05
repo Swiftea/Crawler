@@ -58,7 +58,7 @@ class Crawler(object):
 				error = False
 			if error:
 				if self.file_manager.reading_file_number != 0:
-					module.tell('Failed to download inverted-index ' + index, 1)
+					module.tell('Failed to download inverted-index ' + inverted_index, 1)
 					module.quit_program()
 				else:
 					module.tell("New inverted-index")
@@ -262,5 +262,4 @@ if __name__ == '__main__':
 	module.def_links()
 	crawler = Crawler()
 	atexit.register(save, crawler)
-	#crawler.get_inverted_index()
 	crawler.start()

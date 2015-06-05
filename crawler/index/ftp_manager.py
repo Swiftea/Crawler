@@ -103,7 +103,7 @@ class FTPManager(FTP):
 			else:
 				return ['Empty list']
 
-	def infos_listdir(self, path, facts):
+	def infos_listdir(self, path='.', facts=[]):
 		"""Return the result of mlsd command of ftplib or
 		a list whose first element is the error response."""
 		try:
@@ -155,3 +155,20 @@ class FTPManager(FTP):
 			else:
 				response = 'Download file ' + server_filename + ': ' + response
 		return response
+
+	def countfiles(self, path='.'):
+		"""Count the file in the given path
+
+		:param path: path to count
+		:type path: str
+		:return: number of files
+
+		"""
+		nb_files = int()
+		infos = self.infos_listdir(path, ['type', 'size'])
+		for info in infos:
+			if info[1]['type'] == 'dir':
+				nb_files += self.countfiles(path + '/' + info[0])
+			elif info[1]['type'] == 'file':
+				nb_files += 1
+		return nb_files
