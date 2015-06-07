@@ -153,7 +153,10 @@ def clean_link(url, base_url=None):
 				new = 'http' + new
 			else:
 				new = base_url + '/' + new
-		infos_url = urlparse(new)
+		try:
+			infos_url = urlparse(new)
+		except ValueError:
+			return None
 		new = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
 		if new.endswith('/'):
 			new = new[:-1]

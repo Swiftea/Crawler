@@ -32,7 +32,7 @@ class DatabaseSwiftea(DatabaseManager):
 		:return: True if an error occured
 
 		"""
-		result, response = self.send_command("SELECT popularity, last_crawl FROM index_url WHERE url = %s", (webpage_infos['url'],), True)
+		result, response = self.send_command("SELECT popularity, last_crawl FROM search WHERE url = %s", (webpage_infos['url'],), True)
 		if 'error' in response:
 			tell('Popularity and last_crawl query failed: ' + response, 16)
 			return True
@@ -66,7 +66,7 @@ class DatabaseSwiftea(DatabaseManager):
 		"""
 		tell('Updating ' + infos['url'])
 		response = self.send_command(
-"""UPDATE index_url
+"""UPDATE search
 SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, score=%s, homepage=%s, favicon=%s
 WHERE url = %s """, (infos['title'], infos['description'], infos['language'], popularity, infos['score'],\
 	infos['homepage'], infos['favicon'], infos['url']))
@@ -87,7 +87,7 @@ WHERE url = %s """, (infos['title'], infos['description'], infos['language'], po
 		"""
 		tell('Adding ' + infos['url'])
 		response = self.send_command(
-"""INSERT INTO index_url (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, homepage, favicon)
+"""INSERT INTO search (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, homepage, favicon)
 VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 (infos['title'], infos['description'], infos['url'], infos['language'], infos['score'], infos['homepage'], infos['favicon']))
 		if 'error' in  response[1]:
@@ -97,12 +97,12 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 			return False
 
 
-	def get_doc_id(self, url, table='index_url'):
+	def get_doc_id(self, url, table='search'):
 		"""Get id of a document in database.
 
 		:param url: url of webpage
 		:type url: str
-		:param table: table, default to index_url
+		:param table: table, default to search
 		:type table: str
 		:return: id of webpage or None if not found
 
@@ -115,14 +115,14 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 			return str(result[0])
 
 
-	def del_one_doc(self, url, table='index_url'):
+	def del_one_doc(self, url, table='search'):
 		"""Delete document corresponding to url from the given table.
 
 		:param url: url of webpage
 		:type url: str
 		:param table: table where given url is
 		:type table: str
-		:param table: table, default to index_url
+		:param table: table, default to search
 		:type table: str
 		:return: status message
 
@@ -153,12 +153,12 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 			return suggested_links
 
 
-	def doc_exists(self, url, table='index_url'):
+	def doc_exists(self, url, table='search'):
 		"""Check if url is in database.
 
 		:param url: url corresponding to doc
 		:type url: str
-		:param table: table, default to index_url
+		:param table: table, default to search
 		:type table: str
 		:return: True if doc exists
 

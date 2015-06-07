@@ -76,10 +76,10 @@ class Crawler(object):
 		"""
 		run = True
 		while run:
-			for _ in range(1):  # 50
+			for _ in range(50):
 				module.tell('Crawl', severity=2)
 				begining = time()
-				while len(self.infos) < 1:  # 10
+				while len(self.infos) < 10:
 					module.tell('Reading {0}, link {1}'.format(
 						str(self.file_manager.reading_file_number),
 						str(self.file_manager.reading_line_number+1)), severity=0)
@@ -222,7 +222,10 @@ class Crawler(object):
 		else:
 			index.stats_ul_index(begining, time())
 		for path in listdir(DIR_INDEX):
-			rmtree(path)
+			try:
+				rmtree(path)
+			except FileNotFoundError:
+				pass
 
 	def suggestions(self):
 		"""Suggestions:
