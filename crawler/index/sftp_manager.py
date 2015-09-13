@@ -52,15 +52,10 @@ class SFTPManager(FTP):
 		:return: server goodbye message or error message
 
 		"""
-		try:
-			response = self.quit()
-		except Exception as error:
-			response = "Can't quit server : " + str(error)
-		except AttributeError:
-			response = 'Connexion already exited.'
-		else:
-			self.close()
-		return response
+		self.sftp.close()
+		self.transport.close()
+        self.sftp = None
+		self.transport = None
 
 
 	def cd(self, path):
