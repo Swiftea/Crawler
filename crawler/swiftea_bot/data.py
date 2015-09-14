@@ -23,7 +23,7 @@ FILE_INDEX = DIR_DATA + 'inverted_index.json'
 FILE_DOCS = DIR_DATA + 'docs.json'
 
 # Strings for ftp location:
-FTP_INDEX = '/www/data/inverted-index/'
+FTP_INDEX = '/var/www/data/inverted_index'
 
 # Lists for clean up links and keywords:
 BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif',

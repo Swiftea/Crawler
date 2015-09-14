@@ -4,14 +4,14 @@ from os import path, mkdir, listdir
 import json
 
 from index.index import count_files
-from index.ftp_manager import FTPManager
+from index.sftp_manager import SFTPManager
 from swiftea_bot.data import DIR_INDEX, FTP_INDEX
 from swiftea_bot.module import tell
 
-class FTPSwiftea(FTPManager):
+class FTPSwiftea(SFTPManager):
 	"""Class to manage the ftp connexion for crawler."""
 	def __init__(self, host, user, password):
-		FTPManager.__init__(self, host, user, password)
+		SFTPManager.__init__(self, host, user, password)
 		self.language = int()
 		self.ftp_index = FTP_INDEX
 		self.downuploaded_files = self.nb_files = int()
@@ -89,7 +89,7 @@ class FTPSwiftea(FTPManager):
 			list_language = self.listdir()
 			if list_language[0].startswith('Error'): return 'listdir error'
 			if language not in list_language:
-				self.mkd(language)
+				self.mkdir(language)
 			if not path.isdir(DIR_INDEX + language):
 				mkdir(DIR_INDEX + language)
 
@@ -99,7 +99,7 @@ class FTPSwiftea(FTPManager):
 				list_first_letter = self.listdir()
 				if list_first_letter[0].startswith('Error'): return 'listdir error'
 				if first_letter not in list_first_letter:
-					self.mkd(first_letter)
+					self.mkdir(first_letter)
 				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
 					mkdir(DIR_INDEX + language + '/' + first_letter)
 
@@ -157,7 +157,7 @@ class FTPSwiftea(FTPManager):
 				if list_first_letter[0].startswith('Error'): return False
 				if 'C' in list_first_letter:
 					if self.cd('C').startswith('Error'): return False
-					infos_filename = self.infos_listdir(facts=['type', 'size'])
+					infos_filename = self.listdir_attr(facts=['type', 'size'])
 					if isinstance(infos_filename, str): return False
 					for data in infos_filename:
 						if data[0] == 'co.sif':

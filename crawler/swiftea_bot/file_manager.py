@@ -209,11 +209,12 @@ class FileManager(object):
 		:return: docs
 
 		"""
-		tell('Get docs form save file')
 		try:
 			with open(FILE_DOCS, 'r') as myfile:
 				docs = json.load(myfile)
 		except FileNotFoundError:
 			return list()
-		remove(FILE_DOCS)
-		return docs
+		else:
+			remove(FILE_DOCS)
+			tell('Get docs form save file')
+			return docs

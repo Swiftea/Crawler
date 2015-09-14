@@ -31,8 +31,7 @@ class TestGlobal(object):
 			myfile.write(BASE_LINKS)
 		crawler = Crawler()
 		crawler.database.set_name('swiftea_tests')
-		crawler.ftp_manager.set_ftp_index('/www/data/test_index/')
-		crawler.get_inverted_index()
+		crawler.ftp_manager.set_ftp_index('/var/www/data/test_index')
 		config = ConfigParser()
 		config['DEFAULT'] = {
 			'run': 'false',

@@ -1,5 +1,20 @@
 #!/usr/bin/python3
 
+"""How to:
+
+In command line:
+    cd crawler/tests
+    python run_tests.py [args for pytest]
+    python run_tests.py -f [testfilename] [args for pytest]  # Test given file.
+
+With coverage report (same way than travis):
+    export PYTHONPATH=crawler
+    coverage run setup.py test
+    coverage report
+    coverage html
+
+"""
+
 import pytest
 from sys import argv
 
@@ -15,12 +30,13 @@ args = '--strict --verbose'
 
 def tests():
     tests = str()
-    if __name__ == '__main__':
-        tests += 'global_test.py '
-    tests += path + 'swiftea_bot_test.py '
-    tests += path + 'crawling_test.py '
-    tests += path + 'database_test.py '
-    tests += path + 'index_test.py '
+    if '-f' not in args:
+        if __name__ == '__main__':
+            tests += 'global_test.py '
+        tests += path + 'swiftea_bot_test.py '
+        tests += path + 'crawling_test.py '
+        tests += path + 'database_test.py '
+        tests += path + 'index_test.py '
     tests += args
     errno = pytest.main(tests)
     reset()

@@ -217,7 +217,7 @@ class Crawler(object):
 		begining = time()
 		error = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		if error:
-			module.tell('Failed to send inverted-index ' + error, 2)
+			module.tell('Failed to send inverted-index: ' + error, 2)
 			module.quit_program()
 		else:
 			index.stats_ul_index(begining, time())
