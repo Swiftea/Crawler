@@ -50,18 +50,16 @@ class Crawler(object):
 		else:
 			if self.ftp_manager.compare_indexs():
 				begining = time()
-				inverted_index, error = self.ftp_manager.get_inverted_index()
-				if not error:
-					index.stats_dl_index(begining, time())
+				inverted_index = self.ftp_manager.get_inverted_index()
+				index.stats_dl_index(begining, time())
 			else:
 				inverted_index = self.file_manager.read_inverted_index()
-				error = False
-			if error:
-				if self.file_manager.reading_file_number != 0:
-					module.tell('Failed to download inverted-index ' + inverted_index, 1)
-					module.quit_program()
-				else:
-					module.tell("New inverted-index")
+
+			if self.file_manager.reading_file_number != 0:
+				module.tell('Failed to download inverted-index ' + inverted_index, 1)
+				module.quit_program()
+			else:
+				module.tell("New inverted-index")
 		self.index_manager.setInvertedIndex(inverted_index)
 
 	def start(self):
@@ -213,14 +211,10 @@ class Crawler(object):
 			self.index_manager.add_doc(webpage_infos['keywords'], doc_id, webpage_infos['language'])
 
 	def send_inverted_index(self):
-		"""Send inverted-index generate by indexing to ftp server."""
+		"""Send inverted-index generate by indexing to server."""
 		begining = time()
-		error = self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
-		if error:
-			module.tell('Failed to send inverted-index: ' + error, 2)
-			module.quit_program()
-		else:
-			index.stats_ul_index(begining, time())
+		self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
+		index.stats_ul_index(begining, time())
 		for path in listdir(DIR_INDEX):
 			try:
 				rmtree(path)

@@ -3,11 +3,16 @@
 from socket import timeout
 import paramiko
 
-from swiftea_bot.data import TIMEOUT
+
+class SFTPError(Exception):
+    def __init__(self, message):
+        self.message = message
+    def __str__(self):
+        return repr('SFTP error: ' + self.message)
 
 
-class SFTPManager:
-    """Class to connect to a ftp server with SSH using paramiko.
+class SFTPManager(object):
+    """Class to connect to a sftp server with SSH using paramiko.
 
     :param host: hostname server
     :type host: str
@@ -32,15 +37,12 @@ class SFTPManager:
             self.transport.connect(username=self.user, password=self.password)
             self.sftp = paramiko.SFTPClient.from_transport(self.transport)
         except timeout:
-            response = 'Timeout error'
+            raise SFTPError('Timeout error')
         except Exception as error:
-            response = 'Failed to connect to server: ' + str(error)
-        else:
-            response = 'Connected'
-        return response
+            raise SFTPError('connect; ' + str(error))
 
     def disconnect(self):
-        """Quit connexion to ftp server."""
+        """Close connexion to sftp server."""
         self.sftp.close()
         self.transport.close()
         self.sftp = None
@@ -52,31 +54,29 @@ class SFTPManager:
 
         :param path: path to set
         :type path: str
-        :return: ok or error message
 
         """
         try:
             self.sftp.chdir(path)
         except Exception as error:
-            return 'Error: ' + str(error)
-        else:
-            return 'ok'
+            raise SFTPError('cd; {} {}'.format(path, str(error)))
 
     def mkdir(self, dirname):
         """Create directory."""
-        self.sftp.mkdir(dirname)
+        try:
+            self.sftp.mkdir(dirname)
+        except Exception as error:
+            raise SFTPError('mkdir; ' + str(error))
 
     def listdir(self, path='.'):
         """Return a list containing the names of the entries in the given path."""
         try:
             result = self.sftp.listdir(path)
         except Exception as error:
-            return ['Error: ' + str(error)]
+            raise SFTPError('lisdir; ' + str(error))
         else:
-            if result != []:
-                return result
-            else:
-                return ['Empty list']
+            # Must be test:
+            return result
 
     def listdir_attr(self, path='.'):
         """List the given path.
@@ -87,11 +87,11 @@ class SFTPManager:
         try:
             result = self.sftp.listdir_attr(path)
         except Exception as error:
-            return 'Error: ' + str(error)
+            raise SFTPError('lisdir attrs; ' + str(error))
         else:
             return result
 
-    def upload(self, local_filename, server_filename):
+    def put(self, local_filename, server_filename):
         """Upload a file into server.
 
         :param local_filename: local filename to upload
@@ -104,12 +104,10 @@ class SFTPManager:
         try:
             self.sftp.put(local_filename, server_filename)
         except Exception as error:
-            return 'Error: ' + str(error)
-        else:
-            return 'Ok'
+            raise SFTPError('upload; ' + str(error))
 
-    def download(self, local_filename, server_filename):
-        """Download a file from ftp server.
+    def get(self, local_filename, server_filename):
+        """Download a file from server.
 
         :param local_filename: local filename to create
         :type local_filename: str
@@ -121,9 +119,7 @@ class SFTPManager:
         try:
             self.sftp.get(server_filename, local_filename)
         except Exception as error:
-            return 'Error: ' + str(error)
-        else:
-            return 'Ok'
+            raise SFTPError('download; ' + str(error))
 
     def countfiles(self, path='.'):
         """Count the file in the given path.
@@ -136,8 +132,8 @@ class SFTPManager:
         nb_files = int()
         infos = self.listdir_attr(path)
         for info in infos:
-            if info[1]['type'] == 'dir':
-                nb_files += self.countfiles(path + '/' + info[0])
-            elif info[1]['type'] == 'file':
+            if '.' in info.filename:
                 nb_files += 1
+            else:
+                nb_files += self.countfiles(path + '/' + info.filename)
         return nb_files

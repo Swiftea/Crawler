@@ -4,8 +4,10 @@
 
 from swiftea_bot.data import DIR_DATA
 
-def count_files(index):
+def count_files_index(index):
 	"""Return number of file to download are uplaod
+
+	Parse languages and letters from the given index.
 
 	:return: int
 
@@ -13,8 +15,7 @@ def count_files(index):
 	nb_files = int()
 	for language in index:
 		for first_letter in index[language]:
-			for two_letters in index[language][first_letter]:
-				nb_files += 1
+			nb_files += len(index[language][first_letter])
 	return nb_files
 
 def stats_dl_index(begining, end):
