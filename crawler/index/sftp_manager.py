@@ -7,7 +7,7 @@ from swiftea_bot.data import TIMEOUT
 
 
 class SFTPManager:
-    """Class to connect to a ftp server more easily.
+    """Class to connect to a ftp server with SSH using paramiko.
 
     :param host: hostname server
     :type host: str
@@ -26,11 +26,7 @@ class SFTPManager:
         self.sftp = None
 
     def connexion(self):
-        """Connect to server.
-
-        Catch Exception of ftplib. Use utf-8 encoding.
-
-        """
+        """Connect to server."""
         try:
             self.transport = paramiko.Transport(self.host)
             self.transport.connect(username=self.user, password=self.password)
@@ -44,13 +40,7 @@ class SFTPManager:
         return response
 
     def disconnect(self):
-        """Quit connexion to ftp server.
-
-        Close it if an error occured while trying to quit it.
-
-        :return: server goodbye message or error message
-
-        """
+        """Quit connexion to ftp server."""
         self.sftp.close()
         self.transport.close()
         self.sftp = None
@@ -62,7 +52,7 @@ class SFTPManager:
 
         :param path: path to set
         :type path: str
-        :return: sever response
+        :return: ok or error message
 
         """
         try:
@@ -89,6 +79,11 @@ class SFTPManager:
                 return ['Empty list']
 
     def listdir_attr(self, path='.'):
+        """List the given path.
+
+        Return the names and other informations about entries.
+
+        """
         try:
             result = self.sftp.listdir_attr(path)
         except Exception as error:
@@ -103,7 +98,7 @@ class SFTPManager:
         :type local_filename: str
         :param server_filename: server filename to upload
         :type server_filename: str
-        :return: response of server
+        :return: ok or error message
 
         """
         try:
@@ -120,7 +115,7 @@ class SFTPManager:
         :type local_filename: str
         :param server_filename: server filename to download
         :type server_filename: str
-        :return: server response message or error message
+        :return: server ok or error message
 
         """
         try:
@@ -131,7 +126,7 @@ class SFTPManager:
             return 'Ok'
 
     def countfiles(self, path='.'):
-        """Count the file in the given path
+        """Count the file in the given path.
 
         :param path: path to count
         :type path: str

@@ -103,6 +103,14 @@ index.ftp_manager module
     :show-inheritance:
 
 
+index.sftp_manager module
+-------------------------
+.. automodule:: index.sftp_manager
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 index.ftp_swiftea module
 ------------------------
 .. automodule:: index.ftp_swiftea
