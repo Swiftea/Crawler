@@ -1,4 +1,4 @@
 reppy==0.3.0
 PyMySQL==0.6.6
-pytest==2.7.2
-paramiko
+pytest==2.7.3
+paramiko==1.15.2
