@@ -96,10 +96,10 @@ def split_keywords(keyword):
 	if '.' in keyword:
 		keyword = keyword.split('.')
 		is_list = True
-	if '/' in keyword:
+	elif '/' in keyword:
 		keyword = keyword.split('/')  # str -> list
 		is_list = True
-	if '-' in keyword:
+	elif '-' in keyword:
 		keyword = keyword.split('-')  # str -> list
 		is_list = True
 	return is_list, keyword

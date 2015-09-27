@@ -43,6 +43,14 @@ tests.index_test
     :show-inheritance:
 
 
+tests.crawler_test
+------------------
+.. automodule:: tests.crawler_test
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 tests.global_test
 -----------------
 .. automodule:: tests.global_test

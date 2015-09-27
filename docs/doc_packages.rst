@@ -95,14 +95,6 @@ index.inverted_index module
     :undoc-members:
 
 
-index.ftp_manager module
-------------------------
-.. automodule:: index.ftp_manager
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
 index.sftp_manager module
 -------------------------
 .. automodule:: index.sftp_manager
