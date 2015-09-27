@@ -87,5 +87,4 @@ def reset():
     rmtree(DIR_CONFIG)
     rmtree(DIR_OUTPUT)
     rmtree(DIR_LINKS)
-    rmtree('test_dir')
     remove('test_RedirectOutput.ext')

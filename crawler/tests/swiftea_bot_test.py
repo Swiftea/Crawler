@@ -41,16 +41,6 @@ class TestModule(SwifteaBotBaseTest):
 		open(FILE_INDEX, 'w').close()
 		assert is_index() == True
 
-	def test_dir_size(self):
-		mkdir('test_dir')
-		mkdir('test_dir/dir')
-		with open('test_dir/file', 'w') as myfile:
-			myfile.write('01234')  # Write five octets
-		with open('test_dir/dir/file', 'w') as myfile:
-			myfile.write('01234')  # Write five octets
-		assert dir_size('test_dir') == 10
-		#rmtree('test_dir')
-
 	def test_can_add_doc(self):
 		docs = [{'url': self.url}]
 		assert can_add_doc(docs, {'url': self.url}) == False

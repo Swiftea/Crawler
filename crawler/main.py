@@ -112,10 +112,6 @@ class Crawler(object):
 			if run:
 				self.suggestions()
 				self.send_inverted_index()
-				if module.dir_size(DIR_INDEX) > 7000000:
-					module.tell('Index is too big for current server', severity=-1)
-					self.safe_quit()
-					run = False
 
 	def crawl_webpage(self, url):
 		"""Crawl the given url.

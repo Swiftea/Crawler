@@ -129,17 +129,6 @@ def is_index():
 	else:
 		return False
 
-def dir_size(source):
-	#total_size = path.getsize(source)
-	total_size = int()
-	for item in listdir(source):
-		itempath = path.join(source, item)
-		if path.isfile(itempath):
-			total_size += path.getsize(itempath)
-		elif path.isdir(itempath):
-			total_size += dir_size(itempath)
-	return total_size
-
 def can_add_doc(docs, new_doc):
 	"""to avoid documents duplicate, look for all url doc.
 

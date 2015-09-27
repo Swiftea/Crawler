@@ -133,7 +133,7 @@ class WebConnexion(object):
 
 		:param request: request
 		:type request: requests.models.Response
-		:return: url
+		:return: url, source code
 
 		"""
 		url1 = clean_link(request1.url)
@@ -145,6 +145,8 @@ class WebConnexion(object):
 			request2 = self.send_request(new_url)
 			request2.encoding = self.search_encoding(request2.headers, request2.text)[0]
 			url2 = clean_link(request2.url)
+			if url2 is None:
+				return url1, request1.text
 			if connexion.duplicate_content(request1.text, request2.text):
 				tell("Same content: " + url1 + " and " + url2)   # Tests
 				return url2, request2.text
