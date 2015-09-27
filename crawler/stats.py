@@ -4,51 +4,48 @@
 
 from swiftea_bot.data import DIR_DATA
 
-def stats():
-	"""
+def stats(dir_data=DIR_DATA):
 	try:
-		with open(DIR_DATA + 'stat_stopwords', 'r') as myfile:
+		with open(dir_data + 'stat_stopwords', 'r') as myfile:
 			content = myfile.read().split()
 	except FileNotFoundError:
-		stat_stopwords = 'File ' + DIR_DATA + 'stat_stopwords' + ' not found.'
+		stat_stopwords = 'File ' + dir_data + 'stat_stopwords' + ' not found.'
 	else:
 		stat_stopwords = 'Average percentage of removed words: ' + str(average(content))
 		if len(content) > 10000:
-			compress_stats(DIR_DATA + 'stat_stopwords')
+			compress_stats(dir_data + 'stat_stopwords')
 	result = stat_stopwords + '\n'
-	"""
-	result = ''
 	try:
-		with open(DIR_DATA + 'stat_links', 'r') as myfile:
+		with open(dir_data + 'stat_links', 'r') as myfile:
 			content = myfile.read().split()
 	except FileNotFoundError:
-		stat_links = ('File ' +  DIR_DATA + 'stat_links' + ' not found.')
+		stat_links = ('File ' +  dir_data + 'stat_links' + ' not found.')
 	else:
 		stat_links = ('Average links in webpage: ' + str(average(content)))
 		if len(content) > 10000:
-			compress_stats(DIR_DATA + 'stat_links')
+			compress_stats(dir_data + 'stat_links')
 	result += stat_links + '\n'
 	try:
-		with open(DIR_DATA + 'stat_webpages', 'r') as myfile:
+		with open(dir_data + 'stat_webpages', 'r') as myfile:
 			content = myfile.read().split()
 	except FileNotFoundError:
-		stat_webpages = 'File ' +  DIR_DATA + 'stat_webpages' + ' not found.'
+		stat_webpages = 'File ' +  dir_data + 'stat_webpages' + ' not found.'
 	else:
 		stat_webpages = 'Time to crawl ten webpages: ' + str(average(content))
 	result += stat_webpages + '\n'
 	try:
-		with open(DIR_DATA + 'stat_dl_index', 'r') as myfile:
+		with open(dir_data + 'stat_dl_index', 'r') as myfile:
 			content = myfile.read().split()
 	except FileNotFoundError:
-		stat_dl_index = 'File ' +  DIR_DATA + 'stat_dl_index' + ' not found.'
+		stat_dl_index = 'File ' +  dir_data + 'stat_dl_index' + ' not found.'
 	else:
 		stat_dl_index = 'Time download inverted-index: ' + str(average(content))
 	result += stat_dl_index + '\n'
 	try:
-		with open(DIR_DATA + 'stat_up_index', 'r') as myfile:
+		with open(dir_data + 'stat_up_index', 'r') as myfile:
 			content = myfile.read().split()
 	except FileNotFoundError:
-		stat_up_index = 'File ' +  DIR_DATA + 'stat_up_index' + ' not found.'
+		stat_up_index = 'File ' +  dir_data + 'stat_up_index' + ' not found.'
 	else:
 		stat_up_index = 'Time upload inverted-index: ' + str(average(content))
 	result += stat_up_index + '\n'

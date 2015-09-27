@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
-from swiftea_bot.data import DIR_DATA
+from shutil import rmtree
+from os import mkdir
 import swiftea_bot.data
-import stats
-import main
 from swiftea_bot.module import *
 from swiftea_bot.file_manager import *
 from tests.test_data import URL, INVERTED_INDEX, BASE_LINKS
@@ -50,6 +49,7 @@ class TestModule(SwifteaBotBaseTest):
 		with open('test_dir/dir/file', 'w') as myfile:
 			myfile.write('01234')  # Write five octets
 		assert dir_size('test_dir') == 10
+		#rmtree('test_dir')
 
 	def test_can_add_doc(self):
 		docs = [{'url': self.url}]
@@ -83,10 +83,6 @@ class TestFileManager(SwifteaBotBaseTest):
 		FileManager.save_links(self, BASE_LINKS.split())
 		FileManager.save_links(self, BASE_LINKS[5:].split())
 
-	def test_ckeck_size_links(self):
-		self.max_links = 2
-		FileManager.ckeck_size_links(self, self.links)
-
 	def test_get_url(self):
 		with open(DIR_LINKS + '1', 'w') as myfile:
 			myfile.write(self.url + '\nhttp://example.en/page qui parle de ça')
@@ -94,6 +90,10 @@ class TestFileManager(SwifteaBotBaseTest):
 		assert FileManager.get_url(self) == 'http://example.en/page qui parle de ça'
 		self.reading_file_number = 1
 		assert FileManager.get_url(self) == 'stop'
+
+	def test_ckeck_size_links(self):
+		self.max_links = 2
+		FileManager.ckeck_size_links(self, self.links)
 
 	def test_save_inverted_index(self):
 		FileManager.save_inverted_index(self, self.inverted_index)
@@ -111,13 +111,9 @@ class TestFileManager(SwifteaBotBaseTest):
 
 	def test_save_docs(self):
 		FileManager.save_docs(self, [{'url': self.url}])
+		FileManager.save_docs(self, [])
 
 	def test_get_docs(self):
 		assert FileManager.get_docs(self) == [{'url': self.url}]
-
-class TestStats(SwifteaBotBaseTest):
-	def test_stats(self):
-		stats.stats()
-
-	def test_compress_stats(self):
-		stats.compress_stats(DIR_DATA + 'stat_webpages')
+		assert FileManager.get_docs(self) == []
+		#rmtree('data')

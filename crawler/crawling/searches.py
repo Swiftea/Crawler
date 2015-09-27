@@ -153,10 +153,7 @@ def clean_link(url, base_url=None):
 				new = 'http' + new
 			else:
 				new = base_url + '/' + new
-		try:
-			infos_url = urlparse(new)
-		except ValueError:
-			return None
+		infos_url = urlparse(new)  # Removing excpet ValueError
 		new = infos_url.scheme + '://' + infos_url.netloc + infos_url.path
 		if new.endswith('/'):
 			new = new[:-1]
@@ -200,7 +197,7 @@ def stats_stop_words(begining, end):
 	else:
 		stats = '100'
 	with open(DIR_DATA + 'stat_stopwords', 'a') as myfile:
-		myfile.write(stats)
+		myfile.write(stats + '\n')
 
 def stats_links(stats):
 	"""Write the number of links for statistics.

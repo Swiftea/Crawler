@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from shutil import rmtree
+from os import remove
 
 from swiftea_bot.data import DIR_DATA, DIR_OUTPUT, DIR_LINKS, DIR_CONFIG
 
@@ -86,5 +87,5 @@ def reset():
     rmtree(DIR_CONFIG)
     rmtree(DIR_OUTPUT)
     rmtree(DIR_LINKS)
-    try: rmtree('test_dir')
-    except: pass
+    rmtree('test_dir')
+    remove('test_RedirectOutput.ext')

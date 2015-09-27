@@ -96,6 +96,10 @@ class TestSearches(CrawlingBaseTest):
 		is_list, keywords = split_keywords('fichier')
 		assert is_list == False
 		assert keywords == 'fichier'
+		is_list, keywords = split_keywords('two-words')
+		assert is_list == True
+		assert keywords == ['two', 'words']
+
 
 	def test_letter_repeat(self):
 		assert letter_repeat('file') == False

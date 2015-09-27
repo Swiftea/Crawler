@@ -60,8 +60,8 @@ def duplicate_content(code1, code2):
 		if percent >= 95:
 			is_duplicate = True
 		elif percent >= 65 and percent < 95:
-			# advanced verification to confirm or not
-			# difference percent of size
+			# Advanced verification to confirm or not
+			# Difference percent of size.
 			difference = 15
 			if size_code1 > size_code2:
 				percent_difference = (size_code1 - size_code2) * 100 / size_code1

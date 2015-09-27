@@ -22,6 +22,9 @@ class TestIndex(IndexBaseTest):
 		assert count_files_index(self.inverted_index) == 4
 
 class TestInvertedIndex(IndexBaseTest):
+	def test_create_inverted_index(self):
+		inverted_index = InvertedIndex()
+
 	def test_getInvertedIndex(self):
 		assert InvertedIndex.getInvertedIndex(self) == INVERTED_INDEX
 

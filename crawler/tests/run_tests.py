@@ -37,6 +37,7 @@ def tests():
         tests += path + 'crawling_test.py '
         tests += path + 'database_test.py '
         tests += path + 'index_test.py '
+        tests += path + 'crawler_test.py '
     tests += args
     errno = pytest.main(tests)
     reset()

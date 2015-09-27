@@ -4,6 +4,7 @@ from time import time
 import atexit
 from os import listdir
 from shutil import rmtree
+import sys
 
 
 try:
@@ -23,7 +24,7 @@ class Crawler(object):
 		self.site_informations = site_informations.SiteInformations()
 		if self.site_informations.STOPWORDS is None:
 			module.tell('No stopwords, quit program')
-			module.quit_program()
+			sys.exit()
 		self.file_manager = FileManager()
 		self.ftp_manager = ftp_swiftea.FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
 		self.index_manager = inverted_index.InvertedIndex()
@@ -57,7 +58,7 @@ class Crawler(object):
 
 			if self.file_manager.reading_file_number != 0:
 				module.tell('Failed to download inverted-index ' + inverted_index, 1)
-				module.quit_program()
+				sys.exit()
 			else:
 				module.tell("New inverted-index")
 		self.index_manager.setInvertedIndex(inverted_index)
@@ -132,7 +133,7 @@ class Crawler(object):
 		if html_code is None:
 			self.delete_if_exists(all_urls)  # Failed to get code, must delete from database.
 		elif html_code == 'no connexion':
-			module.quit_program()
+			sys.exit()
 		elif html_code == 'ignore':  # There was something wrong and maybe a redirection.
 			self.delete_if_exists(all_urls)
 		else:

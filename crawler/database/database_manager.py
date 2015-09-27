@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-from socket import timeout
-
 import pymysql
 
 from swiftea_bot.data import TIMEOUT
@@ -54,8 +52,6 @@ class DatabaseManager(object):
 				use_unicode=True,
 				charset='utf8',
 				connect_timeout=TIMEOUT)
-		except timeout:
-			response = 'Timeout error'
 		except pymysql.err.OperationalError as error:
 			response = 'Connexion error: ' + str(error)
 		else:

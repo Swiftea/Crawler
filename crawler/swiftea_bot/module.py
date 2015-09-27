@@ -4,7 +4,6 @@
 
 from time import strftime
 from os import path, mkdir, remove, listdir
-import sys
 
 import swiftea_bot.data as data
 
@@ -52,12 +51,8 @@ def errors(message, error_code):
 
 	"""
 	with open(data.FILE_ERROR, 'a') as myfile:
-		myfile.write(str(error_code) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ': ' + message + '\n')
+		myfile.write(' ' + str(error_code) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ': ' + message + '\n')
 
-def quit_program():
-	"""Function who manage end of prgoram."""
-	tell('end\n', 0)
-	sys.exit()
 
 def create_dirs():
 	"""Manage crawler's runing.
