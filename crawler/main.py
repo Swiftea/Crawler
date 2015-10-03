@@ -11,32 +11,32 @@ try:
 	import swiftea_bot.private_data as pvdata
 except ImportError:
 	pass
-from crawling import web_connexion, site_informations
-from database.database_swiftea import DatabaseSwiftea
-from index import inverted_index, ftp_swiftea, index
-from swiftea_bot.file_manager import FileManager
+from crawler import FTPSwiftea, SiteInformations, DatabaseSwiftea, FileManager, InvertedIndex, WebConnexion
 from swiftea_bot.data import DIR_INDEX
 import swiftea_bot.module as module
+import inverted_index as index
 
 class Crawler(object):
 	"""Crawler main class."""
 	def __init__(self):
-		self.site_informations = site_informations.SiteInformations()
+		self.ftp_manager = FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
+
+		self.site_informations = SiteInformations()
 		if self.site_informations.STOPWORDS is None:
 			module.tell('No stopwords, quit program')
 			sys.exit()
 		self.file_manager = FileManager()
-		self.ftp_manager = ftp_swiftea.FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
-		self.index_manager = inverted_index.InvertedIndex()
+		self.index_manager = InvertedIndex()
 		self.database = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER, pvdata.PASSWORD, pvdata.NAME_DB)
-		self.web_connexion = web_connexion.WebConnexion()
+		self.web_connexion = WebConnexion()
 
 		self.get_inverted_index()
 		self.infos = self.file_manager.get_docs()
 		if self.infos != []:
-			module.tell('Send and index saved docs')
-			self.send_to_db()
-			self.indexing()
+			module.tell('Send and index saved docs (no)')
+			#self.send_to_db()
+			#self.indexing()
+			print(self.infos)
 		self.crawled_websites = 0
 
 	def get_inverted_index(self):
@@ -70,7 +70,7 @@ class Crawler(object):
 		and save the configurations (line number in links file, ...).
 		Send the inverted-index and check for suggestions each 500 crawled webpages.
 
-		Do it until the user want stop crawling, occured an error, or fill the server.
+		Do it until the user want stop crawling or occured an error.
 
 		"""
 		run = True
@@ -90,7 +90,7 @@ class Crawler(object):
 
 				# End of crawling loop
 
-				module.tell('{} new documents ! '.format(self.crawled_websites), severity=-1)
+				module.tell('{} new documents!'.format(self.crawled_websites), severity=-1)
 
 				self.send_to_db()
 				self.indexing()
@@ -101,7 +101,6 @@ class Crawler(object):
 				self.file_manager.check_stop_crawling()
 				self.file_manager.get_max_links()
 				self.file_manager.save_config()
-				#self.file_manager.check_size_file()
 				if self.file_manager.run == 'false':
 					module.tell('User wants stop program')
 					self.safe_quit()
@@ -184,11 +183,10 @@ class Crawler(object):
 		"""
 		module.tell('Send to database', severity=2)
 		for webpage_infos in self.infos:
-			url_to_add, url_to_del = self.database.https_duplicate(webpage_infos['url'])
-			webpage_infos['url'] = url_to_add
+			webpage_infos['url'], url_to_del = self.database.https_duplicate(webpage_infos['url'])
 			if url_to_del:
 				self.delete_if_exists(url_to_del)
-			module.tell('New url: ' + webpage_infos['url'], severity=-1)
+			module.tell('New url (to add): ' + webpage_infos['url'], severity=-1)
 			error = self.database.send_doc(webpage_infos)
 			if error:
 				self.safe_quit()
@@ -222,7 +220,7 @@ class Crawler(object):
 		"""Suggestions:
 
 		Get 5 urls from database, delete them, crawl them,
-		send all informations about them, index them and return to main loop.
+		send all informations about them, index them.
 
 		"""
 		suggestions = self.database.suggestions()

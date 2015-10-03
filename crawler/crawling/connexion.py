@@ -3,6 +3,7 @@
 """Define several functions WebConnexion."""
 
 import requests
+
 from swiftea_bot.module import remove_duplicates
 from crawling.searches import clean_link
 from swiftea_bot.module import tell

@@ -5,7 +5,7 @@ from datetime import datetime
 from swiftea_bot.module import tell
 from swiftea_bot.data import CRAWL_DELAY
 from database.database_manager import DatabaseManager
-from database.database import url_is_secure, convert_secure
+import database.database as database
 
 class DatabaseSwiftea(DatabaseManager):
 	"""Class to manage Swiftea database.
@@ -186,10 +186,10 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
 
 		"""
 		tell('url to send: ' + old_url, severity=-1)
-		new_url = convert_secure(old_url)
+		new_url = database.convert_secure(old_url)
 		new_exists = self.doc_exists(new_url)
 
-		if url_is_secure(old_url):
+		if database.url_is_secure(old_url):
 			# old_url start with https
 			if new_exists:  # Start with http
 				#tell('insecure exists', severity=-1)

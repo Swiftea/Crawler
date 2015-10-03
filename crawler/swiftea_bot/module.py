@@ -132,6 +132,8 @@ def is_index():
 def can_add_doc(docs, new_doc):
 	"""to avoid documents duplicate, look for all url doc.
 
+	Parse self.infos of Crawler and return True if new_doc isn't in it.
+
 	:param docs: the documents to check
 	:type docs: list
 	:param new_doc: the doc to add
