@@ -11,10 +11,16 @@ try:
 	import swiftea_bot.private_data as pvdata
 except ImportError:
 	pass
-from crawler import FTPSwiftea, SiteInformations, DatabaseSwiftea, FileManager, InvertedIndex, WebConnexion
+
+from index.ftp_swiftea import FTPSwiftea
+from crawling.web_connexion import WebConnexion
+from crawling.site_informations import SiteInformations
+from database.database_swiftea import DatabaseSwiftea
+from swiftea_bot.file_manager import FileManager
+from index.inverted_index import InvertedIndex
 from swiftea_bot.data import DIR_INDEX
 import swiftea_bot.module as module
-import inverted_index as index
+import index.index as index
 
 class Crawler(object):
 	"""Crawler main class."""

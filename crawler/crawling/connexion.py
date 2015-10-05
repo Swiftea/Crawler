@@ -4,9 +4,14 @@
 
 import requests
 
+try:
+	import swiftea_bot.private_data as pvdata
+except ImportError:
+	pass
 from swiftea_bot.module import remove_duplicates
 from crawling.searches import clean_link
 from swiftea_bot.module import tell
+from swiftea_bot.data import LANGUAGES
 
 def no_connexion(url='http://swiftea.alwaysdata.net'):
 	"""Check connexion.
@@ -102,22 +107,23 @@ def all_urls(request):
 			urls.append(url)
 	return remove_duplicates(urls)
 
-def get_stopwords(path='http://swiftea.alwaysdata.net/data/stopwords/'):
-	"""Get stopwords from swiftea website.
+def get_words_lists(type_):
+	"""Get words from swiftea server.
 
+	:param path: path
+	:param type_: stopwords or badwords
 	:return: a dict: keys are languages and values are stopwords
 
 	"""
-	STOP_WORDS = dict()
+	path = pvdata.HOST + 'data/' + type_
+	result = dict()
 	try:
-		r = requests.get(path + 'fr.stopwords.txt')
-		r.encoding = 'utf-8'
-		STOP_WORDS['fr'] = r.text
-		r = requests.get(path + 'en.stopwords.txt')
-		r.encoding = 'utf-8'
-		STOP_WORDS['en'] = r.text
+		for language in LANGUAGES:
+			r = requests.get(path + language + '.' + type_ + '.txt')
+			r.encoding = 'utf-8'
+			result[language] = r.text
 	except requests.exceptions.ConnectionError:
-		print('Failed to get stopwords', 10)
+		print('Failed to get ' + type_, 10)
 		return None
 	else:
-		return STOP_WORDS
+		return result

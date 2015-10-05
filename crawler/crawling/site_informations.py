@@ -7,14 +7,16 @@ from urllib.parse import urlparse
 
 from swiftea_bot.module import tell, remove_duplicates
 from crawling import parsers, searches
-from crawling.connexion import get_stopwords
+from crawling.connexion import get_words_lists
+
 
 class SiteInformations(object):
 	"""Class to manage searches in source codes."""
 	def __init__(self):
 		"""Build searches manager."""
 		self.parser = parsers.ExtractData()
-		self.STOPWORDS = get_stopwords()
+		self.STOPWORDS = get_words_lists('stopwords')
+		self.BADWORDS = get_words_lists('badwords')
 
 	def get_infos(self, url, code, nofollow, score):
 		"""Manager all searches of webpage's informations.

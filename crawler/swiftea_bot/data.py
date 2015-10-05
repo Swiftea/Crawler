@@ -39,6 +39,7 @@ HEADERS = {"User-Agent": USER_AGENT}
 MAX_LINKS = 5000  # Max links in a file
 CRAWL_DELAY = timedelta(days=2)  # Program don't crawl the same website after this delay
 TIMEOUT = 30
+LANGUAGES = ['fr', 'en']
 
 ERROR_CODE_DOC = """Error codes
 ===========

@@ -51,9 +51,9 @@ class TestConnexion(CrawlingBaseTest):
 		request = req.get("http://www.wordreference.com/")
 		assert all_urls(request) == ["http://www.wordreference.com"]
 
-	def test_get_stopwords(self):
-		get_stopwords()
-		get_stopwords(self.url)
+	def test_get_words_lists(self):
+		get_words_lists('stopwords')
+		get_words_lists('badwords')
 
 
 class TestWebConnexion(CrawlingBaseTest):

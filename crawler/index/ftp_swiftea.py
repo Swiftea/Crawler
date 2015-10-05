@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from os import path, mkdir, listdir
+from os import path, mkdir
 import json
 
 from index.index import count_files_index
@@ -103,9 +103,9 @@ class FTPSwiftea(SFTPManager):
 	def download(self, language, first_letter, filename):
 		self.downuploaded_files += 1
 		path_index = language + '/' + first_letter + '/' + filename
-		response = self.get(DIR_INDEX + path_index, filename)
+		self.get(DIR_INDEX + path_index, filename)
 		with open(DIR_INDEX + path_index, 'r', encoding='utf-8') as myfile:
-		 	return json.load(myfile)
+			return json.load(myfile)
 
 	def upload(self, language, first_letter, two_letters, index):
 		self.downuploaded_files += 1
