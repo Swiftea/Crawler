@@ -22,8 +22,9 @@ FILE_BASELINKS = DIR_LINKS + '0'
 FILE_INDEX = DIR_DATA + 'inverted_index.json'
 FILE_DOCS = DIR_DATA + 'docs.json'
 
-# String for server directorie:
+# String for server:
 FTP_INDEX = '/var/www/html/data/inverted_index'
+HOST = 'http://vps193469.ovh.net/'
 
 # Lists for clean up links and keywords:
 BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif',

@@ -4,14 +4,10 @@
 
 import requests
 
-try:
-	import swiftea_bot.private_data as pvdata
-except ImportError:
-	pass
 from swiftea_bot.module import remove_duplicates
 from crawling.searches import clean_link
 from swiftea_bot.module import tell
-from swiftea_bot.data import LANGUAGES
+from swiftea_bot.data import LANGUAGES, HOST
 
 def no_connexion(url='http://swiftea.alwaysdata.net'):
 	"""Check connexion.
@@ -115,7 +111,7 @@ def get_words_lists(type_):
 	:return: a dict: keys are languages and values are stopwords
 
 	"""
-	path = pvdata.HOST + 'data/' + type_
+	path = HOST + 'data/' + type_
 	result = dict()
 	try:
 		for language in LANGUAGES:
