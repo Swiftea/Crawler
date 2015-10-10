@@ -42,7 +42,7 @@ class Crawler(object):
 			module.tell('Send and index saved docs (no)')
 			#self.send_to_db()
 			#self.indexing()
-			print(self.infos)
+			#print(self.infos)
 		self.crawled_websites = 0
 
 	def get_inverted_index(self):
@@ -63,7 +63,7 @@ class Crawler(object):
 				inverted_index = self.file_manager.read_inverted_index()
 
 			if self.file_manager.reading_file_number != 0:
-				module.tell('Failed to download inverted-index ' + inverted_index, 1)
+				module.tell('Failed to download inverted-index', 1)
 				sys.exit()
 			else:
 				module.tell("New inverted-index")
@@ -144,7 +144,7 @@ class Crawler(object):
 			webpage_infos['url'] = new_url
 			(links, webpage_infos['title'], webpage_infos['description'],
 				webpage_infos['keywords'], webpage_infos['language'],
-				webpage_infos['score'], webpage_infos['favicon'], webpage_infos['homepage']
+				webpage_infos['score'], webpage_infos['favicon'], webpage_infos['homepage'], webpage_infos['sanesearch']
 				) = self.site_informations.get_infos(new_url, html_code, nofollow, score)
 
 			if webpage_infos['title'] != '':

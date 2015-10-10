@@ -9,7 +9,7 @@ from crawling.searches import clean_link
 from swiftea_bot.module import tell
 from swiftea_bot.data import LANGUAGES, HOST
 
-def no_connexion(url='http://swiftea.alwaysdata.net'):
+def no_connexion(url=HOST):
 	"""Check connexion.
 
 	Try to connect to swiftea website.
@@ -111,7 +111,7 @@ def get_words_lists(type_):
 	:return: a dict: keys are languages and values are stopwords
 
 	"""
-	path = HOST + 'data/' + type_
+	path = HOST + 'data/' + type_ + '/'
 	result = dict()
 	try:
 		for language in LANGUAGES:

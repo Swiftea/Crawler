@@ -53,6 +53,9 @@ class SiteInformations(object):
 			keywords = self.clean_keywords(keywords, language)
 			keywords.extend(self.clean_keywords(title.lower().split(), language))
 			keywords.extend(self.clean_keywords(self.split_url(url), language))
+			searches.stats_stop_words(begining_size, len(keywords))  # stats
+
+			sanesearch = self.sane_search(keywords, language)
 
 			# Description:
 			if self.parser.description == '':
@@ -64,7 +67,6 @@ class SiteInformations(object):
 			if self.parser.css:
 				score += 1
 
-			searches.stats_stop_words(begining_size, len(keywords))  # stats
 
 			base_url = searches.get_base_url(url)
 
@@ -80,9 +82,9 @@ class SiteInformations(object):
 				favicon = ''
 		else:
 			tell('No language or title', severity=-1)
-			title = links = description = score = favicon = ''
+			title = links = description = score = favicon = sanesearch = ''
 
-		return links, title, description, keywords, language, score, favicon, homepage
+		return links, title, description, keywords, language, score, favicon, homepage, sanesearch
 
 
 	def detect_language(self, keywords):
@@ -182,6 +184,17 @@ class SiteInformations(object):
 					new_keywords.append(keyword)
 		return new_keywords
 
+	def sane_search(self, keywords, language):
+		badwords = self.BADWORDS[language]
+		nb_badwords = 0
+		for keyword in keywords:
+			if keyword in badwords:
+				nb_badwords += 1
+		if nb_badwords >= 4:
+			tell('bad site detected')
+			return True
+		else:
+			return False
 
 	def split_url(self, url):
 		"""Split url into keywords.

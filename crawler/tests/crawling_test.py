@@ -22,6 +22,7 @@ class CrawlingBaseTest(object):
 		self.parser = ExtractData()
 		self.parser_encoding = ExtractEncoding()
 		self.STOPWORDS = {'fr':('mot', 'pour', 'de')}
+		self.BADWORDS = {'fr': ('pipe', 'xxx')}
 		self.objet = 'title'
 		self.title = 'letter'
 		self.headers = {'status': '200 OK', 'content-type': 'text/html; charset=utf-8', 'vary': 'X-PJAX, Accept-Encoding'}
@@ -158,6 +159,11 @@ class TestSiteInformations(CrawlingBaseTest):
 		'quoi...', '*****', 'epee,...', '2.0', 'o\'clock',]
 		keywords = SiteInformations.clean_keywords(self, keywords, 'fr')
 		assert keywords == ['le', 'bureau', 'word', 'example', 'oiseau', 'quoi', 'epee', 'clock']
+
+	def test_sane_search(self):
+		assert SiteInformations.sane_search(self, ['car'], 'fr') == False
+		assert SiteInformations.sane_search(self, ['cigare', 'pipe'], 'fr') == False
+		assert SiteInformations.sane_search(self, ['pipe', 'xxx'], 'fr') == True
 
 	def test_detect_language(self):
 		keywords = "un texte d'exemple pour tester la fonction".split()

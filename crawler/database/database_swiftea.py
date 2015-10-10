@@ -67,9 +67,9 @@ class DatabaseSwiftea(DatabaseManager):
 		tell('Updating ' + infos['url'])
 		response = self.send_command(
 """UPDATE search
-SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, score=%s, homepage=%s, favicon=%s
+SET title=%s, description=%s, last_crawl=NOW(), lang=%s, popularity=%s, score=%s, homepage=%s, sanesearch=%s, favicon=%s
 WHERE url = %s """, (infos['title'], infos['description'], infos['language'], popularity, infos['score'],\
-	infos['homepage'], infos['favicon'], infos['url']))
+	infos['homepage'], infos['sanesearch'], infos['favicon'], infos['url']))
 		if 'error' in  response[1]:
 			tell('Failed to update: ' + response[1], 9)
 			return True
@@ -87,9 +87,9 @@ WHERE url = %s """, (infos['title'], infos['description'], infos['language'], po
 		"""
 		tell('Adding ' + infos['url'])
 		response = self.send_command(
-"""INSERT INTO search (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, homepage, favicon)
-VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s)""", \
-(infos['title'], infos['description'], infos['url'], infos['language'], infos['score'], infos['homepage'], infos['favicon']))
+"""INSERT INTO search (title, description, url, first_crawl, last_crawl, lang, likes, popularity, score, homepage, sanesearch, favicon)
+VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s, %s)""", \
+(infos['title'], infos['description'], infos['url'], infos['language'], infos['score'], infos['homepage'], infos['sanesearch'], infos['favicon']))
 		if 'error' in  response[1]:
 			tell('Failed to add: ' + response[1], 10)
 			return True
