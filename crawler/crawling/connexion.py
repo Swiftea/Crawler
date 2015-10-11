@@ -42,6 +42,14 @@ def is_nofollow(url):
 		return False, url
 
 def duplicate_content(code1, code2):
+	"""Compare code1 and code2.
+
+	:param code1: first code to compare
+	:type code1: str
+	:param code2: second code to compare
+	:type code2: str
+
+	"""
 	if code1 != code2:
 		size_code1, size_code2 = len(code1), len(code2)
 		# Percent of similar words

@@ -188,6 +188,15 @@ class SiteInformations(object):
 		return new_keywords
 
 	def sane_search(self, keywords, language, max_badwords=4):
+		"""Filter adults websites.
+
+		:param: keywords: webpage's keywords
+		:type keywords: list
+		:pram language: found website language
+		:type language: str
+		:return: True or False
+
+		"""
 		badwords = self.BADWORDS[language]
 		nb_badwords = 0
 		for keyword in keywords:
