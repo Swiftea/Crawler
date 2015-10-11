@@ -99,8 +99,7 @@ def def_links():
 		mkdir(data.DIR_LINKS)
 		print("""No links directory,
 1: let programm choose a list...
-2: fill a file yourself...
-(see doc.txt file in config)""")
+2: fill a file yourself...""")
 		rep = input("What's your choice ? (1/2) : ")
 		if rep == '1':
 			# Basic links
@@ -171,6 +170,13 @@ def stats_webpages(begining, end):
 	"""
 	delta = end - begining  # Time to crawl ten webpages
 	time = delta / 10  # Time in second to crawl 10 webpages
+	nb_webpages = 60 / time  # Number of webpages crawled in 1 minute
+	with open(data.DIR_DATA + 'stat_webpages', 'a') as myfile:
+		myfile.write(str(nb_webpages) + '\n')
+
+def stats_send_index(begining, end):
+	delta = end - begining  # Time between 2 sending index
+	time = delta / 10
 	nb_webpages = 60 / time  # number of webpages crawled in 1 minute
 	with open(data.DIR_DATA + 'stat_webpages', 'a') as myfile:
 		myfile.write(str(nb_webpages) + '\n')

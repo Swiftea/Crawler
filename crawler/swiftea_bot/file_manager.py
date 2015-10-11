@@ -54,11 +54,6 @@ class FileManager(object):
 		self.config.read_file(open(FILE_CONFIG))
 		self.run = self.config['DEFAULT']['run']
 
-	def get_max_links(self):
-		"""Get back the maximal number of links in a file from configuration file."""
-		self.config.read_file(open(FILE_CONFIG))
-		self.max_links = int(self.config['DEFAULT']['max_links'])
-
 	def save_config(self):
 		"""Save all configurations in config file."""
 		self.config['DEFAULT'] = {

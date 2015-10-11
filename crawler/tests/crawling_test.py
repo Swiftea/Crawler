@@ -161,9 +161,9 @@ class TestSiteInformations(CrawlingBaseTest):
 		assert keywords == ['le', 'bureau', 'word', 'example', 'oiseau', 'quoi', 'epee', 'clock']
 
 	def test_sane_search(self):
-		assert SiteInformations.sane_search(self, ['car'], 'fr') == False
-		assert SiteInformations.sane_search(self, ['cigare', 'pipe'], 'fr') == False
-		assert SiteInformations.sane_search(self, ['pipe', 'xxx'], 'fr') == True
+		assert SiteInformations.sane_search(self, ['car'], 'fr', 2) == False
+		assert SiteInformations.sane_search(self, ['cigare', 'pipe'], 'fr', 2) == False
+		assert SiteInformations.sane_search(self, ['pipe', 'xxx'], 'fr', 2) == True
 
 	def test_detect_language(self):
 		keywords = "un texte d'exemple pour tester la fonction".split()

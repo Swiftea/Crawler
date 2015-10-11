@@ -61,10 +61,6 @@ class TestFileManager(SwifteaBotBaseTest):
 		FileManager.check_stop_crawling(self)
 		assert self.run == 'true'
 
-	def test_get_max_links(self):
-		FileManager.get_max_links(self)
-		assert self.max_links == MAX_LINKS
-
 	def test_save_config(self):
 		FileManager.save_config(self)
 

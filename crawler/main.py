@@ -81,6 +81,7 @@ class Crawler(object):
 		"""
 		run = True
 		while run:
+			stats_send_index = time()
 			for _ in range(50):
 				module.tell('Crawl', severity=2)
 				begining = time()
@@ -105,7 +106,6 @@ class Crawler(object):
 
 				self.infos.clear()  # Reset the list of dict of informations of websites.
 				self.file_manager.check_stop_crawling()
-				self.file_manager.get_max_links()
 				self.file_manager.save_config()
 				if self.file_manager.run == 'false':
 					module.tell('User wants stop program')
@@ -117,6 +117,7 @@ class Crawler(object):
 			if run:
 				self.suggestions()
 				self.send_inverted_index()
+				module.stats_send_index(stats_send_index, time())
 
 	def crawl_webpage(self, url):
 		"""Crawl the given url.
@@ -139,13 +140,9 @@ class Crawler(object):
 			self.delete_if_exists(all_urls)
 		else:
 			module.tell('New url: ' + new_url, severity=0)
-			self.delete_if_exists(all_urls)
-			webpage_infos = dict()
+			self.delete_if_exists(all_urls)  # Except new url
+			webpage_infos, links = self.site_informations.get_infos(new_url, html_code, nofollow, score)
 			webpage_infos['url'] = new_url
-			(links, webpage_infos['title'], webpage_infos['description'],
-				webpage_infos['keywords'], webpage_infos['language'],
-				webpage_infos['score'], webpage_infos['favicon'], webpage_infos['homepage'], webpage_infos['sanesearch']
-				) = self.site_informations.get_infos(new_url, html_code, nofollow, score)
 
 			if webpage_infos['title'] != '':
 				if module.can_add_doc(self.infos, webpage_infos):  # Duplicate only with url
@@ -217,10 +214,7 @@ class Crawler(object):
 		self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		index.stats_ul_index(begining, time())
 		for path in listdir(DIR_INDEX):
-			try:
-				rmtree(path)
-			except FileNotFoundError:
-				pass
+			rmtree(path)
 
 	def suggestions(self):
 		"""Suggestions:
@@ -236,13 +230,13 @@ class Crawler(object):
 			suggestions = self.site_informations.clean_links(suggestions)
 			if len(suggestions) > 0:
 				module.tell('Suggestions', severity=2)
+				for url in suggestions:
+					self.crawl_website(url)
+				self.send_to_db()
+				self.indexing()
+				self.infos.clear()  # Reset the list of dict of informations of websites.
 			else:
 				module.tell('No suggestions')
-			for url in suggestions:
-				self.crawl_website(url)
-			self.send_to_db()
-			self.indexing()
-			self.infos.clear()  # Reset the list of dict of informations of websites.
 
 	def safe_quit(self):
 		"""Save inverted-index and quit."""

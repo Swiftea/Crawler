@@ -33,11 +33,12 @@ class SiteInformations(object):
 			score, number of words
 
 		"""
-		homepage = 1 if searches.is_homepage(url) else 0
+		results = dict()
+		results['homepage'] = 1 if searches.is_homepage(url) else 0
 
 		self.parser.feed(code)
 
-		title = searches.clean_text(searches.capitalize(self.parser.title))  # Find title and clean it
+		results['title'] = searches.clean_text(searches.capitalize(self.parser.title))  # Find title and clean it
 
 		keywords = searches.clean_text(self.parser.keywords.lower()).split()
 		begining_size = len(keywords)  # Stats
@@ -51,22 +52,23 @@ class SiteInformations(object):
 
 		if language in self.STOPWORDS and self.parser.title != '':
 			keywords = self.clean_keywords(keywords, language)
-			keywords.extend(self.clean_keywords(title.lower().split(), language))
+			keywords.extend(self.clean_keywords(results['title'].lower().split(), language))
 			keywords.extend(self.clean_keywords(self.split_url(url), language))
-			searches.stats_stop_words(begining_size, len(keywords))  # stats
+			searches.stats_stop_words(begining_size, len(keywords))  # Stats
 
-			sanesearch = self.sane_search(keywords, language)
+			results['sanesearch'] = self.sane_search(keywords, language)
+			results['language'] = language
+			results['keywords'] = keywords
 
 			# Description:
 			if self.parser.description == '':
-				description = searches.clean_text(searches.capitalize(self.parser.first_title))
+				results['description'] = searches.clean_text(searches.capitalize(self.parser.first_title))
 			else:
-				description = searches.clean_text(searches.capitalize(self.parser.description))
+				results['description'] = searches.clean_text(searches.capitalize(self.parser.description))
 
 			# Css:
 			if self.parser.css:
 				score += 1
-
 
 			base_url = searches.get_base_url(url)
 
@@ -77,14 +79,15 @@ class SiteInformations(object):
 				links = self.clean_links(self.parser.links, base_url)
 				searches.stats_links(len(links))
 			if self.parser.favicon != '':
-				favicon = self.clean_favicon(self.parser.favicon, base_url)
+				results['favicon'] = self.clean_favicon(self.parser.favicon, base_url)
 			else:
-				favicon = ''
+				results['favicon'] = ''
 		else:
 			tell('No language or title', severity=-1)
-			title = links = description = score = favicon = sanesearch = ''
+			results = {'title': ''}
 
-		return links, title, description, keywords, language, score, favicon, homepage, sanesearch
+		results['score'] = score
+		return results, links
 
 
 	def detect_language(self, keywords):
@@ -184,13 +187,13 @@ class SiteInformations(object):
 					new_keywords.append(keyword)
 		return new_keywords
 
-	def sane_search(self, keywords, language):
+	def sane_search(self, keywords, language, max_badwords=4):
 		badwords = self.BADWORDS[language]
 		nb_badwords = 0
 		for keyword in keywords:
 			if keyword in badwords:
 				nb_badwords += 1
-		if nb_badwords >= 4:
+		if nb_badwords >= max_badwords:
 			tell('bad site detected')
 			return True
 		else:
