@@ -26,12 +26,14 @@ class Crawler(object):
 	"""Crawler main class."""
 	def __init__(self):
 		self.ftp_manager = FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
-
 		self.site_informations = SiteInformations()
-		if self.site_informations.STOPWORDS is None:
-			module.tell('No stopwords, quit program')
-			sys.exit()
 		self.file_manager = FileManager()
+		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
+		if stopwords == dict() or badwords == dict():
+			self.ftp_manager.download_lists()  # Download all lists of words (bad and stop)
+			stopwords, badwords = self.file_manager.get_lists_words()
+		self.site_informations.set_listswords(stopwords, badwords)
+
 		self.index_manager = InvertedIndex()
 		self.database = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER, pvdata.PASSWORD, pvdata.NAME_DB)
 		self.web_connexion = WebConnexion()

@@ -15,8 +15,10 @@ class SiteInformations(object):
 	def __init__(self):
 		"""Build searches manager."""
 		self.parser = parsers.ExtractData()
-		self.STOPWORDS = get_words_lists('stopwords')
-		self.BADWORDS = get_words_lists('badwords')
+
+	def set_listswords(self, stopwords, badwords):
+		self.STOPWORDS = stopwords
+		self.BADWORDS = badwords
 
 	def get_infos(self, url, code, nofollow, score):
 		"""Manager all searches of webpage's informations.
@@ -85,6 +87,7 @@ class SiteInformations(object):
 		else:
 			tell('No language or title', severity=-1)
 			results = {'title': ''}
+			links = list()
 
 		results['score'] = score
 		return results, links

@@ -73,7 +73,7 @@ class TestWebConnexion(CrawlingBaseTest):
 
 	def test_send_request(self):
 		WebConnexion.send_request(self, 'https://zestedesavoir.com')
-		assert WebConnexion.send_request(self, 'https://uneurlbidon.com') == 'ignore'
+		assert WebConnexion.send_request(self, 'https://uneurlbidon.com') == None
 
 	def test_duplicate_content(self):
 		request = req.get('https://zestedesavoir.com')

@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
-from os import path, mkdir
+from os import mkdir
 import json
 
 from index.index import count_files_index
 from index.sftp_manager import SFTPManager
-from swiftea_bot.data import DIR_INDEX, FTP_INDEX
+from swiftea_bot.data import DIR_INDEX, FTP_INDEX, DIR_DATA
 from swiftea_bot.module import tell
 
 class FTPSwiftea(SFTPManager):
@@ -66,7 +66,7 @@ class FTPSwiftea(SFTPManager):
 		:return: True if an error occured
 
 		"""
-		tell('Send inverted-index')
+		tell('send inverted-index')
 		self.downuploaded_files = 0
 		self.nb_files = count_files_index(inverted_index)  # Count files from index (prepare to upload)
 		self.connexion()
@@ -157,3 +157,13 @@ class FTPSwiftea(SFTPManager):
 				return False
 		else:
 			return True
+
+	def download_lists(self):
+		"""Download stopwords and badwords"""
+		tell('download list of words')
+		self.connexion()
+		for filename in ['en.stopwords.txt', 'fr.stopwords.txt', 'en.badwords.txt', 'fr.badwords.txt']:
+			type_ = filename[3:-4] + '/'
+			self.cd('/var/www/html/data/' + type_)
+			self.get(DIR_DATA + type_ + filename, filename)
+		self.disconnect()

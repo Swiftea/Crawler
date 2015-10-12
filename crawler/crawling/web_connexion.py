@@ -69,7 +69,7 @@ class WebConnexion(object):
 			if connexion.no_connexion():
 				return 'no connexion'
 			else:
-				return 'ignore'
+				return None
 		else:
 			return request
 
