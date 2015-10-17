@@ -2,6 +2,7 @@
 
 from os import mkdir
 import json
+from os import path
 
 from index.index import count_files_index
 from index.sftp_manager import SFTPManager
@@ -135,21 +136,18 @@ class FTPSwiftea(SFTPManager):
 		if path.exists(local_file):
 			local_size = path.getsize(local_file)
 			self.connexion()
-			if self.cd(self.sftp_index).startswith('Error'): return False
+			self.cd(self.sftp_index)
 			server_size = 0
 			list_language = self.listdir()
-			if list_language[0].startswith('Error'): return True
 			if 'FR' in list_language:
-				if self.cd('FR').startswith('Error'): return False
+				self.cd('FR')
 				list_first_letter = self.listdir()
-				if list_first_letter[0].startswith('Error'): return False
 				if 'C' in list_first_letter:
-					if self.cd('C').startswith('Error'): return False
-					infos_filename = self.listdir_attr(facts=['type', 'size'])
-					if isinstance(infos_filename, str): return False
+					self.cd('C')
+					infos_filename = self.listdir_attr()
 					for data in infos_filename:
-						if data[0] == 'co.sif':
-							server_size = int(data[1]['size'])
+						if data.filename == 'co.sif':
+							server_size = data.st__size
 			self.disconnect()
 			if local_size < server_size:
 				return True
