@@ -144,6 +144,12 @@ class TestSearches(CrawlingBaseTest):
 
 
 class TestSiteInformations(CrawlingBaseTest):
+	def test_set_listswords(self):
+		var = SiteInformations()
+		var.set_listswords({'en': ['then', 'already']}, {'en': ['verybadword']})
+		assert var.STOPWORDS == {'en': ['then', 'already']}
+		assert var.BADWORDS == {'en': ['verybadword']}
+
 	def test_clean_links(self):
 		links = ['page.php', 'http://aetfiws.alwaysdata.net/', 'mailto:test@test.fr',
 			'//www.example.fr?w=word', 'http://aetfiws.alwaysdata.net/page1/index.html',

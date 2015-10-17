@@ -158,8 +158,8 @@ class FTPSwiftea(SFTPManager):
 		else:
 			return True
 
-	def download_lists(self):
-		"""Download stopwords and badwords"""
+	def download_lists_words(self):
+		"""Download stopwords and badwords."""
 		tell('download list of words')
 		self.connexion()
 		for filename in ['en.stopwords.txt', 'fr.stopwords.txt', 'en.badwords.txt', 'fr.badwords.txt']:

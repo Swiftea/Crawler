@@ -100,7 +100,7 @@ def def_links():
 	if not path.isdir(data.DIR_LINKS):
 		mkdir(data.DIR_LINKS)
 		print("""No links directory,
-1: let programm choose a list...
+1: let program choose a list...
 2: fill a file yourself...""")
 		rep = input("What's your choice ? (1/2) : ")
 		if rep == '1':

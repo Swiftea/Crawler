@@ -103,3 +103,15 @@ class TestFileManager(SwifteaBotBaseTest):
 		assert FileManager.get_docs(self) == [{'url': self.url}]
 		assert FileManager.get_docs(self) == []
 		#rmtree('data')
+
+	def test_get_lists_words(self):
+		# No dirs badwords and stopwords
+		stopwords, badwords = FileManager.get_lists_words(self)
+		# Dirs created
+		with open(data.DIR_DATA + 'stopwords/' + 'en.stopwords.txt', 'w') as myfile:
+			myfile.write('then\nalready')
+		with open(data.DIR_DATA + 'badwords/' + 'en.badwords.txt', 'w') as myfile:
+			myfile.write('verybadword')
+		stopwords, badwords = FileManager.get_lists_words(self)
+		assert stopwords == {'en': ['then', 'already']}
+		assert badwords == {'en': ['verybadword']}

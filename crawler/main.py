@@ -30,7 +30,7 @@ class Crawler(object):
 		self.file_manager = FileManager()
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
 		if stopwords == dict() or badwords == dict():
-			self.ftp_manager.download_lists()  # Download all lists of words (bad and stop)
+			self.ftp_manager.download_lists_words()  # Download all lists of words (bad and stop)
 			stopwords, badwords = self.file_manager.get_lists_words()
 		self.site_informations.set_listswords(stopwords, badwords)
 
@@ -241,9 +241,7 @@ class Crawler(object):
 				module.tell('No suggestions')
 
 	def safe_quit(self):
-		"""Save inverted-index and quit."""
-		module.tell('Programm will quit', severity=2)
-		module.tell('end\n', 0, 0)
+		module.tell('exiting', 0, 2,)
 
 
 def save(crawler):

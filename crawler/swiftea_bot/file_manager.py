@@ -215,6 +215,13 @@ class FileManager(object):
 			return docs
 
 	def get_lists_words(self):
+		"""Get lists words from data
+
+		Check for dirs lists words, create it if don't exists.
+
+		:return: stopwords, badwords
+
+		"""		
 		stopwords = dict()
 		badwords = dict()
 		if path.isdir(DIR_DATA + 'stopwords/'):
