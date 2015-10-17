@@ -2,7 +2,7 @@
 
 """Define several functions for inverted-index."""
 
-from swiftea_bot.data import DIR_DATA
+from swiftea_bot.data import DIR_STATS
 
 def count_files_index(index):
 	"""Return number of file to download are uplaod
@@ -27,7 +27,7 @@ def stats_dl_index(begining, end):
 	:type end: int
 
 	"""
-	with open(DIR_DATA + 'stat_dl_index', 'a') as myfile:
+	with open(DIR_STATS + 'stat_dl_index', 'a') as myfile:
 		myfile.write(str(end - begining) + '\n')
 
 def stats_ul_index(begining, end):
@@ -39,5 +39,5 @@ def stats_ul_index(begining, end):
 	:type end: int
 
 	"""
-	with open(DIR_DATA + 'stat_up_index', 'a') as myfile:
+	with open(DIR_STATS + 'stat_up_index', 'a') as myfile:
 		myfile.write(str(end - begining) + '\n')

@@ -4,7 +4,7 @@
 
 from urllib.parse import urlparse
 
-from swiftea_bot.data import START_CHARS, END_CHARS, MIDLE_CHARS, ALPHABET, BAD_EXTENTIONS, DIR_DATA
+from swiftea_bot.data import START_CHARS, END_CHARS, MIDLE_CHARS, ALPHABET, BAD_EXTENTIONS, DIR_STATS
 
 def clean_text(text):
 	"""Clean up text by removing tabulation, blank and carriage return.
@@ -196,7 +196,7 @@ def stats_stop_words(begining, end):
 		stats = str(((begining - end) * 100) / begining)
 	else:
 		stats = '100'
-	with open(DIR_DATA + 'stat_stopwords', 'a') as myfile:
+	with open(DIR_STATS + 'stat_stopwords', 'a') as myfile:
 		myfile.write(stats + '\n')
 
 def stats_links(stats):
@@ -206,5 +206,5 @@ def stats_links(stats):
 	:type stat: int
 
 	"""
-	with open(DIR_DATA + 'stat_links', 'a') as myfile:
+	with open(DIR_STATS + 'stat_links', 'a') as myfile:
 		myfile.write(str(stats) + '\n')  # Write the number of links found

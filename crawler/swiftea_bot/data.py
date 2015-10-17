@@ -9,11 +9,12 @@ from datetime import timedelta
 setdefaulttimeout(30)
 
 # Strings for directories and files:
-DIR_LINKS = 'links/'
-DIR_CONFIG = 'config/'
 DIR_DATA = 'data/'
-DIR_OUTPUT = 'output/'
+DIR_LINKS = DIR_DATA + 'links/'
+DIR_CONFIG = DIR_DATA + 'config/'
+DIR_OUTPUT = DIR_DATA + 'output/'
 DIR_INDEX = DIR_DATA + 'inverted_index/'
+DIR_STATS = DIR_DATA + 'stats/'
 FILE_NEWS = DIR_CONFIG + 'events.log'
 FILE_ERROR = DIR_CONFIG + 'errors.log'
 FILE_CONFIG = DIR_CONFIG + 'config.ini'

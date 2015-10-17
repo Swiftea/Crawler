@@ -74,6 +74,8 @@ def create_dirs():
 		mkdir(data.DIR_OUTPUT)
 	if not path.isdir(data.DIR_INDEX):
 		mkdir(data.DIR_INDEX)
+	if not path.isdir(data.DIR_STATS):
+		mkdir(data.DIR_STATS)
 
 def create_doc():
 	"""Create doc file if it doesn't exist and if it was modified."""
@@ -171,14 +173,14 @@ def stats_webpages(begining, end):
 	delta = end - begining  # Time to crawl ten webpages
 	time = delta / 10  # Time in second to crawl 10 webpages
 	nb_webpages = 60 / time  # Number of webpages crawled in 1 minute
-	with open(data.DIR_DATA + 'stat_webpages', 'a') as myfile:
+	with open(data.DIR_STATS + 'stat_webpages', 'a') as myfile:
 		myfile.write(str(nb_webpages) + '\n')
 
 def stats_send_index(begining, end):
 	delta = end - begining  # Time between 2 sending index
 	time = delta / 10
 	nb_webpages = 60 / time  # number of webpages crawled in 1 minute
-	with open(data.DIR_DATA + 'stat_webpages', 'a') as myfile:
+	with open(data.DIR_STATS + 'stat_webpages', 'a') as myfile:
 		myfile.write(str(nb_webpages) + '\n')
 
 def convert_keys(inverted_index):
