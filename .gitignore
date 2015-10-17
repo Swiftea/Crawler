@@ -1,11 +1,6 @@
 crawler/swiftea_bot/private_data.py
-crawler/swiftea_bot/__pycache__/
-crawler/database/__pycache__/
-crawler/index/__pycache__/
-crawler/crawling/__pycache__/
-crawler/tests/__pycache__/
-crawler/tests/htmlcov/
-crawler/__pycache__/
+
+*__pycache__/
 
 htmlcov/
 crawler/tests/.coverage

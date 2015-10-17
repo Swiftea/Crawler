@@ -4,7 +4,7 @@ import sys
 
 import stats
 import main
-from swiftea_bot.data import DIR_DATA
+from swiftea_bot.data import DIR_STATS
 from tests.global_test import RedirectOutput
 
 class CrawlerBaseTest(object):
@@ -23,4 +23,4 @@ class TestStats(CrawlerBaseTest):
 		stats.stats()
 
 	def test_compress_stats(self):
-		stats.compress_stats(DIR_DATA + 'stat_webpages')
+		stats.compress_stats(DIR_STATS + 'stat_webpages')

@@ -66,10 +66,10 @@ def create_dirs():
 
 	"""
 	# Create directories if they don't exist:
-	if not path.isdir(data.DIR_CONFIG):
-		mkdir(data.DIR_CONFIG)
 	if not path.isdir(data.DIR_DATA):
 		mkdir(data.DIR_DATA)
+	if not path.isdir(data.DIR_CONFIG):
+		mkdir(data.DIR_CONFIG)
 	if not path.isdir(data.DIR_OUTPUT):
 		mkdir(data.DIR_OUTPUT)
 	if not path.isdir(data.DIR_INDEX):
