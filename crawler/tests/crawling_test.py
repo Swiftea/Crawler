@@ -218,7 +218,7 @@ class TestParsers(CrawlingBaseTest):
 		self.parser.feed(self.code1)
 		assert self.parser.links == ['demo', 'index', 'about/nf.php!nofollow!']
 		assert clean_text(self.parser.first_title) == 'Gros titre'
-		assert clean_text(self.parser.keywords) == 'Gros titre Moyen titre petit titre strong em'
+		assert clean_text(self.parser.keywords) == 'CSS Demo Moyen titre petit titre strong em Why use Swiftea ? Why use Swiftea ? Why use Swiftea ?'
 		assert self.parser.css == True
 		assert self.parser.description == 'Moteur de recherche'
 		assert self.parser.language == 'en'

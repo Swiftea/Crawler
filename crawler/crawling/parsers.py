@@ -25,11 +25,11 @@ class ExtractData(HTMLParser):
 	"""
 	def __init__(self):
 		HTMLParser.__init__(self)
-		self.links = list()    # List of links
-		self.keywords = ''     # All keywords in a string
-		self.objet = None      # Type of parsing information
-		self.css = False       # True if there is a css link in the source code
-		self.h1 = False        # True if parsing the title of webpage
+		self.links = list()  # List of links
+		self.keywords = ''  # All keywords in a string
+		self.objet = None  # Type of parsing information
+		self.css = False  # True if there is a css link in the source code
+		self.h1 = False  # True if parsing the title of webpage
 		self.first_title = ''  # The first title (h1) of the web site
 		self.description = self.language = self.title = self.favicon  = ''
 
@@ -85,9 +85,6 @@ class ExtractData(HTMLParser):
 		elif tag == 'h1' and self.first_title == '':
 			self.h1 = True  # It's about a h1
 
-		if tag == 'h1' or tag == 'h2' or tag == 'h3' or tag == 'strong' or tag == 'em':
-			self.objet = 'keyword'
-
 	def handle_data(self, data):
 		"""Call when parser met data.
 
@@ -97,10 +94,10 @@ class ExtractData(HTMLParser):
 		"""
 		if self.objet == 'title':
 			self.title += data
-		elif self.objet == 'keyword':
-			self.keywords += ' ' + data
-		if self.h1:
+		elif self.h1:
 			self.first_title = data
+		else:
+			self.keywords += ' ' + data
 
 	def handle_endtag(self, tag):
 		"""Call when parser met a ending tag.
@@ -111,11 +108,7 @@ class ExtractData(HTMLParser):
 		:type attrs: list
 
 		"""
-		if tag == 'title':
-			self.objet = None
-		elif tag == 'h1' or tag == 'h2' or tag == 'h3'	or tag == 'strong' or tag == 'em':
-			self.objet = None
-		elif tag == 'meta':
+		if tag == 'title' or tag == 'neta':
 			self.objet = None
 		elif tag == 'p':
 			self.text = False
