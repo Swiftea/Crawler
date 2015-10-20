@@ -129,6 +129,7 @@ class InvertedIndex(object):
 		"""Delete a id of a word in inverted-index
 
 		This method delete a word from a document.
+		Remove a words from a doc.
 
 		:param word_infos: word infos: word, language, first letter and two first letters
 		:type word_infos: dict

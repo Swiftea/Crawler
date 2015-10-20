@@ -116,7 +116,7 @@ class Crawler(object):
 					break
 
 			# End of loop range(n)
-			if run:
+			if run:  # Only on dev branch
 				self.suggestions()
 				self.send_inverted_index()
 				module.stats_send_index(stats_send_index, time())
@@ -216,7 +216,7 @@ class Crawler(object):
 		self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		index.stats_ul_index(begining, time())
 		for path in listdir(DIR_INDEX):
-			rmtree(path)
+			rmtree(DIR_INDEX + path)
 
 	def suggestions(self):
 		"""Suggestions:
