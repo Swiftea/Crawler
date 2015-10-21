@@ -4,11 +4,9 @@
 Here is a class who use the html parser and manage all results."""
 
 from urllib.parse import urlparse
-from re import findall
 
 from swiftea_bot.module import tell, remove_duplicates
 from crawling import parsers, searches
-from crawling.connexion import get_words_lists
 
 
 class SiteInformations(object):

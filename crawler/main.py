@@ -3,7 +3,7 @@
 from time import time
 import atexit
 from os import listdir
-from shutil import rmtree
+#from shutil import rmtree  # Only on master branch
 import sys
 
 
@@ -210,9 +210,8 @@ class Crawler(object):
 		begining = time()
 		self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		index.stats_ul_index(begining, time())
-		for path in listdir(DIR_INDEX):
+		#for path in listdir(DIR_INDEX):  # Only on master branch
 			#rmtree(DIR_INDEX + path)  # Only on master branch
-			pass
 
 	def suggestions(self):
 		"""Suggestions:

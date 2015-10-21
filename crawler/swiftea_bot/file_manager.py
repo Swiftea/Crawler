@@ -8,7 +8,7 @@ from os import path, remove, listdir, mkdir
 from configparser import ConfigParser
 import json
 
-from swiftea_bot.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX, FILE_DOCS, DIR_DATA
+from swiftea_bot.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX, DIR_DATA
 from swiftea_bot.module import tell, remove_duplicates, convert_keys
 
 class FileManager(object):
@@ -117,7 +117,7 @@ class FileManager(object):
 		try:
 			with open(filename, 'r', errors='replace', encoding='utf8') as myfile:
 				list_links = myfile.read().splitlines()  # List of urls
-		except FileNotFoundError:  # pylint:disable=undefined-variable
+		except FileNotFoundError:
 			tell('Reading file is not found in get_url: ' + filename, 4)
 			return 'stop'
 		else:
