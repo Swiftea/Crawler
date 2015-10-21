@@ -5,7 +5,7 @@
 from re import compile as compile_regex
 from urllib.parse import urlparse
 
-from swiftea_bot.data import START_CHARS, END_CHARS, MIDLE_CHARS, ALPHABET, BAD_EXTENTIONS, DIR_STATS
+from swiftea_bot.data import BAD_EXTENTIONS, DIR_STATS
 
 regex = compile_regex(r'(\w+|\d+)')
 

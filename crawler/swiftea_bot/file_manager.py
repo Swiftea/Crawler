@@ -117,7 +117,7 @@ class FileManager(object):
 		try:
 			with open(filename, 'r', errors='replace', encoding='utf8') as myfile:
 				list_links = myfile.read().splitlines()  # List of urls
-		except FileNotFoundError:
+		except FileNotFoundError:  # pylint:disable=undefined-variable
 			tell('Reading file is not found in get_url: ' + filename, 4)
 			return 'stop'
 		else:
@@ -183,37 +183,6 @@ class FileManager(object):
 						inverted_index[language][first_letter][filename[:-4]] = json.load(myfile)
 		return convert_keys(inverted_index)
 
-
-	def save_docs(self, docs):
-		"""Save docs.
-
-		:param docs: docs to save
-		:type docs: list
-
-		"""
-		if docs != []:
-			with open(FILE_DOCS, 'w') as myfile:
-				json.dump(docs, myfile, ensure_ascii=False)
-				tell('Save docs in save file')
-		else:
-			tell('Docs empty')
-
-	def get_docs(self):
-		"""Get docs saved from save_docs.
-
-		:return: docs
-
-		"""
-		try:
-			with open(FILE_DOCS, 'r') as myfile:
-				docs = json.load(myfile)
-		except FileNotFoundError:
-			return list()
-		else:
-			remove(FILE_DOCS)
-			tell('Get docs form save file')
-			return docs
-
 	def get_lists_words(self):
 		"""Get lists words from data
 
@@ -221,7 +190,7 @@ class FileManager(object):
 
 		:return: stopwords, badwords
 
-		"""		
+		"""
 		stopwords = dict()
 		badwords = dict()
 		if path.isdir(DIR_DATA + 'stopwords/'):

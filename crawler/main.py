@@ -39,12 +39,6 @@ class Crawler(object):
 		self.web_connexion = WebConnexion()
 
 		self.get_inverted_index()
-		self.infos = self.file_manager.get_docs()
-		if self.infos != []:
-			module.tell('Send and index saved docs (no)')
-			#self.send_to_db()
-			#self.indexing()
-			#print(self.infos)
 		self.crawled_websites = 0
 
 	def get_inverted_index(self):
@@ -248,7 +242,6 @@ class Crawler(object):
 
 def save(crawler):
 	crawler.file_manager.save_inverted_index(crawler.index_manager.getInvertedIndex())
-	crawler.file_manager.save_docs(crawler.infos)
 
 if __name__ == '__main__':
 	module.create_dirs()

@@ -1,3 +1,0 @@
-ignore-paths:
-    - crawler/swiftea_bot/data.py
-    - crawler/stats.py
