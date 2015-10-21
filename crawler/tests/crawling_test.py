@@ -88,31 +88,6 @@ class TestSearches(CrawlingBaseTest):
 	def test_get_base_url(self):
 		assert get_base_url(self.url + '/page1.php') == self.url
 
-	def test_split_keywords(self):
-		is_list, keywords = split_keywords('jean/pierre')
-		assert is_list == True
-		assert keywords == ['jean', 'pierre']
-		is_list, keywords = split_keywords('fichier.ext')
-		assert keywords == ['fichier', 'ext']
-		is_list, keywords = split_keywords('fichier')
-		assert is_list == False
-		assert keywords == 'fichier'
-		is_list, keywords = split_keywords('two-words')
-		assert is_list == True
-		assert keywords == ['two', 'words']
-
-
-	def test_letter_repeat(self):
-		assert letter_repeat('file') == False
-		assert letter_repeat('*****') == True
-		assert letter_repeat('aaaaa') == True
-
-	def test_is_letters(self):
-		assert is_letters('file') == True
-		assert is_letters('fi*le') == True
-		assert is_letters('****') == False
-		assert is_letters('2015') == False
-
 	def test_is_homepage(self):
 		assert is_homepage('http://www.bfmtv.com') == True
 		assert is_homepage('http://www.bfmtv.com/page.html') == False
@@ -123,21 +98,12 @@ class TestSearches(CrawlingBaseTest):
 		assert capitalize('ceci est un Titre') == 'Ceci est un Titre'
 		assert capitalize('') == ''
 
-	def test_remove_useless_chars(self):
-		assert remove_useless_chars('(file’s)...') == 'file'
-		assert remove_useless_chars('2.0') == '2.0'
-		assert remove_useless_chars('\'') == None
-		assert remove_useless_chars('(l') == None
-		assert remove_useless_chars('l\'e') == None
-		assert remove_useless_chars('e\'l\'e') == None
-
-
 	def test_clean_link(self):
 		assert clean_link('http://www.example.fr?w=word#big_title') == 'http://www.example.fr?w=word'
 
-	def test_stats_stop_words(self):
-		stats_stop_words(100, 50)
-		stats_stop_words(0, 0)
+	def test_stats_stopwords(self):
+		stats_stopwords(100, 50)
+		stats_stopwords(0, 0)
 
 	def test_stats_links(self):
 		stats_links(50)
@@ -160,16 +126,15 @@ class TestSiteInformations(CrawlingBaseTest):
 			'http://www.sportetstyle.fr']
 
 	def test_clean_keywords(self):
-		# 'jean/pierre', 'fichier.ext'
-		keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
-		'quoi...', '*****', 'epee,...', '2.0', 'o\'clock',]
-		keywords = SiteInformations.clean_keywords(self, keywords, 'fr')
-		assert keywords == ['le', 'bureau', 'word', 'example', 'oiseau', 'quoi', 'epee', 'clock']
+		base_keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
+		'quoi...', '*****', 'epee,...', '2.0', 'o\'clock', '[çochon$¤', '#{[|µ£%]}', '12h|(']
+		keywords = SiteInformations.clean_keywords(self, base_keywords, 'fr')
+		assert keywords == ['le', '2015', 'bureau', 'word', 'example', 'oiseau', 'quoi', 'epee', 'clock', 'çochon', '12h']
 
 	def test_sane_search(self):
-		assert SiteInformations.sane_search(self, ['car'], 'fr', 2) == False
-		assert SiteInformations.sane_search(self, ['cigare', 'pipe'], 'fr', 2) == False
-		assert SiteInformations.sane_search(self, ['pipe', 'xxx'], 'fr', 2) == True
+		assert SiteInformations.sane_search(self, ['car'], 'fr') == False
+		assert SiteInformations.sane_search(self, ['cigare', 'pipe', 'cigarette', 'fumer', 'tue', 'santé'], 'fr') == False
+		assert SiteInformations.sane_search(self, ['pipe', 'xxx', 'voiture'], 'fr') == True
 
 	def test_detect_language(self):
 		keywords = "un texte d'exemple pour tester la fonction".split()
@@ -182,9 +147,6 @@ class TestSiteInformations(CrawlingBaseTest):
 		assert SiteInformations.clean_favicon(self, '/icon.ico', self.url) == favicon
 		assert SiteInformations.clean_favicon(self, '//aetfiws.alwaysdata.net/icon.ico', self.url) == favicon
 		assert SiteInformations.clean_favicon(self, 'icon.ico', self.url) == favicon
-
-	def test_split_url(self):
-		assert SiteInformations.split_url(self, self.url + '/page-qui_parledevoiture.html') == ['aetfiws', 'alwaysdata', 'page', 'qui', 'parledevoiture']
 
 
 class TestParsers(CrawlingBaseTest):

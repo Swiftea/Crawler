@@ -2,9 +2,12 @@
 
 """Define several functions SiteInformations."""
 
+from re import compile as compile_regex
 from urllib.parse import urlparse
 
 from swiftea_bot.data import START_CHARS, END_CHARS, MIDLE_CHARS, ALPHABET, BAD_EXTENTIONS, DIR_STATS
+
+regex = compile_regex(r'(\w+|\d+)')
 
 def clean_text(text):
 	"""Clean up text by removing tabulation, blank and carriage return.
@@ -27,82 +30,6 @@ def get_base_url(url):
 	infos_url = urlparse(url)
 	base_url = infos_url.scheme + '://' + infos_url.netloc
 	return base_url
-
-def remove_useless_chars(keyword):
-	"""Remove useless chars in keyword.
-
-	See data for all could be remove chars.
-	Return None if keyword size is under two letters.
-
-	:param keyword: keyword
-	:type keyword: str
-	:return: keyword or None
-
-	"""
-	while (keyword.startswith(START_CHARS) or keyword.endswith(END_CHARS) or keyword[1] == '\'' or
-		keyword[1] == MIDLE_CHARS or keyword[-2] == '\'' or keyword[-2] == MIDLE_CHARS):
-
-		if len(keyword) > 1:
-			if keyword.startswith(START_CHARS):
-				keyword = keyword[1:]
-		else:
-			return None
-		if keyword.endswith(END_CHARS):
-			keyword = keyword[:-1]
-		if len(keyword) > 2:
-			if keyword[1] == '\'' or keyword[1] == MIDLE_CHARS:
-				keyword = keyword[2:]
-		else:
-			return None
-		if len(keyword) > 2:
-			if keyword[-2] == '\'' or keyword[-2] == MIDLE_CHARS:
-				keyword = keyword[:-2]
-		else:
-			return None
-		if len(keyword) <= 1:
-			return None
-
-	return keyword
-
-def is_letters(keyword):
-	"""Return True if one char at least is a letter.
-
-	:param keyword: keyword to check
-	:type keyword: str
-	:return: True or False
-
-	"""
-	if True in [letter in ALPHABET for letter in keyword]:
-		return True
-	else:
-		return False
-
-def letter_repeat(keyword):
-	"""Return True if the first letter isn't repeat eatch times."""
-	if True not in [letter != '' for letter in keyword.split(keyword[0])]:
-		return True  # '********'
-	else:
-		return False
-
-def split_keywords(keyword):
-	"""Split the given keyword by '.' and '/'.
-
-	:param keyword: keyword to split
-	:type keyword: str
-	:return: True is the keyword was split and the list of new keyword or the keyword.
-
-	"""
-	is_list = False
-	if '.' in keyword:
-		keyword = keyword.split('.')
-		is_list = True
-	elif '/' in keyword:
-		keyword = keyword.split('/')  # str -> list
-		is_list = True
-	elif '-' in keyword:
-		keyword = keyword.split('-')  # str -> list
-		is_list = True
-	return is_list, keyword
 
 def is_homepage(url):
 	"""Check if url is the homepage.
@@ -183,7 +110,7 @@ def capitalize(text):
 	else:
 		return ''
 
-def stats_stop_words(begining, end):
+def stats_stopwords(begining, end):
 	"""Write the percentage of deleted word with stopwords for statistics.
 
 	:param begining: size of keywords list before cleaning

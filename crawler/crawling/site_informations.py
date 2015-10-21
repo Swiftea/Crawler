@@ -4,6 +4,7 @@
 Here is a class who use the html parser and manage all results."""
 
 from urllib.parse import urlparse
+from re import findall
 
 from swiftea_bot.module import tell, remove_duplicates
 from crawling import parsers, searches
@@ -54,9 +55,12 @@ class SiteInformations(object):
 
 		if language in self.STOPWORDS and self.parser.title != '':
 			keywords = self.clean_keywords(keywords, language)
+			searches.stats_stopwords(begining_size, len(keywords))
 			keywords.extend(self.clean_keywords(results['title'].lower().split(), language))
-			keywords.extend(self.clean_keywords(self.split_url(url), language))
-			searches.stats_stop_words(begining_size, len(keywords))  # Stats
+			infos_url = urlparse(url)
+			path_position = infos_url.path.rfind('.')
+			path = infos_url.path[:path_position]
+			keywords.extend(self.clean_keywords(path, language))
 
 			results['sanesearch'] = self.sane_search(keywords, language)
 			results['language'] = language
@@ -160,7 +164,7 @@ class SiteInformations(object):
 		return favicon
 
 
-	def clean_keywords(self, keywords, language):
+	def clean_keywords(self, dirty_keywords, language):
 		"""Clean found keywords.
 
 		Delete stopwords, bad chars, two letter less word and split word1-word2
@@ -171,26 +175,19 @@ class SiteInformations(object):
 
 		"""
 		stopwords = self.STOPWORDS[language]
-		new_keywords = []
-		for keyword in keywords:
-			if keyword != '':
-				if searches.letter_repeat(keyword):
-					continue
-				keyword = searches.remove_useless_chars(keyword)
-				if keyword is None:
-					continue
-				if not searches.is_letters(keyword):
-					continue
+		cleaned_keywords = list()
+		half_cleaned_keywords = list()  # cleaning with regex (with '_')
+		for keyword in dirty_keywords:
+			half_cleaned_keywords.extend(searches.regex.findall(keyword))
+		new_keywords = list()  # Without '_'
+		for keyword in half_cleaned_keywords:
+			new_keywords.extend(keyword.split('_'))
+		for keyword in new_keywords:
+			if keyword not in stopwords and len(keyword) > 1:
+				cleaned_keywords.append(keyword)
+		return cleaned_keywords
 
-				is_list, keywords = searches.split_keywords(keyword)
-				if is_list:
-					keywords = self.clean_keywords(keywords, language)
-
-				if keyword not in stopwords:
-					new_keywords.append(keyword)
-		return new_keywords
-
-	def sane_search(self, keywords, language, max_badwords=4):
+	def sane_search(self, keywords, language, max_ratio=.2):
 		"""Filter adults websites.
 
 		:param: keywords: webpage's keywords
@@ -202,33 +199,13 @@ class SiteInformations(object):
 		"""
 		badwords = self.BADWORDS[language]
 		nb_badwords = 0
+		nb_words = len(keywords)
 		for keyword in keywords:
 			if keyword in badwords:
 				nb_badwords += 1
-		if nb_badwords >= max_badwords:
+		ratio = nb_badwords / nb_words
+		if ratio >= max_ratio:
 			tell('bad site detected')
 			return True
 		else:
 			return False
-
-	def split_url(self, url):
-		"""Split url into keywords.
-
-		:param url: url to split
-		:type url: str
-		:return: list of keywords
-
-		"""
-		infos_url = urlparse(url.lower())
-		netloc = infos_url.netloc.rfind('.')
-		path = infos_url.path.rfind('.')
-		url = infos_url.netloc[:netloc] + infos_url.path[:path] + '/' + infos_url.fragment
-		keywords = list()
-		for word in url.split():
-			for word in word.split('-'):
-				for word in word.split('_'):
-					for word in word.split('.'):
-						for word in word.split('/'):
-							if word != '':
-								keywords.append(word)
-		return keywords

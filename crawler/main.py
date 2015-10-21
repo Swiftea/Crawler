@@ -84,6 +84,7 @@ class Crawler(object):
 		run = True
 		while run:
 			stats_send_index = time()
+			self.suggestions()
 			for _ in range(50):
 				module.tell('Crawl', severity=2)
 				begining = time()
@@ -216,7 +217,8 @@ class Crawler(object):
 		self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		index.stats_ul_index(begining, time())
 		for path in listdir(DIR_INDEX):
-			rmtree(DIR_INDEX + path)
+			#rmtree(DIR_INDEX + path)  # Only on master branch
+			pass
 
 	def suggestions(self):
 		"""Suggestions:
@@ -233,7 +235,7 @@ class Crawler(object):
 			if len(suggestions) > 0:
 				module.tell('Suggestions', severity=2)
 				for url in suggestions:
-					self.crawl_website(url)
+					self.crawl_webpage(url)
 				self.send_to_db()
 				self.indexing()
 				self.infos.clear()  # Reset the list of dict of informations of websites.
