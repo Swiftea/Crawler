@@ -7,10 +7,12 @@ the sencond one only for encoding."""
 from html.parser import HTMLParser
 from html.entities import name2codepoint, html5
 
+from swiftea_bot.data import LIST_TAG_WORDS, LIST_ALONE_TAG_WORDS
+
 class ExtractData(HTMLParser):
 	"""Html parser for extract data.
 
-	self.objet : the type of text for title, description and keywords\n
+	self.object : the type of text for title, description and keywords\n
 	dict(attrs).get('content') : convert attrs in a dict and retrun the value
 
 	Data could be extract:
@@ -25,9 +27,13 @@ class ExtractData(HTMLParser):
 	"""
 	def __init__(self):
 		HTMLParser.__init__(self)
+		#print(LIST_TAG_WORDS)  # Only for tests
+		#print(LIST_ALONE_TAG_WORDS)  # Only for tests
 		self.links = list()  # List of links
 		self.keywords = ''  # All keywords in a string
-		self.objet = None  # Type of parsing information
+		self.is_title = False  # True is data are the title
+		self.word1 = False  # True if data are words
+		self.word2 = False  # True if data are words and tag is a tag use in and out other word tags
 		self.css = False  # True if there is a css link in the source code
 		self.h1 = False  # True if parsing the title of webpage
 		self.first_title = ''  # The first title (h1) of the web site
@@ -39,7 +45,9 @@ class ExtractData(HTMLParser):
 		self.first_title = self.keywords = self.description = ''
 		self.language = self.title = self.favicon  = ''
 		self.css = self.h1 = False
-		self.objet = None
+		self.is_title = False
+		self.word1 = False
+		self.word2 = False
 
 
 	def handle_starttag(self, tag, attrs):
@@ -51,6 +59,7 @@ class ExtractData(HTMLParser):
 		:type attrs: list
 
 		"""
+		#print('starting tag: ' + tag)  # Only for tests
 		if tag =='html':
 			self.re_init()
 			if len(dict(attrs).get('lang', '')) >= 2:
@@ -60,9 +69,6 @@ class ExtractData(HTMLParser):
 			url = can_append(dict(attrs).get('href'), dict(attrs).get('rel', ''))
 			if url:
 				self.links.append(url)
-
-		elif tag == 'title':
-			self.objet = 'title'  # It's about title
 
 		elif tag == 'link':
 			rel = dict(attrs).get('rel', '')
@@ -74,15 +80,23 @@ class ExtractData(HTMLParser):
 				self.favicon = dict(attrs).get('href', '')
 
 		elif tag == 'meta':
-			language, description, objet = meta(attrs)
+			language, description = meta(attrs)
 			if language != str():
 				self.language = language
 			if description != str():
 				self.description = description
-			if objet != str():
-				self.objet = objet
 
-		elif tag == 'h1' and self.first_title == '':
+
+		elif tag == 'title':
+			self.is_title = True  # It's about title
+
+		if tag in LIST_TAG_WORDS:
+			self.word1 = True
+
+		if tag in LIST_ALONE_TAG_WORDS:  # tag use in and out of tag from LIST_TAG_WORDS
+			self.word2 = True
+
+		if tag == 'h1' and self.first_title == '':
 			self.h1 = True  # It's about a h1
 
 	def handle_data(self, data):
@@ -92,12 +106,15 @@ class ExtractData(HTMLParser):
 		:type tag: str
 
 		"""
-		if self.objet == 'title':
+		#print('data: ' + data)  # Only for tests
+		if self.is_title:
 			self.title += data
-		elif self.h1:
-			self.first_title = data
-		else:
+
+		if self.word1 or self.word2:
 			self.keywords += ' ' + data
+
+		if self.h1:
+			self.first_title = data
 
 	def handle_endtag(self, tag):
 		"""Call when parser met a ending tag.
@@ -108,14 +125,21 @@ class ExtractData(HTMLParser):
 		:type attrs: list
 
 		"""
-		if tag == 'title' or tag == 'neta':
-			self.objet = None
-		elif tag == 'p':
-			self.text = False
+		#print('ending tag: ' + tag)  # Only for tests
+		if tag == 'title':
+			self.is_title = False
+
 		if tag == 'h1':
 			self.h1 = False
 
+		if tag in LIST_TAG_WORDS:
+			self.word1 = False
+
+		if tag in LIST_ALONE_TAG_WORDS:  # tag use in and out of tag from LIST_TAG_WORDS
+			self.word2 = False
+
 	def handle_entityref(self, name):
+		#print('entityref: ' + name)  # Only for tests
 		try:
 			letter = chr(name2codepoint[name])
 		except KeyError:
@@ -124,15 +148,16 @@ class ExtractData(HTMLParser):
 			except KeyError:
 				pass
 		else:
-			if self.objet == 'title':
+			if self.is_title:
 				self.title += letter
 
 	def handle_charref(self, name):
+		#print('charref: ' + name)  # Only for tests
 		if name.startswith('x'):
 			letter = chr(int(name[1:], 16))
 		else:
 			letter = chr(int(name))
-		if self.objet == 'title':
+		if self.is_title:
 			self.title += letter
 
 
@@ -146,16 +171,16 @@ def meta(attrs):
 
 	:apram attrs: attributes of meta tag
 	:type attrs: list
-	:return: language, description, objet
+	:return: language, description, object
 
 	"""
-	objet = description = language = str()
+	description = str()
+	language = str()
 	name = dict(attrs).get('name', '').lower()
 	content = dict(attrs).get('content')
 	if content:
 		if name == 'description':
 			description = content
-			objet = 'description'
 		elif name == 'language':
 			language = content.lower().strip()[:2]
 
@@ -165,7 +190,7 @@ def meta(attrs):
 		if httpequiv.lower() == 'content-language':
 			language = contentlanguage.lower().strip()[:2]
 
-	return language, description, objet
+	return language, description
 
 def can_append(url, rel):
 	"""Check rel attrs to know if crawler can take this the link.

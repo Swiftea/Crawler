@@ -23,7 +23,7 @@ class CrawlingBaseTest(object):
 		self.parser_encoding = ExtractEncoding()
 		self.STOPWORDS = {'fr':('mot', 'pour', 'de')}
 		self.BADWORDS = {'fr': ('pipe', 'xxx')}
-		self.objet = 'title'
+		self.is_title = True
 		self.title = 'letter'
 		self.headers = {'status': '200 OK', 'content-type': 'text/html; charset=utf-8', 'vary': 'X-PJAX, Accept-Encoding'}
 		self.reqrobots = RobotsCache()
@@ -157,12 +157,11 @@ class TestParsers(CrawlingBaseTest):
 		assert can_append(None, '') is None
 
 	def test_meta(self):
-		language, description, objet = meta([('name', 'description'), ('content', 'Communauté du Libre partage')])
+		language, description = meta([('name', 'description'), ('content', 'Communauté du Libre partage')])
 		assert description == 'Communauté du Libre partage'
-		assert objet == 'description'
-		language, description, objet = meta([('name', 'language'), ('content', 'fr')])
+		language, description = meta([('name', 'language'), ('content', 'fr')])
 		assert language == 'fr'
-		language, description, objet = meta([('http-equiv', 'content-language'), ('content', 'en')])
+		language, description = meta([('http-equiv', 'content-language'), ('content', 'en')])
 		assert language == 'en'
 
 
@@ -180,7 +179,8 @@ class TestParsers(CrawlingBaseTest):
 		self.parser.feed(self.code1)
 		assert self.parser.links == ['demo', 'index', 'about/nf.php!nofollow!']
 		assert clean_text(self.parser.first_title) == 'Gros titre'
-		assert clean_text(self.parser.keywords) == 'CSS Demo Moyen titre petit titre strong em Why use Swiftea ? Why use Swiftea ? Why use Swiftea ?'
+		keywords = 'une CSS Demo ici! Gros titre Moyen titre petit titre strong em Why use Swiftea ?1 Why use Swiftea ?2 Why use Swiftea ?3'
+		assert clean_text(self.parser.keywords) == keywords
 		assert self.parser.css == True
 		assert self.parser.description == 'Moteur de recherche'
 		assert self.parser.language == 'en'

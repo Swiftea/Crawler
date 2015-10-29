@@ -38,7 +38,7 @@ CODE1 = """<!DOCTYPE html>
         <link rel="icon" href="public/favicon.ico" type="image/x-icon">
     </head>
     <body>
-        <a href="demo">CSS Demo</a>
+        <p>une <a href="demo">CSS Demo</a> ici!</p>
         <h1>Gros titre</h1>
         <h2>Moyen titre</h2>
         <h3>petit titre</h3>
@@ -46,9 +46,10 @@ CODE1 = """<!DOCTYPE html>
         <a href="index">
             <img src="public/themes/default/img/logo.png" alt="Swiftea">
         </a>
-        <a href="about/ninf.php" rel="noindex, nofollow">Why use Swiftea ?</a>
-        <a href="about/ni.php" rel="noindex">Why use Swiftea ?</a>
-        <a href="about/nf.php" rel="nofollow">Why use Swiftea ?</a>
+        du texte au milieu
+        <a href="about/ninf.php" rel="noindex, nofollow">Why use Swiftea ?1</a>
+        <a href="about/ni.php" rel="noindex">Why use Swiftea ?2</a>
+        <a href="about/nf.php" rel="nofollow">Why use Swiftea ?3</a>
         <img src="public/themes/default/img/github.png" alt="Github Swiftea">
         <img src="public/themes/default/img/twitter.png" alt="Twitter Swiftea">
     </body>
