@@ -11,8 +11,8 @@ class SwifteaBotBaseTest(object):
 	def setup_method(self, _):
 		self.url = URL
 		self.inverted_index = INVERTED_INDEX
-		self.links = ['http://aetfiws.alwaysdata.net/page.php', 'http://aetfiws.alwaysdata.net',
-			'http://aetfiws.alwaysdata.net?w=word', 'http://aetfiws.alwaysdata.net/page1']
+		self.links = ['http://aetfiws.ovh/page.php', 'http://aetfiws.ovh',
+			'http://aetfiws.ovh?w=word', 'http://aetfiws.ovh/page1']
 		self.max_links = 3
 		self.reading_file_number = 1
 		self.writing_file_number = 5
@@ -33,8 +33,8 @@ class TestModule(SwifteaBotBaseTest):
 		create_doc()
 
 	def test_tell(self):
-		tell('A test message', 0)
-		tell('Big test', severity=2)
+		tell('Simple message', 0)
+		tell('Hard message', severity=2)
 
 	def test_is_index(self):
 		assert is_index() == False
@@ -65,7 +65,8 @@ class TestFileManager(SwifteaBotBaseTest):
 		FileManager.save_config(self)
 
 	def test_save_links(self):
-		mkdir(DIR_LINKS)
+		try: mkdir(DIR_LINKS)
+		except FileExistsError: pass
 		FileManager.save_links(self, BASE_LINKS.split())
 		FileManager.save_links(self, BASE_LINKS[5:].split())
 

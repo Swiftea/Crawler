@@ -2,16 +2,23 @@
 
 """How to:
 
-In command line:
-    cd crawler/tests
-    python run_tests.py [args for pytest]
-    python run_tests.py -f [testfilename] [args for pytest]  # Test given file.
-
 With coverage report (same way than travis):
     export PYTHONPATH=crawler
     coverage run setup.py test
     coverage report
     coverage html
+
+In command line:
+    cd crawler/tests
+    python run_tests.py [args for pytest]
+    python run_tests.py file [testfilename] [args for pytest]  # Test given file.
+
+Unit testing:
+    cd crawler/tests
+    import crawler.tests.crawling_test as t
+    test_class = t.TestWebConnexion
+    test_class.setup_method(None)
+    test_class.test_check_robots_perm()
 
 """
 
@@ -28,9 +35,9 @@ global args
 path = 'crawler/tests/'
 args = '--strict --verbose'
 
-def tests():
+def tests(args='--strict --verbose'):
     tests = str()
-    if '-f' not in args:
+    if 'file' not in args:
         if __name__ == '__main__':
             tests += 'global_test.py '
         tests += path + 'swiftea_bot_test.py '
@@ -38,6 +45,8 @@ def tests():
         tests += path + 'database_test.py '
         tests += path + 'index_test.py '
         tests += path + 'crawler_test.py '
+    else:
+        args = args[5:]
     tests += args
     errno = pytest.main(tests)
     reset()
@@ -48,6 +57,6 @@ if __name__ == '__main__':
     args = list()
     for arg in argv:
         args.append(arg)
-    args = ' '.join(args[1:])  # Remove filename from tests args
-    errno = tests()
+    args = ' '.join(args[1:])
+    errno = tests(args)
     print('Tests exited with ' + str(errno))

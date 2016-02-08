@@ -15,7 +15,7 @@ class CrawlingBaseTest(object):
 	"""Base class for all crawler test classes."""
 	def setup_method(self, _):
 		"""Configure the app."""
-		self.url = "http://aetfiws.alwaysdata.net"
+		self.url = "http://aetfiws.ovh"
 		self.code1 = test_data.CODE1
 		self.code2 = test_data.CODE2
 		self.code3 = test_data.CODE3
@@ -68,7 +68,6 @@ class TestWebConnexion(CrawlingBaseTest):
 		assert WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com') == True
 		assert WebConnexion.check_robots_perm(self, 'https://www.facebook.com') == False
 		assert WebConnexion.check_robots_perm(self, self.url) == True
-		assert WebConnexion.check_robots_perm(self, 'http://www.bilboplanet.com') == True
 		assert WebConnexion.check_robots_perm(self, 'http://premium.lefigaro.fr') == True
 
 	def test_send_request(self):
@@ -117,12 +116,12 @@ class TestSiteInformations(CrawlingBaseTest):
 		assert var.BADWORDS == {'en': ['verybadword']}
 
 	def test_clean_links(self):
-		links = ['page.php', 'http://aetfiws.alwaysdata.net/', 'mailto:test@test.fr',
-			'//www.example.fr?w=word', 'http://aetfiws.alwaysdata.net/page1/index.html',
+		links = ['page.php', 'http://aetfiws.ovh/', 'mailto:test@test.fr',
+			'//www.example.fr?w=word', 'http://aetfiws.ovh/page1/index.html',
 			'/page1', 'http:/', '://www.sportetstyle.fr']
 		links = SiteInformations.clean_links(self, links, self.url)
-		assert links == ['http://aetfiws.alwaysdata.net/page.php', self.url,
-			'http://www.example.fr?w=word', 'http://aetfiws.alwaysdata.net/page1',
+		assert links == ['http://aetfiws.ovh/page.php', self.url,
+			'http://www.example.fr?w=word', 'http://aetfiws.ovh/page1',
 			'http://www.sportetstyle.fr']
 
 	def test_clean_keywords(self):
@@ -143,9 +142,9 @@ class TestSiteInformations(CrawlingBaseTest):
 		assert SiteInformations.detect_language(self, keywords) == ''
 
 	def test_clean_favicon(self):
-		favicon = 'http://aetfiws.alwaysdata.net/icon.ico'
+		favicon = 'http://aetfiws.ovh/icon.ico'
 		assert SiteInformations.clean_favicon(self, '/icon.ico', self.url) == favicon
-		assert SiteInformations.clean_favicon(self, '//aetfiws.alwaysdata.net/icon.ico', self.url) == favicon
+		assert SiteInformations.clean_favicon(self, '//aetfiws.ovh/icon.ico', self.url) == favicon
 		assert SiteInformations.clean_favicon(self, 'icon.ico', self.url) == favicon
 
 

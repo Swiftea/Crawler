@@ -25,6 +25,7 @@ import index.index as index
 class Crawler(object):
 	"""Crawler main class."""
 	def __init__(self):
+		self.infos = list()
 		self.ftp_manager = FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
 		self.site_informations = SiteInformations()
 		self.file_manager = FileManager()
@@ -83,11 +84,10 @@ class Crawler(object):
 				module.tell('Crawl', severity=2)
 				begining = time()
 				while len(self.infos) < 10:
-					module.tell('Reading {0}, link {1}'.format(
+					module.tell('File {0}, line {1}'.format(
 						str(self.file_manager.reading_file_number),
 						str(self.file_manager.reading_line_number+1)), severity=0)
-					# Get the url of the website :
-					url = self.file_manager.get_url()
+					url = self.file_manager.get_url()  # Get the url of the website
 					if url == 'stop':
 						self.safe_quit()
 					self.crawl_webpage(url)

@@ -7,13 +7,13 @@ class DatabaseBaseTest(object):
 	"""Base class for all crawler test classes."""
 	def setup_method(self, _):
 		self.url = URL
-		self.secure = 'https://aetfiws.alwaysdata.net'
+		self.url_secure = 'https://aetfiws.ovh'
 
 class TestDatabase(DatabaseBaseTest):
 	def test_url_is_secure(self):
 		assert url_is_secure(self.url) == False
-		assert url_is_secure(self.secure) == True
+		assert url_is_secure(self.url_secure) == True
 
 	def test_convert_secure(self):
-		assert convert_secure(self.url) == self.secure
-		assert convert_secure(self.secure) == self.url
+		assert convert_secure(self.url) == self.url_secure
+		assert convert_secure(self.url_secure) == self.url

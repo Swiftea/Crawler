@@ -3,30 +3,11 @@
 from shutil import rmtree
 from os import remove
 
-from swiftea_bot.data import DIR_DATA
+from swiftea_bot.data import DIR_DATA, BASE_LINKS
 
-BASE_LINKS = """http://www.planet-libre.org
-https://zestedesavoir.com
-http://www.01net.com
-https://www.youtube.com
-http://www.lefigaro.fr
-http://www.lemonde.fr
-http://www.lepoint.fr
-http://www.sport.fr
-http://www.jeuxvideo.com
-http://www.rueducommerce.fr
-http://www.actu-environnement.com
-https://fr.wikipedia.org
-https://fr.news.yahoo.com
-http://www.live.com
-http://www.yahoo.com
-http://www.lequipe.fr
-http://swiftea.alwaysdata.net
-http://trukastuss.over-blog.com"""
+URL = "http://aetfiws.ovh"
 
-URL = "http://aetfiws.alwaysdata.net"
-
-SUGGESTIONS = ['http://suggestions.net/page1.html', 'http://suggestions.net/page2.html']
+SUGGESTIONS = ['http://suggestions.ovh/page1.html', 'http://suggestions.ovh/page2.html']
 
 CODE1 = """<!DOCTYPE html>
 <html lang="en">
@@ -84,5 +65,7 @@ INVERTED_INDEX = {'EN': {
 'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
 
 def reset():
-    rmtree(DIR_DATA)
-    remove('test_RedirectOutput.ext')
+    try: rmtree(DIR_DATA)
+    except FileNotFoundError: pass
+    try: remove('test_RedirectOutput.ext')
+    except FileNotFoundError: pass

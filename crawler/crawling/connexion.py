@@ -9,7 +9,7 @@ from crawling.searches import clean_link
 from swiftea_bot.module import tell
 from swiftea_bot.data import LANGUAGES, HOST
 
-def no_connexion(url=HOST):
+def no_connexion(url='https://github.com'):
 	"""Check connexion.
 
 	Try to connect to swiftea website.

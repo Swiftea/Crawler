@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 """Define required data for crawler."""
 
@@ -24,7 +25,7 @@ FILE_INDEX = DIR_DATA + 'inverted_index.json'
 
 # String for server:
 FTP_INDEX = '/var/www/html/data/inverted_index'
-HOST = 'http://vps193469.ovh.net/'
+HOST = 'https://swiftea.ovh'
 
 # Lists for clean up links and keywords:
 BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif',
@@ -80,5 +81,5 @@ https://fr.news.yahoo.com
 http://www.live.com
 http://www.yahoo.com
 http://www.lequipe.fr
-http://swiftea.alwaysdata.net
-http://trukastuss.over-blog.com"""
+http://trukastuss.over-blog.com
+""" + HOST
