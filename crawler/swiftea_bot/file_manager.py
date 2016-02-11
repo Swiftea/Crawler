@@ -4,11 +4,12 @@
 Here is a class who manager files of crawler.
 """
 
-from os import path, remove, listdir, mkdir
+from os import path, remove, listdir, mkdir, rename
 from configparser import ConfigParser
 import json
+from zipfile import ZipFile
 
-from swiftea_bot.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX, DIR_DATA, FILE_EVENTS, FILE_ERRORS
+from swiftea_bot.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX, DIR_DATA, FILE_EVENTS, FILE_ERRORS, MAX_SIZE
 from swiftea_bot.module import tell, remove_duplicates, convert_keys
 
 class FileManager(object):
@@ -111,13 +112,13 @@ class FileManager(object):
 				content = myfile.readlines()
 			if len(content) > MAX_SIZE:
 				if not path.exists(filearchive):
-					zipfile.ZipFile(file=filearchive, mode='w').close()
+					ZipFile(file=filearchive, mode='w').close()
 					filename = '0'
 				else:
-					with zipfile.ZipFile(filearchive, 'r') as myzip:
+					with ZipFile(filearchive, 'r') as myzip:
 						filename = str(int(myzip.namelist()[-1])+1)  # The last one +1
 				rename(filelog, filename)
-				with zipfile.ZipFile(filearchive, 'w') as myzip:
+				with ZipFile(filearchive, 'w') as myzip:
 					myzip.write(filename)
 				remove(filename)
 				tell('Archiving ' + filelog + ': ' + filename, severity=-1)

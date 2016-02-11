@@ -2,7 +2,7 @@
 
 from time import time
 import atexit
-from os import listdir
+#from os import listdir  # Only on master branch
 #from shutil import rmtree  # Only on master branch
 import sys
 
@@ -18,7 +18,7 @@ from crawling.site_informations import SiteInformations
 from database.database_swiftea import DatabaseSwiftea
 from swiftea_bot.file_manager import FileManager
 from index.inverted_index import InvertedIndex
-from swiftea_bot.data import DIR_INDEX
+#from swiftea_bot.data import DIR_INDEX  # Only on master branch
 import swiftea_bot.module as module
 import index.index as index
 
@@ -211,7 +211,7 @@ class Crawler(object):
 		self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		index.stats_ul_index(begining, time())
 		#for path in listdir(DIR_INDEX):  # Only on master branch
-			#rmtree(DIR_INDEX + path)  # Only on master branch
+		#	rmtree(DIR_INDEX + path)  # Only on master branch
 
 	def suggestions(self):
 		"""Suggestions:

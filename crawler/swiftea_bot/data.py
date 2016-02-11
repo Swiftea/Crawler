@@ -38,6 +38,7 @@ LIST_ALONE_TAG_WORDS = ['a']
 USER_AGENT = 'Swiftea-Bot'
 HEADERS = {"User-Agent": USER_AGENT}
 MAX_LINKS = 5000  # Max links in a file
+MAX_SIZE = 5000  # Max lines in events.log and errors.log
 CRAWL_DELAY = timedelta(days=2)  # Program don't crawl the same website after this delay
 TIMEOUT = 30
 LANGUAGES = ['fr', 'en']
