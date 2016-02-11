@@ -6,7 +6,7 @@
 Welcome to Swiftea-Crawler's documentation!
 ===========================================
 
-Swiftea-Crawler is an open source web crawler for Swiftea: https://swiftea.ovh. \n
+Swiftea-Crawler is an open source web crawler for Swiftea: https://swiftea.ovh. 
 It can't be run by contributors because it needs private_data.py wich is not upload for obvious reason.
 
 .. toctree::

@@ -36,6 +36,7 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3'
     ],
     extras_require={
         'testing': ['pytest']

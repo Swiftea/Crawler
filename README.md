@@ -16,7 +16,7 @@
 
 ## Description
 
-Swiftea-Crawler is an open source web crawler for Swiftea: http://swiftea.ovh.
+Swiftea-Crawler is an open source web crawler for Swiftea: https://swiftea.ovh.
 
 Currently, it can :
   - Visit websites
