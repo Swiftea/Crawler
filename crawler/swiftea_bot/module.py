@@ -36,7 +36,7 @@ def tell(message, error_code='', severity=1):
 		print(msg_to_print.upper())
 		print(''.center(len(msg_to_print), '='))
 
-	with open(data.FILE_NEWS, 'a') as myfile:
+	with open(data.FILE_EVENTS, 'a') as myfile:
 		myfile.write(strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
 
 def errors(message, error_code):
@@ -50,7 +50,7 @@ def errors(message, error_code):
 	:type error_code: int
 
 	"""
-	with open(data.FILE_ERROR, 'a') as myfile:
+	with open(data.FILE_ERRORS, 'a') as myfile:
 		myfile.write(' ' + str(error_code) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ': ' + message + '\n')
 
 
