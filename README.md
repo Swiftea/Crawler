@@ -33,6 +33,10 @@ Currently, it can :
     - in database
     - in inverted-index
 
+## Version
+
+Current version is 1.0.0
+
 ## Tech
 
 Swiftea's Crawler uses a number of open source projects to work properly:
