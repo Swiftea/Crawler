@@ -103,9 +103,9 @@ index.sftp_manager module
     :show-inheritance:
 
 
-index.ftp_swiftea module
+index.sftp_swiftea module
 ------------------------
-.. automodule:: index.ftp_swiftea
+.. automodule:: index.sftp_swiftea
     :members:
     :undoc-members:
     :show-inheritance:

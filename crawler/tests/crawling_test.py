@@ -59,7 +59,7 @@ class TestConnexion(CrawlingBaseTest):
 
 class TestWebConnexion(CrawlingBaseTest):
 	def test_search_encoding(self):
-		assert  WebConnexion.search_encoding(self, {}, self.code3) == ('utf-8', 0)
+		assert WebConnexion.search_encoding(self, {}, self.code3) == ('utf-8', 0)
 		assert WebConnexion.search_encoding(self, self.headers, self.code3) == ('utf-8', 1)
 		assert WebConnexion.search_encoding(self, {}, self.code1) == ('utf-8', 1)
 		assert WebConnexion.search_encoding(self, {}, self.code2) == ('UTF-16 LE', 1)

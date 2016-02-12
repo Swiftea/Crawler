@@ -13,9 +13,11 @@ In command line:
     python run_tests.py [args for pytest]
     python run_tests.py file [testfilename] [args for pytest]  # Test given file.
 
+    py.test [filetest]
+
 Unit testing:
     cd crawler/tests
-    import crawler.tests.crawling_test as t
+    import crawling_test as t
     test_class = t.TestWebConnexion
     test_class.setup_method(None)
     test_class.test_check_robots_perm()

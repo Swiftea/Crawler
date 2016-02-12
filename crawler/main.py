@@ -12,7 +12,7 @@ try:
 except ImportError:
 	pass
 
-from index.ftp_swiftea import FTPSwiftea
+from index.sftp_swiftea import SFTPSwiftea
 from crawling.web_connexion import WebConnexion
 from crawling.site_informations import SiteInformations
 from database.database_swiftea import DatabaseSwiftea
@@ -26,17 +26,17 @@ class Crawler(object):
 	"""Crawler main class."""
 	def __init__(self):
 		self.infos = list()
-		self.ftp_manager = FTPSwiftea(pvdata.HOST_FTP, pvdata.USER, pvdata.PASSWORD)
+		self.sftp_manager = SFTPSwiftea(pvdata.HOST_SSH, pvdata.USER_SSH, pvdata.PASSWORD_SSH)
 		self.site_informations = SiteInformations()
 		self.file_manager = FileManager()
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
 		if stopwords == dict() or badwords == dict():
-			self.ftp_manager.download_lists_words()  # Download all lists of words (bad and stop)
+			self.sftp_manager.download_lists_words()  # Download all lists of words (bad and stop)
 			stopwords, badwords = self.file_manager.get_lists_words()
 		self.site_informations.set_listswords(stopwords, badwords)
 
 		self.index_manager = InvertedIndex()
-		self.database = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER, pvdata.PASSWORD, pvdata.NAME_DB)
+		self.database = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER_DB, pvdata.PASSWORD_DB, pvdata.NAME_DB)
 		self.web_connexion = WebConnexion()
 
 		self.get_inverted_index()
@@ -52,9 +52,9 @@ class Crawler(object):
 		if module.is_index():
 			inverted_index = self.file_manager.get_inverted_index()
 		else:
-			if self.ftp_manager.compare_indexs():
+			if self.sftp_manager.compare_indexs():
 				begining = time()
-				inverted_index = self.ftp_manager.get_inverted_index()
+				inverted_index = self.sftp_manager.get_inverted_index()
 				index.stats_dl_index(begining, time())
 			else:
 				inverted_index = self.file_manager.read_inverted_index()
@@ -114,6 +114,7 @@ class Crawler(object):
 			if run:  # Only on dev branch
 				self.suggestions()
 				self.send_inverted_index()
+				self.file_manager.check_size_files()
 				module.stats_send_index(stats_send_index, time())
 
 	def crawl_webpage(self, url):
@@ -208,7 +209,7 @@ class Crawler(object):
 	def send_inverted_index(self):
 		"""Send inverted-index generate by indexing to server."""
 		begining = time()
-		self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
+		self.sftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		index.stats_ul_index(begining, time())
 		#for path in listdir(DIR_INDEX):  # Only on master branch
 		#	rmtree(DIR_INDEX + path)  # Only on master branch

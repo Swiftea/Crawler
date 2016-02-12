@@ -6,17 +6,17 @@ from os import path
 
 from index.index import count_files_index
 from index.sftp_manager import SFTPManager
-from swiftea_bot.data import DIR_INDEX, FTP_INDEX, DIR_DATA
+from swiftea_bot.data import DIR_INDEX, SFTP_INDEX, DIR_DATA
 from swiftea_bot.module import tell
 
-class FTPSwiftea(SFTPManager):
+class SFTPSwiftea(SFTPManager):
 	"""Class to manage the sftp connexion for crawler."""
 	def __init__(self, host, user, password):
 		SFTPManager.__init__(self, host, user, password)
-		self.sftp_index = FTP_INDEX
+		self.sftp_index = SFTP_INDEX
 
-	def set_ftp_index(self, ftp_index):
-		self.sftp_index = ftp_index
+	def set_sftp_index(self, sftp_index):
+		self.sftp_index = sftp_index
 
 
 	def get_inverted_index(self):

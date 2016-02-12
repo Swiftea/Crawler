@@ -376,3 +376,5 @@ epub_exclude_files = ['search.html']
 sys.path.append('../crawler')
 
 autodoc_member_order = 'bysource'
+
+# Build the doc in docs : $ make html
