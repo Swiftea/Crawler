@@ -52,10 +52,6 @@ class TestConnexion(CrawlingBaseTest):
 		request = req.get("http://www.wordreference.com/")
 		assert all_urls(request) == ["http://www.wordreference.com"]
 
-	def test_get_words_lists(self):
-		get_words_lists('stopwords')
-		get_words_lists('badwords')
-
 
 class TestWebConnexion(CrawlingBaseTest):
 	def test_search_encoding(self):
@@ -99,10 +95,6 @@ class TestSearches(CrawlingBaseTest):
 
 	def test_clean_link(self):
 		assert clean_link('http://www.example.fr?w=word#big_title') == 'http://www.example.fr?w=word'
-
-	def test_stats_stopwords(self):
-		stats_stopwords(100, 50)
-		stats_stopwords(0, 0)
 
 	def test_stats_links(self):
 		stats_links(50)

@@ -110,24 +110,3 @@ def all_urls(request):
 		if url:
 			urls.append(url)
 	return remove_duplicates(urls)
-
-def get_words_lists(type_):
-	"""Get words from swiftea server.
-
-	:param path: path
-	:param type_: stopwords or badwords
-	:return: a dict: keys are languages and values are stopwords
-
-	"""
-	path = HOST + 'data/' + type_ + '/'
-	result = dict()
-	try:
-		for language in LANGUAGES:
-			r = requests.get(path + language + '.' + type_ + '.txt')
-			r.encoding = 'utf-8'
-			result[language] = r.text
-	except requests.exceptions.ConnectionError:
-		print('Failed to get ' + type_, 10)
-		return None
-	else:
-		return result

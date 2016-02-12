@@ -6,16 +6,6 @@ from swiftea_bot.data import DIR_STATS
 
 def stats(dir_stats=DIR_STATS):
 	try:
-		with open(dir_stats + 'stat_stopwords', 'r') as myfile:
-			content = myfile.read().split()
-	except FileNotFoundError:
-		stat_stopwords = 'File ' + dir_stats + 'stat_stopwords' + ' not found.'
-	else:
-		stat_stopwords = 'Average percentage of removed words: ' + str(average(content))
-		if len(content) > 10000:
-			compress_stats(dir_stats + 'stat_stopwords')
-	result = stat_stopwords + '\n'
-	try:
 		with open(dir_stats + 'stat_links', 'r') as myfile:
 			content = myfile.read().split()
 	except FileNotFoundError:

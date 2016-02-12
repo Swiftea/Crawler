@@ -110,22 +110,6 @@ def capitalize(text):
 	else:
 		return ''
 
-def stats_stopwords(begining, end):
-	"""Write the percentage of deleted word with stopwords for statistics.
-
-	:param begining: size of keywords list before cleaning
-	:type begining: int
-	:param end: size of keywords list after cleaning
-	:type end: int
-
-	"""
-	if begining != 0:
-		stats = str(((begining - end) * 100) / begining)
-	else:
-		stats = '100'
-	with open(DIR_STATS + 'stat_stopwords', 'a') as myfile:
-		myfile.write(stats + '\n')
-
 def stats_links(stats):
 	"""Write the number of links for statistics.
 

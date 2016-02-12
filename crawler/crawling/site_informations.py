@@ -42,7 +42,6 @@ class SiteInformations(object):
 		results['title'] = searches.clean_text(searches.capitalize(self.parser.title))  # Find title and clean it
 
 		keywords = searches.clean_text(self.parser.keywords.lower()).split()
-		begining_size = len(keywords)  # Stats
 
 		# Language:
 		if self.parser.language != '':
@@ -53,7 +52,6 @@ class SiteInformations(object):
 
 		if language in self.STOPWORDS and self.parser.title != '':
 			keywords = self.clean_keywords(keywords, language)
-			searches.stats_stopwords(begining_size, len(keywords))
 			keywords.extend(self.clean_keywords(results['title'].lower().split(), language))
 			infos_url = urlparse(url)
 			path_position = infos_url.path.rfind('.')
