@@ -43,29 +43,6 @@ CRAWL_DELAY = timedelta(days=2)  # Program don't crawl the same website after th
 TIMEOUT = 30
 LANGUAGES = ['fr', 'en']
 
-ERROR_CODE_DOC = """Error codes
-===========
-
-0: End,
-
-1: Failed to download inverted-index
-2: Failed to send inverted-index
-
-3: Connexion to webpage failed: read timeout error (urllib3)
-4: website not respoding
-5: Connexion to webpage failed
-6: Error robots.txt (reppy)
-7: Error robots.txt (timeout)
-8: Error robots.txt (requests)
-
-9: Failed to update row in database
-10: Failed to add row in database
-11: Failed to get id in database
-12: Doc not removed in database
-13: Failed to get url in database
-14: Failed to check row
-"""
-
 BASE_LINKS = """http://www.planet-libre.org
 https://zestedesavoir.com
 http://www.01net.com

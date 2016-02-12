@@ -77,19 +77,6 @@ def create_dirs():
 	if not path.isdir(data.DIR_STATS):
 		mkdir(data.DIR_STATS)
 
-def create_doc():
-	"""Create doc file if it doesn't exist and if it was modified."""
-	if not path.exists(data.FILE_DOC):
-		with open(data.FILE_DOC, 'w') as myfile:
-			myfile.write(data.ERROR_CODE_DOC)
-	else:
-		with open(data.FILE_DOC, 'r') as myfile:
-			content = myfile.read()
-		if content != data.ERROR_CODE_DOC:
-			remove(data.FILE_DOC)
-		with open(data.FILE_DOC, 'w') as myfile:
-			myfile.write(data.ERROR_CODE_DOC)
-
 def def_links():
 	"""Create directory of links if it doesn't exist
 
