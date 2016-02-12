@@ -25,13 +25,6 @@ class TestModule(SwifteaBotBaseTest):
 	def test_create_dirs(self):
 		create_dirs()
 
-	def test_create_doc(self):
-		create_doc()
-		create_doc()
-		with open(swiftea_bot.data.FILE_DOC, 'w') as myfile:
-			myfile.write('This is not the doc.')
-		create_doc()
-
 	def test_tell(self):
 		tell('Simple message', 0)
 		tell('Hard message', severity=2)

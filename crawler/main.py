@@ -245,7 +245,6 @@ def save(crawler):
 
 if __name__ == '__main__':
 	module.create_dirs()
-	module.create_doc()
 	module.def_links()
 	crawler = Crawler()
 	atexit.register(save, crawler)

@@ -6,7 +6,7 @@ from os import mkdir, remove
 
 from main import Crawler
 from swiftea_bot.data import DIR_LINKS, FILE_CONFIG, MAX_LINKS, FILE_BASELINKS, DIR_CONFIG
-from swiftea_bot.module import create_dirs, create_doc
+from swiftea_bot.module import create_dirs
 from tests.test_data import reset, BASE_LINKS
 
 class RedirectOutput(object):
@@ -25,7 +25,6 @@ class TestGlobal(object):
 		sys.stdout = RedirectOutput('log')
 		sys.stderr = RedirectOutput('err')
 		create_dirs()
-		create_doc()
 		mkdir(DIR_LINKS)
 		with open(FILE_BASELINKS, 'w') as myfile:
 			myfile.write(BASE_LINKS)
