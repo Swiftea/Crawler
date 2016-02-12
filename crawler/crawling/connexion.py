@@ -7,7 +7,6 @@ import requests
 from swiftea_bot.module import remove_duplicates
 from crawling.searches import clean_link
 from swiftea_bot.module import tell
-from swiftea_bot.data import HOST
 
 def no_connexion(url='https://github.com'):
 	"""Check connexion.
