@@ -3,7 +3,7 @@
 """Define several functions for all crawler's class."""
 
 from time import strftime
-from os import path, mkdir, remove
+from os import path, mkdir
 
 import swiftea_bot.data as data
 

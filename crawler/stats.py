@@ -14,7 +14,7 @@ def stats(dir_stats=DIR_STATS):
 		stat_links = ('Average links in webpage: ' + str(average(content)))
 		if len(content) > 10000:
 			compress_stats(dir_stats + 'stat_links')
-	result += stat_links + '\n'
+	result = stat_links + '\n'
 	try:
 		with open(dir_stats + 'stat_webpages', 'r') as myfile:
 			content = myfile.read().split()
