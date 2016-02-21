@@ -75,7 +75,6 @@ class SFTPManager(object):
         except Exception as error:
             raise SFTPError('lisdir; ' + str(error))
         else:
-            # Must be test:
             return result
 
     def listdir_attr(self, path='.'):

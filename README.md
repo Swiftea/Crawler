@@ -35,7 +35,7 @@ Currently, it can :
 
 ## Version
 
-Current version is 1.0.0
+Current version is 1.0.1
 
 ## Tech
 
@@ -45,6 +45,7 @@ Swiftea's Crawler uses a number of open source projects to work properly:
   - [Reppy](https://github.com/seomoz/reppy)
   - [PyMySQL](https://github.com/PyMySQL/PyMySQL/)
   - [Requests](https://github.com/kennethreitz/requests)
+  - [Paramiko](http://www.paramiko.org/)
 
 
 ## Contributing

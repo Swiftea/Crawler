@@ -30,7 +30,7 @@ class SFTPSwiftea(SFTPManager):
 		inverted_index = dict()
 		self.connexion()
 		self.cd(self.sftp_index)
-		self.nb_files = self.countfiles()  # count files on server (prepare to download)
+		self.nb_files = self.countfiles()  # Count files on server (prepare to download)
 		list_language = self.listdir()
 
 		for language in list_language:
@@ -147,7 +147,7 @@ class SFTPSwiftea(SFTPManager):
 					infos_filename = self.listdir_attr()
 					for data in infos_filename:
 						if data.filename == 'co.sif':
-							server_size = data.st__size
+							server_size = data.st_size
 			self.disconnect()
 			if local_size < server_size:
 				return True
