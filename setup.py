@@ -21,7 +21,7 @@ def read(filename):
 
 setup(
     name = "Crawler",
-    version = "1.0.0",
+    version = "1.0.1",
     author = "Thykof",
     tests_require=['pytest'],
     install_requires=read('requirements.txt'),

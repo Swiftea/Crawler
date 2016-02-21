@@ -104,7 +104,7 @@ index.sftp_manager module
 
 
 index.sftp_swiftea module
-------------------------
+-------------------------
 .. automodule:: index.sftp_swiftea
     :members:
     :undoc-members:
