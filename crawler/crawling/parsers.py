@@ -27,8 +27,6 @@ class ExtractData(HTMLParser):
 	"""
 	def __init__(self):
 		HTMLParser.__init__(self)
-		#print(LIST_TAG_WORDS)  # Only for tests
-		#print(LIST_ALONE_TAG_WORDS)  # Only for tests
 		self.links = list()  # List of links
 		self.keywords = ''  # All keywords in a string
 		self.is_title = False  # True is data are the title
@@ -59,7 +57,6 @@ class ExtractData(HTMLParser):
 		:type attrs: list
 
 		"""
-		#print('starting tag: ' + tag)  # Only for tests
 		if tag =='html':
 			self.re_init()
 			if len(dict(attrs).get('lang', '')) >= 2:
@@ -106,7 +103,6 @@ class ExtractData(HTMLParser):
 		:type tag: str
 
 		"""
-		#print('data: ' + data)  # Only for tests
 		if self.is_title:
 			self.title += data
 
@@ -125,7 +121,6 @@ class ExtractData(HTMLParser):
 		:type attrs: list
 
 		"""
-		#print('ending tag: ' + tag)  # Only for tests
 		if tag == 'title':
 			self.is_title = False
 
@@ -139,7 +134,6 @@ class ExtractData(HTMLParser):
 			self.word2 = False
 
 	def handle_entityref(self, name):
-		#print('entityref: ' + name)  # Only for tests
 		try:
 			letter = chr(name2codepoint[name])
 		except KeyError:
@@ -152,7 +146,6 @@ class ExtractData(HTMLParser):
 				self.title += letter
 
 	def handle_charref(self, name):
-		#print('charref: ' + name)  # Only for tests
 		if name.startswith('x'):
 			letter = chr(int(name[1:], 16))
 		else:

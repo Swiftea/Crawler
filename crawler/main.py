@@ -2,8 +2,8 @@
 
 from time import time
 import atexit
-#from os import listdir  # Only on master branch
-#from shutil import rmtree  # Only on master branch
+from os import listdir
+from shutil import rmtree
 import sys
 
 
@@ -18,7 +18,7 @@ from crawling.site_informations import SiteInformations
 from database.database_swiftea import DatabaseSwiftea
 from swiftea_bot.file_manager import FileManager
 from index.inverted_index import InvertedIndex
-#from swiftea_bot.data import DIR_INDEX  # Only on master branch
+from swiftea_bot.data import DIR_INDEX
 import swiftea_bot.module as module
 import index.index as index
 
@@ -58,12 +58,6 @@ class Crawler(object):
 				index.stats_dl_index(begining, time())
 			else:
 				inverted_index = self.file_manager.read_inverted_index()
-
-			if self.file_manager.reading_file_number != 0:
-				module.tell('Failed to download inverted-index', 1)
-				sys.exit()
-			else:
-				module.tell("New inverted-index")
 		self.index_manager.setInvertedIndex(inverted_index)
 
 	def start(self):
@@ -111,7 +105,7 @@ class Crawler(object):
 					break
 
 			# End of loop range(n)
-			if run:  # Only on dev branch
+			if run:
 				self.suggestions()
 				self.send_inverted_index()
 				self.file_manager.check_size_files()
@@ -211,8 +205,8 @@ class Crawler(object):
 		begining = time()
 		self.sftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		index.stats_ul_index(begining, time())
-		#for path in listdir(DIR_INDEX):  # Only on master branch
-		#	rmtree(DIR_INDEX + path)  # Only on master branch
+		for path in listdir(DIR_INDEX):
+			rmtree(DIR_INDEX + path)
 
 	def suggestions(self):
 		"""Suggestions:

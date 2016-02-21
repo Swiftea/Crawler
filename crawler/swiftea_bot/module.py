@@ -70,8 +70,6 @@ def create_dirs():
 		mkdir(data.DIR_DATA)
 	if not path.isdir(data.DIR_CONFIG):
 		mkdir(data.DIR_CONFIG)
-	if not path.isdir(data.DIR_OUTPUT):
-		mkdir(data.DIR_OUTPUT)
 	if not path.isdir(data.DIR_INDEX):
 		mkdir(data.DIR_INDEX)
 	if not path.isdir(data.DIR_STATS):
@@ -164,11 +162,9 @@ def stats_webpages(begining, end):
 		myfile.write(str(nb_webpages) + '\n')
 
 def stats_send_index(begining, end):
-	delta = end - begining  # Time between 2 sending index
-	time = delta / 10
-	nb_webpages = 60 / time  # number of webpages crawled in 1 minute
-	with open(data.DIR_STATS + 'stat_webpages', 'a') as myfile:
-		myfile.write(str(nb_webpages) + '\n')
+	"""Time spent between two sending of index"""
+	with open(data.DIR_STATS + 'stats_send_index', 'a') as myfile:
+		myfile.write(str(end - begining) + '\n')
 
 def convert_keys(inverted_index):
 	"""Convert str words keys into int from inverted-index.

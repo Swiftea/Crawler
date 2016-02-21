@@ -118,7 +118,7 @@ class FileManager(object):
 					with ZipFile(filearchive, 'r') as myzip:
 						filename = str(int(myzip.namelist()[-1])+1)  # The last one +1
 				rename(filelog, filename)
-				with ZipFile(filearchive, 'w') as myzip:
+				with ZipFile(filearchive, 'a') as myzip:
 					myzip.write(filename)
 				remove(filename)
 				tell('Archiving ' + filelog + ': ' + filename, severity=-1)
@@ -141,10 +141,10 @@ class FileManager(object):
 		else:
 			url = list_links[self.reading_line_number]
 			self.reading_line_number += 1
-			# If is the last links of the file:
+			# If it is the last links of the file:
 			if len(list_links) == (self.reading_line_number):
 				self.reading_line_number = 0
-				if self.reading_file_number != 0:  # Or > 0 ? wich is better ?
+				if self.reading_file_number != 0:
 					remove(filename)
 					tell('File ' + filename + ' removed', severity=-1)
 				self.reading_file_number += 1
@@ -175,7 +175,7 @@ class FileManager(object):
 		:return: inverted-index
 
 		"""
-		tell('Get inverted-index form save file')
+		tell('Get inverted-index from save file')
 		with open(FILE_INDEX, 'r') as myfile:
 			inverted_index = json.load(myfile)
 		remove(FILE_INDEX)

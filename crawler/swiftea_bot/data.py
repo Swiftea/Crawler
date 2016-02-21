@@ -13,7 +13,6 @@ setdefaulttimeout(30)
 DIR_DATA = 'data/'
 DIR_LINKS = DIR_DATA + 'links/'
 DIR_CONFIG = DIR_DATA + 'config/'
-DIR_OUTPUT = DIR_DATA + 'output/'
 DIR_INDEX = DIR_DATA + 'inverted_index/'
 DIR_STATS = DIR_DATA + 'stats/'
 FILE_EVENTS = DIR_CONFIG + 'events.log'
