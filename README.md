@@ -6,6 +6,7 @@
 [![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=master)](https://crawler.readthedocs.org/en/master/)
 [![Code Health](https://landscape.io/github/Swiftea/Swiftea-Crawler/master/landscape.svg?style=flat)](https://landscape.io/github/Swiftea/Swiftea-Crawler/master)
 [![Requirements Status](https://requires.io/github/Swiftea/Swiftea-Crawler/requirements.svg?branch=master)](https://requires.io/github/Swiftea/Swiftea-Crawler/requirements/?branch=master)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FSwiftea%2FOld-Crawler.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FSwiftea%2FOld-Crawler?ref=badge_shield)
 
 ## Develop branch :
 [![Build Status](https://travis-ci.org/Swiftea/Swiftea-Crawler.svg?branch=develop)](https://travis-ci.org/Swiftea/Swiftea-Crawler)
@@ -85,3 +86,7 @@ License
 GNU GENERAL PUBLIC LICENSE (v3)
 
 **Free Software, Hell Yeah!**
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FSwiftea%2FOld-Crawler.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FSwiftea%2FOld-Crawler?ref=badge_large)
