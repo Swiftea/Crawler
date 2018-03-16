@@ -26,7 +26,7 @@ class CrawlingBaseTest(object):
 		self.is_title = True
 		self.title = 'letter'
 		self.headers = {'status': '200 OK', 'content-type': 'text/html; charset=utf-8', 'vary': 'X-PJAX, Accept-Encoding'}
-		self.reqrobots = RobotsCache()
+		self.reqrobots = RobotsCache(capacity=100)
 
 
 class TestConnexion(CrawlingBaseTest):
@@ -63,7 +63,7 @@ class TestWebConnexion(CrawlingBaseTest):
 	def test_check_robots_perm(self):
 		assert WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com') == True
 		assert WebConnexion.check_robots_perm(self, 'https://www.facebook.com') == False
-		assert WebConnexion.check_robots_perm(self, self.url) == True
+		assert WebConnexion.check_robots_perm(self, self.url) == False
 		assert WebConnexion.check_robots_perm(self, 'http://premium.lefigaro.fr') == True
 
 	def test_send_request(self):

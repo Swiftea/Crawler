@@ -18,7 +18,7 @@ from crawling.searches import clean_link
 class WebConnexion(object):
 	"""Manage the web connexion with the page to crawl."""
 	def __init__(self):
-		self.reqrobots = RobotsCache()
+		self.reqrobots = RobotsCache(capacity=100)
 		self.parser_encoding = parsers.ExtractEncoding()
 
 
@@ -123,7 +123,8 @@ class WebConnexion(object):
 		except Exception as error:
 			tell('Unknow robots.txt error: ' + str(error) + ' ' + url, 8)
 			allowed = True
-		return allowed
+		else:
+			return allowed
 
 	def duplicate_content(self, request1, url):
 		"""Avoid param duplicate.
