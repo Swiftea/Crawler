@@ -2,7 +2,7 @@
 
 import sys
 from configparser import ConfigParser
-from os import mkdir, remove
+from os import mkdir, remove, path
 
 from main import Crawler
 from swiftea_bot.data import DIR_LINKS, FILE_CONFIG, MAX_LINKS, FILE_BASELINKS, DIR_CONFIG
@@ -25,7 +25,7 @@ class TestGlobal(object):
 		sys.stdout = RedirectOutput('log')
 		sys.stderr = RedirectOutput('err')
 		create_dirs()
-		mkdir(DIR_LINKS)
+		if not path.exists(DIR_LINKS): mkdir(DIR_LINKS)
 		with open(FILE_BASELINKS, 'w') as myfile:
 			myfile.write(BASE_LINKS)
 		crawler = Crawler()

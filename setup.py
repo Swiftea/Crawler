@@ -11,8 +11,8 @@ class PyTest(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
-        from crawler.tests.run_tests import tests
-        errno = tests()
+        from crawler.tests.run_tests import run_tests
+        errno = run_tests()
         sys.exit(errno)
 
 def read(filename):

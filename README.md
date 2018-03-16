@@ -42,6 +42,24 @@ Currently, it can :
     - in database
     - in inverted-index
 
+## Install and usage
+    virtualenv -p /usr/bin/python3 crawler-env
+    source crawler-env/bin/activate
+    pip install -r requirements.txt
+
+### Run tests
+Using only pytest:
+
+    export PYTHONPATH=crawler
+    python setup.py test
+
+With coverage:
+
+    export PYTHONPATH=crawler
+    coverage run setup.py test
+    coverage report
+    coverage html
+
 ## Version
 
 Current version is 1.0.1

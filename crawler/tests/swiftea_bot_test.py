@@ -58,8 +58,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		FileManager.save_config(self)
 
 	def test_save_links(self):
-		try: mkdir(DIR_LINKS)
-		except FileExistsError: pass
+		mkdir(DIR_LINKS)
 		FileManager.save_links(self, BASE_LINKS.split())
 		FileManager.save_links(self, BASE_LINKS[5:].split())
 
