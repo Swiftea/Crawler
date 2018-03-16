@@ -2,25 +2,17 @@
 
 ## Master branch :
 [![Build Status](https://travis-ci.org/Swiftea/Old-Crawler.svg?branch=master)](https://travis-ci.org/Swiftea/Old-Crawler)
-
 [![Coverage Status](https://coveralls.io/repos/Swiftea/Swiftea-Crawler/badge.svg?branch=master)](https://coveralls.io/r/Swiftea/Swiftea-Crawler?branch=master)
-
 [![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=master)](http://crawler.readthedocs.io/en/master/?badge=master)
-
 [![Code Health](https://landscape.io/github/Swiftea/Old-Crawler/master/landscape.svg?style=flat)](https://landscape.io/github/Swiftea/Old-Crawler/master)
-
 [![Requirements Status](https://requires.io/github/Swiftea/Old-Crawler/requirements.svg?branch=master)](https://requires.io/github/Swiftea/Old-Crawler/requirements/?branch=master)
 
 
 ## Develop branch :
 [![Build Status](https://travis-ci.org/Swiftea/Old-Crawler.svg?branch=develop)](https://travis-ci.org/Swiftea/Old-Crawler)
-
 [![Coverage Status](https://coveralls.io/repos/github/Swiftea/Swiftea-Crawler/badge.svg?branch=develop)](https://coveralls.io/github/Swiftea/Swiftea-Crawler?branch=develop)
-
 [![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=master)](http://crawler.readthedocs.io/en/develop/index.html)
-
 [![Code Health](https://landscape.io/github/Swiftea/Old-Crawler/develop/landscape.svg?style=flat)](https://landscape.io/github/Swiftea/Old-Crawler/develop)
-
 [![Requirements Status](https://requires.io/github/Swiftea/Old-Crawler/requirements.svg?branch=develop)](https://requires.io/github/Swiftea/Old-Crawler/requirements/?branch=develop)
 
 ## Description
@@ -41,6 +33,24 @@ Currently, it can :
   - Index them
     - in database
     - in inverted-index
+
+## Install and usage
+    virtualenv -p /usr/bin/python3 crawler-env
+    source crawler-env/bin/activate
+    pip install -r requirements.txt
+
+### Run tests
+Using only pytest:
+
+    export PYTHONPATH=crawler
+    python setup.py test
+
+With coverage:
+
+    export PYTHONPATH=crawler
+    coverage run setup.py test
+    coverage report
+    coverage html
 
 ## Version
 

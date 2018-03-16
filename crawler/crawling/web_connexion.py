@@ -64,7 +64,7 @@ class WebConnexion(object):
 		except requests.exceptions.Timeout:
 			tell('Timeout error: ' + url, 4)
 			return None
-		except requests.exceptions.RequestException as error:
+		except (requests.exceptions.RequestException, requests.exceptions.ConnectionError) as error:
 			tell('Connexion failed: {}, {}'.format(str(error), url), 5)
 			if connexion.no_connexion():
 				return 'no connexion'
