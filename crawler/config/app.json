@@ -1,0 +1,17 @@
+{
+    "default": {
+        "user_agent": "SwifteaBot"
+    },
+    "crawl": {
+        "items_per_loop": 15
+    },
+    "request": {
+        "timeout": 5
+    },
+    "database": {
+        "host": "localhost",
+        "username": "root",
+        "password": "",
+        "database": "swiftea"
+    }
+}

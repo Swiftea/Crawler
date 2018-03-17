@@ -1,51 +1,17 @@
-# Swiftea's Open Source Web Crawler
+# Swiftea Crawler
 
-## Master branch :
-[![Build Status](https://travis-ci.org/Swiftea/Swiftea-Crawler.svg?branch=master)](https://travis-ci.org/Swiftea/Swiftea-Crawler)
-[![Coverage Status](https://coveralls.io/repos/Swiftea/Swiftea-Crawler/badge.svg?branch=master)](https://coveralls.io/r/Swiftea/Swiftea-Crawler?branch=master)
-[![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=master)](https://crawler.readthedocs.org/en/master/)
-[![Code Health](https://landscape.io/github/Swiftea/Swiftea-Crawler/master/landscape.svg?style=flat)](https://landscape.io/github/Swiftea/Swiftea-Crawler/master)
-[![Requirements Status](https://requires.io/github/Swiftea/Swiftea-Crawler/requirements.svg?branch=master)](https://requires.io/github/Swiftea/Swiftea-Crawler/requirements/?branch=master)
-
-## Develop branch :
-[![Build Status](https://travis-ci.org/Swiftea/Swiftea-Crawler.svg?branch=develop)](https://travis-ci.org/Swiftea/Swiftea-Crawler)
-[![Coverage Status](https://coveralls.io/repos/Swiftea/Swiftea-Crawler/badge.svg?branch=develop)](https://coveralls.io/r/Swiftea/Swiftea-Crawler?branch=develop)
-[![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=develop)](https://crawler.readthedocs.org/en/develop)
-[![Code Health](https://landscape.io/github/Swiftea/Swiftea-Crawler/develop/landscape.svg?style=flat)](https://landscape.io/github/Swiftea/Swiftea-Crawler/develop)
-[![Requirements Status](https://requires.io/github/Swiftea/Swiftea-Crawler/requirements.svg?branch=develop)](https://requires.io/github/Swiftea/Swiftea-Crawler/requirements/?branch=develop)
-
-## Description
-
-Swiftea-Crawler is an open source web crawler for Swiftea: https://swiftea.ovh.
-
-Currently, it can :
-  - Visit websites
-    - check robots.txt
-    - search encoding
-  - Parse them
-    - extract data
-      - title
-      - description
-      - ...
-    - extract important words
-      - filter stopwords
-  - Index them
-    - in database
-    - in inverted-index
-
-## Version
-
-Current version is 1.0.1
+[![Code Health](https://landscape.io/github/Swiftea/Crawler/develop/landscape.svg?style=flat)](https://landscape.io/github/Swiftea/Crawler/develop)
+[![Requirements Status](https://requires.io/github/Swiftea/Crawler/requirements.svg?branch=develop)](https://requires.io/github/Swiftea/Crawler/requirements/?branch=develop)
 
 ## Tech
 
 Swiftea's Crawler uses a number of open source projects to work properly:
 
-- [Python 3](https://www.python.org/)
+- [Python 3](https://www.python.org)
+  - [BeautifulSoup 4](https://www.crummy.com/software/BeautifulSoup)
+  - [PyMySQL](https://github.com/PyMySQL/PyMySQL)
   - [Reppy](https://github.com/seomoz/reppy)
-  - [PyMySQL](https://github.com/PyMySQL/PyMySQL/)
   - [Requests](https://github.com/kennethreitz/requests)
-  - [Paramiko](http://www.paramiko.org/)
 
 
 ## Contributing
@@ -54,8 +20,8 @@ Want to contribute? Great!
 
 Fork the repository. Then, run:
 
-    git clone --recursive git@github.com:<username>/Swiftea-Crawler.git
-    cd Swiftea-Crawler
+    git clone --recursive git@github.com:<username>/Crawler.git
+    cd Crawler
     git flow init -d
     git flow feature start <your feature>
 
@@ -72,7 +38,7 @@ When done, open a pull request to your feature branch.
   - Use the imperative mood
 
 #### Examples
-  - Add something : "Add feature ..."
+  - Add something : "Add ..."
   - Update : "Update ..."
   - Improve something : "Improve ..."
   - Change something : "Change ..."

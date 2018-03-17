@@ -1,4 +1,4 @@
-reppy==0.3.1
-PyMySQL==0.7.1
-pytest==2.8.7
-paramiko==1.16.0
+beautifulsoup4==4.5.1
+pymysql==0.7.9
+reppy==0.3.4
+requests==2.11.1
