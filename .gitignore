@@ -1,3 +1,6 @@
+crawler-env
+.pytest_cache
+
 crawler/swiftea_bot/private_data.py
 crawler/tests/private_test.py
 

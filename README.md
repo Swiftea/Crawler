@@ -35,22 +35,47 @@ Currently, it can :
     - in inverted-index
 
 ## Install and usage
+
+### Settup
     virtualenv -p /usr/bin/python3 crawler-env
     source crawler-env/bin/activate
     pip install -r requirements.txt
+    export PYTHONPATH=crawler
+
+If these files doen't exists:
+- data/stopwords/fr.stopwords.txt
+- data/stopwords/en.stopwords.txt
+- data/badwords/fr.badwords.txt
+- data/badwords/en.badwords.txt
+
+The crawler download the list of words from the sftp server.
 
 ### Run tests
 Using only pytest:
 
-    export PYTHONPATH=crawler
     python setup.py test
 
 With coverage:
 
-    export PYTHONPATH=crawler
     coverage run setup.py test
     coverage report
     coverage html
+
+### Run crawler
+
+    python crawler/main.py
+
+
+## How it work?
+
+### Database:
+The DatabaseSwiftea object can:
+ - send documents
+ - get the id of a document by the url
+ - delete a document
+ - select the suggestions
+ - check if a doc exists
+ - check for http and https duplicate
 
 ## Version
 
