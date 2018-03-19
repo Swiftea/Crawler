@@ -13,7 +13,7 @@ except ImportError:
 	pass
 
 from index.sftp_swiftea import SFTPSwiftea
-from crawling.web_connexion import WebConnexion
+from crawling.web_connection import WebConnection
 from crawling.site_informations import SiteInformations
 from database.database_swiftea import DatabaseSwiftea
 from swiftea_bot.file_manager import FileManager
@@ -26,7 +26,8 @@ class Crawler(object):
 	"""Crawler main class."""
 	def __init__(self):
 		self.infos = list()
-		self.sftp_manager = SFTPSwiftea(pvdata.HOST_SSH, pvdata.USER_SSH, pvdata.PASSWORD_SSH)
+		self.sftp_manager = SFTPSwiftea(pvdata.HOST_SSH, pvdata.USER_SSH,
+			pvdata.PASSWORD_SSH, pvdata.SSH_PORT)
 		self.site_informations = SiteInformations()
 		self.file_manager = FileManager()
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
@@ -36,8 +37,9 @@ class Crawler(object):
 		self.site_informations.set_listswords(stopwords, badwords)
 
 		self.index_manager = InvertedIndex()
-		self.database = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER_DB, pvdata.PASSWORD_DB, pvdata.NAME_DB)
-		self.web_connexion = WebConnexion()
+		self.database = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER_DB,
+			pvdata.PASSWORD_DB, pvdata.NAME_DB, pvdata.NAME_TABLE)
+		self.web_connection = WebConnection()
 
 		self.get_inverted_index()
 		self.crawled_websites = 0
@@ -123,10 +125,10 @@ class Crawler(object):
 		"""
 		module.tell('Crawling ' + url)
 		# Get webpage's html code:
-		new_url, html_code, nofollow, score, all_urls = self.web_connexion.get_code(url)
+		new_url, html_code, nofollow, score, all_urls = self.web_connection.get_code(url)
 		if html_code is None:
 			self.delete_if_exists(all_urls)  # Failed to get code, must delete from database.
-		elif html_code == 'no connexion':
+		elif html_code == 'no connection':
 			sys.exit()
 		elif html_code == 'ignore':  # There was something wrong and maybe a redirection.
 			self.delete_if_exists(all_urls)

@@ -22,10 +22,11 @@ class SFTPManager(object):
     :type password: str
 
     """
-    def __init__(self, host, user='', password=''):
+    def __init__(self, host, user='', password='', port=2222):
         self.host = host
         self.user = user
         self.password = password
+        self.port = port
 
         self.transport = None
         self.sftp = None
@@ -33,7 +34,7 @@ class SFTPManager(object):
     def connection(self):
         """Connect to server."""
         try:
-            self.transport = paramiko.Transport((self.host, 2222))
+            self.transport = paramiko.Transport((self.host, self.port))
             self.transport.connect(username=self.user, password=self.password)
             self.sftp = paramiko.SFTPClient.from_transport(self.transport)
         except timeout:
