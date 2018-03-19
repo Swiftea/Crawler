@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from shutil import rmtree
-from os import mkdir
+from os import mkdir, path
 import swiftea_bot.data
 from swiftea_bot.module import *
 from swiftea_bot.file_manager import *
@@ -58,7 +58,8 @@ class TestFileManager(SwifteaBotBaseTest):
 		FileManager.save_config(self)
 
 	def test_save_links(self):
-		mkdir(DIR_LINKS)
+		if not path.exists(DIR_LINKS):
+			mkdir(DIR_LINKS)
 		FileManager.save_links(self, BASE_LINKS.split())
 		FileManager.save_links(self, BASE_LINKS[5:].split())
 
