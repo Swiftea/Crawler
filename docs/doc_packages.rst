@@ -23,16 +23,16 @@ swiftea_bot.file_manager module
     :undoc-members:
 
 
-crawling.web_connexion module
+crawling.web_connection module
 -----------------------------
-.. automodule:: crawling.web_connexion
+.. automodule:: crawling.web_connection
     :members:
     :undoc-members:
 
 
-crawling.connexion module
+crawling.connection module
 -------------------------
-.. automodule:: crawling.connexion
+.. automodule:: crawling.connection
     :members:
     :undoc-members:
 

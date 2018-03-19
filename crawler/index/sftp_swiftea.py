@@ -10,9 +10,9 @@ from swiftea_bot.data import DIR_INDEX, SFTP_INDEX, DIR_DATA
 from swiftea_bot.module import tell
 
 class SFTPSwiftea(SFTPManager):
-	"""Class to manage the sftp connexion for crawler."""
-	def __init__(self, host, user, password):
-		SFTPManager.__init__(self, host, user, password)
+	"""Class to manage the sftp connection for crawler."""
+	def __init__(self, host, user, password, port):
+		SFTPManager.__init__(self, host, user, password, port)
 		self.sftp_index = SFTP_INDEX
 
 	def set_sftp_index(self, sftp_index):
@@ -28,7 +28,7 @@ class SFTPSwiftea(SFTPManager):
 		tell('Get inverted-index from server')
 		self.downuploaded_files = 0
 		inverted_index = dict()
-		self.connexion()
+		self.connection()
 		self.cd(self.sftp_index)
 		self.nb_files = self.countfiles()  # Count files on server (prepare to download)
 		list_language = self.listdir()
@@ -70,7 +70,7 @@ class SFTPSwiftea(SFTPManager):
 		tell('send inverted-index')
 		self.downuploaded_files = 0
 		self.nb_files = count_files_index(inverted_index)  # Count files from index (prepare to upload)
-		self.connexion()
+		self.connection()
 		self.cd(self.sftp_index)
 
 		for language in inverted_index:
@@ -135,7 +135,7 @@ class SFTPSwiftea(SFTPManager):
 		local_file = DIR_INDEX + 'FR/' + 'C/' + 'co.sif'
 		if path.exists(local_file):
 			local_size = path.getsize(local_file)
-			self.connexion()
+			self.connection()
 			self.cd(self.sftp_index)
 			server_size = 0
 			list_language = self.listdir()
@@ -159,7 +159,7 @@ class SFTPSwiftea(SFTPManager):
 	def download_lists_words(self):
 		"""Download stopwords and badwords."""
 		tell('download list of words')
-		self.connexion()
+		self.connection()
 		for filename in ['en.stopwords.txt', 'fr.stopwords.txt', 'en.badwords.txt', 'fr.badwords.txt']:
 			type_ = filename[3:-4] + '/'
 			self.cd('/var/www/html/data/' + type_)

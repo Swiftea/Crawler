@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""Connexion to webpage are manage with requests module.
+"""Connection to webpage are manage with requests module.
 Thoses errors are waiting for: timeout with socket module and with urllib3 mudule
 and all RequestException errors."""
 
@@ -12,11 +12,11 @@ from reppy.exceptions import ServerError
 
 from swiftea_bot.data import USER_AGENT, HEADERS, TIMEOUT
 from swiftea_bot.module import tell, remove_duplicates
-from crawling import parsers, connexion
+from crawling import parsers, connection
 from crawling.searches import clean_link
 
-class WebConnexion(object):
-	"""Manage the web connexion with the page to crawl."""
+class WebConnection(object):
+	"""Manage the web connection with the page to crawl."""
 	def __init__(self):
 		self.reqrobots = RobotsCache(capacity=100)
 		self.parser_encoding = parsers.ExtractEncoding()
@@ -30,7 +30,7 @@ class WebConnexion(object):
 		:return: source code, True if no take links, score and new url (redirection)
 
 		"""
-		nofollow, url = connexion.is_nofollow(url)
+		nofollow, url = connection.is_nofollow(url)
 		result = self.send_request(url)
 		if not isinstance(result, requests.models.Response):
 			return None, result, None, None, url
@@ -42,7 +42,7 @@ class WebConnexion(object):
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
 				new_url, code = self.duplicate_content(request, url)  # new_url is clean and maybe without params
-				all_urls = connexion.all_urls(request)  # List of urls to delete
+				all_urls = connection.all_urls(request)  # List of urls to delete
 				if new_url in all_urls:  # new_url don't be delete
 					all_urls.remove(new_url)
 				return new_url, code, nofollow, score, all_urls
@@ -50,7 +50,7 @@ class WebConnexion(object):
 				tell('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed), severity=0)
 				# All redirections urls, the first and the last:
-				all_urls = connexion.all_urls(request)
+				all_urls = connection.all_urls(request)
 				all_urls.append(request.url)
 				all_urls.append(url)
 				return None, 'ignore', None, None, remove_duplicates(all_urls)
@@ -65,9 +65,9 @@ class WebConnexion(object):
 			tell('Timeout error: ' + url, 4)
 			return None
 		except (requests.exceptions.RequestException, requests.exceptions.ConnectionError) as error:
-			tell('Connexion failed: {}, {}'.format(str(error), url), 5)
-			if connexion.no_connexion():
-				return 'no connexion'
+			tell('Connection failed: {}, {}'.format(str(error), url), 5)
+			if connection.no_connection():
+				return 'no connection'
 			else:
 				return None
 		else:
@@ -150,7 +150,7 @@ class WebConnexion(object):
 			url2 = clean_link(request2.url)
 			if url2 is None:
 				return url1, request1.text
-			if connexion.duplicate_content(request1.text, request2.text):
+			if connection.duplicate_content(request1.text, request2.text):
 				tell("Same content: " + url1 + " and " + url2)   # Tests
 				return url2, request2.text
 			else:

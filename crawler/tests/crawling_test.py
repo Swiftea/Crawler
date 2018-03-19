@@ -4,9 +4,9 @@ import requests as req
 from reppy.cache import RobotsCache
 
 from swiftea_bot.data import HEADERS
-from crawling.connexion import *
+from crawling.connection import *
 from crawling.searches import *
-from crawling.web_connexion import WebConnexion
+from crawling.web_connection import WebConnection
 from crawling.site_informations import SiteInformations
 from crawling.parsers import *
 import tests.test_data as test_data
@@ -29,10 +29,10 @@ class CrawlingBaseTest(object):
 		self.reqrobots = RobotsCache(capacity=100)
 
 
-class TestConnexion(CrawlingBaseTest):
-	def test_no_connexion(self):
-		assert no_connexion(self.url) == True
-		assert no_connexion() == False
+class TestConnection(CrawlingBaseTest):
+	def test_no_connection(self):
+		assert no_connection(self.url) == True
+		assert no_connection() == False
 
 	def test_is_nofollow(self):
 		nofollow, url = is_nofollow(self.url + '!nofollow!')
@@ -53,26 +53,26 @@ class TestConnexion(CrawlingBaseTest):
 		assert all_urls(request) == ["http://www.wordreference.com"]
 
 
-class TestWebConnexion(CrawlingBaseTest):
+class TestWebConnection(CrawlingBaseTest):
 	def test_search_encoding(self):
-		assert WebConnexion.search_encoding(self, {}, self.code3) == ('utf-8', 0)
-		assert WebConnexion.search_encoding(self, self.headers, self.code3) == ('utf-8', 1)
-		assert WebConnexion.search_encoding(self, {}, self.code1) == ('utf-8', 1)
-		assert WebConnexion.search_encoding(self, {}, self.code2) == ('UTF-16 LE', 1)
+		assert WebConnection.search_encoding(self, {}, self.code3) == ('utf-8', 0)
+		assert WebConnection.search_encoding(self, self.headers, self.code3) == ('utf-8', 1)
+		assert WebConnection.search_encoding(self, {}, self.code1) == ('utf-8', 1)
+		assert WebConnection.search_encoding(self, {}, self.code2) == ('UTF-16 LE', 1)
 
 	def test_check_robots_perm(self):
-		assert WebConnexion.check_robots_perm(self, 'https://zestedesavoir.com') == True
-		assert WebConnexion.check_robots_perm(self, 'https://www.facebook.com') == False
-		assert WebConnexion.check_robots_perm(self, self.url) == False
-		assert WebConnexion.check_robots_perm(self, 'http://premium.lefigaro.fr') == True
+		assert WebConnection.check_robots_perm(self, 'https://zestedesavoir.com') == True
+		assert WebConnection.check_robots_perm(self, 'https://www.facebook.com') == False
+		assert WebConnection.check_robots_perm(self, self.url) == False
+		assert WebConnection.check_robots_perm(self, 'http://premium.lefigaro.fr') == True
 
 	def test_send_request(self):
-		WebConnexion.send_request(self, 'https://zestedesavoir.com')
-		assert WebConnexion.send_request(self, 'https://uneurlbidon.com') == None
+		WebConnection.send_request(self, 'https://zestedesavoir.com')
+		assert WebConnection.send_request(self, 'https://uneurlbidon.com') == None
 
 	def test_duplicate_content(self):
 		request = req.get('https://zestedesavoir.com')
-		WebConnexion.duplicate_content(self, request, 'https://zestedesavoir.com')
+		WebConnection.duplicate_content(self, request, 'https://zestedesavoir.com')
 
 
 class TestSearches(CrawlingBaseTest):

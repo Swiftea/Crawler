@@ -17,9 +17,9 @@ class DatabaseManager(object):
 
 	:param host: hostname of the sftp server
 	:type host: str
-	:param user: username to use for connexion
+	:param user: username to use for connection
 	:type user: str
-	:param password: password to use for connexion
+	:param password: password to use for connection
 	:type password: str
 	:param name: name of database
 	:type name: str
@@ -42,7 +42,7 @@ class DatabaseManager(object):
 		self.name = name
 
 
-	def connexion(self):
+	def connection(self):
 		"""Connect to database."""
 		try:
 			self.conn = pymysql.connect(host=self.host,
@@ -53,7 +53,7 @@ class DatabaseManager(object):
 				charset='utf8',
 				connect_timeout=TIMEOUT)
 		except pymysql.err.OperationalError as error:
-			response = 'Connexion error: ' + str(error)
+			response = 'Connection error: ' + str(error)
 		else:
 			self.cursor = self.conn.cursor()  # Cursor building
 			response = 'Connected to database'
@@ -61,8 +61,8 @@ class DatabaseManager(object):
 		return response
 
 
-	def close_connexion(self):
-		"""Close database connexion."""
+	def close_connection(self):
+		"""Close database connection."""
 		self.cursor.close()
 		self.conn.close()
 
@@ -79,7 +79,7 @@ class DatabaseManager(object):
 		:return: result of the query and status message
 
 		"""
-		response = self.connexion()
+		response = self.connection()
 		if response != 'Connected to database':
 			return None, response
 		else:
@@ -95,5 +95,5 @@ class DatabaseManager(object):
 			else:
 				response = 'Send command: ok'
 
-			self.close_connexion()
+			self.close_connection()
 			return result, response

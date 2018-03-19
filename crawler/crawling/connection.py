@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""Define several functions WebConnexion."""
+"""Define several functions WebConnection."""
 
 import requests
 
@@ -8,19 +8,19 @@ from swiftea_bot.module import remove_duplicates
 from crawling.searches import clean_link
 from swiftea_bot.module import tell
 
-def no_connexion(url='https://github.com'):
-	"""Check connexion.
+def no_connection(url='https://github.com'):
+	"""Check connection.
 
 	Try to connect to swiftea website.
 
 	:param url: url use by test
-	:return: True if no connexion
+	:return: True if no connection
 
 	"""
 	try:
 		requests.get(url)
 	except requests.exceptions.RequestException:
-		tell('No connexion')
+		tell('No connection')
 		return True
 	else:
 		return False

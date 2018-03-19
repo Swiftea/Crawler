@@ -16,9 +16,9 @@ class SFTPManager(object):
 
     :param host: hostname server
     :type host: str
-    :param user: username to use for connexion
+    :param user: username to use for connection
     :type user: str
-    :param password: password to use for connexion
+    :param password: password to use for connection
     :type password: str
 
     """
@@ -30,7 +30,7 @@ class SFTPManager(object):
         self.transport = None
         self.sftp = None
 
-    def connexion(self):
+    def connection(self):
         """Connect to server."""
         try:
             self.transport = paramiko.Transport((self.host, 2222))
@@ -42,7 +42,7 @@ class SFTPManager(object):
             raise SFTPError('connect; ' + str(error))
 
     def disconnect(self):
-        """Close connexion to sftp server."""
+        """Close connection to sftp server."""
         self.sftp.close()
         self.transport.close()
         self.sftp = None
