@@ -37,20 +37,21 @@ Currently, it can :
 ## Install and usage
 
 ### Setup
+
     virtualenv -p /usr/bin/python3 crawler-env
     source crawler-env/bin/activate
     pip install -r requirements.txt
     export PYTHONPATH=crawler
 
-If these files doen't exists:
+If the files below don't exist, the crawler will download them from the server :
+
 - data/stopwords/fr.stopwords.txt
 - data/stopwords/en.stopwords.txt
 - data/badwords/fr.badwords.txt
 - data/badwords/en.badwords.txt
 
-The crawler download the list of words from the sftp server.
-
 ### Run tests
+
 Using only pytest:
 
     python setup.py test
@@ -65,8 +66,7 @@ With coverage:
 
     python crawler/main.py
 
-
-## How it work?
+## How it works?
 
 ### Database:
 The DatabaseSwiftea object can:
