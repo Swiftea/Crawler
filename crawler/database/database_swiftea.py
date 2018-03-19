@@ -12,16 +12,17 @@ class DatabaseSwiftea(DatabaseManager):
 
 	:param host: hostname of the sftp server
 	:type host: str
-	:param user: username to use for connexion
+	:param user: username to use for connection
 	:type user: str
-	:param password: password to use for connexion
+	:param password: password to use for connection
 	:type password: str
 	:param name: name of database
 	:type name: str
 
 	"""
-	def __init__(self, host, user, password, name):
+	def __init__(self, host, user, password, name, table):
 		DatabaseManager.__init__(self, host, user, password, name)
+		self.t = table
 
 
 	def send_doc(self, webpage_infos):
@@ -32,7 +33,9 @@ class DatabaseSwiftea(DatabaseManager):
 		:return: True if an error occured
 
 		"""
-		result, response = self.send_command("SELECT popularity, last_crawl FROM search WHERE url = %s", (webpage_infos['url'],), True)
+		result, response = self.send_command(
+			"SELECT popularity, last_crawl FROM %s WHERE url = %s",
+			(self.t, webpage_infos['url']), True)
 		if 'error' in response:
 			tell('Popularity and last_crawl query failed: ' + response, 16)
 			return True
@@ -47,7 +50,8 @@ class DatabaseSwiftea(DatabaseManager):
 			else:
 				tell('Recently crawled: ' + webpage_infos['url'])
 		else:
-			# Url not found in database, the url don't exists in the database, we add it:
+			# Url not found in database, the url don't exists in the database,
+			# we add it:
 			error = self.insert(webpage_infos)
 			if error:
 				return True
@@ -66,10 +70,13 @@ class DatabaseSwiftea(DatabaseManager):
 		"""
 		tell('Updating ' + infos['url'])
 		response = self.send_command(
-"""UPDATE search
-SET title=%s, description=%s, last_crawl=NOW(), language=%s, popularity=%s, score=%s, homepage=%s, sanesearch=%s, favicon=%s
-WHERE url = %s """, (infos['title'], infos['description'], infos['language'], popularity, infos['score'],\
-	infos['homepage'], infos['sanesearch'], infos['favicon'], infos['url']))
+"""UPDATE %s
+SET title=%s, description=%s, last_crawl=NOW(), language=%s, popularity=%s,
+	score=%s, homepage=%s, sanesearch=%s, favicon=%s
+WHERE url = %s """, (infos['title'], infos['description'], infos['language'],
+		popularity, infos['score'],
+		infos['homepage'], infos['sanesearch'], infos['favicon'], infos['url'])
+	)
 		if 'error' in  response[1]:
 			tell('Failed to update: ' + response[1], 9)
 			return True
@@ -87,9 +94,11 @@ WHERE url = %s """, (infos['title'], infos['description'], infos['language'], po
 		"""
 		tell('Adding ' + infos['url'])
 		response = self.send_command(
-"""INSERT INTO search (title, description, url, first_crawl, last_crawl, language, likes, popularity, score, homepage, sanesearch, favicon)
-VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s, %s)""", \
-(infos['title'], infos['description'], infos['url'], infos['language'], infos['score'], infos['homepage'], infos['sanesearch'], infos['favicon']))
+"""INSERT INTO %s (title, description, url, first_crawl, last_crawl, language,
+	popularity, score, homepage, sanesearch, favicon)
+VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""", \
+(infos['title'], infos['description'], infos['url'], infos['language'],
+	infos['score'], infos['homepage'], infos['sanesearch'], infos['favicon']))
 		if 'error' in  response[1]:
 			tell('Failed to add: ' + response[1], 10)
 			return True
@@ -97,17 +106,15 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s, %s)""", \
 			return False
 
 
-	def get_doc_id(self, url, table='search'):
+	def get_doc_id(self, url):
 		"""Get id of a document in database.
 
 		:param url: url of webpage
 		:type url: str
-		:param table: table, default to search
-		:type table: str
 		:return: id of webpage or None if not found
 
 		"""
-		result, response = self.send_command("SELECT id FROM {} WHERE url = %s".format(table), (url,))
+		result, response = self.send_command("SELECT id FROM %s WHERE url = %s", (self.t, url))
 		if 'error' in  response[1]:
 			tell('Failed to get id: ' + response, 11)
 			return None
@@ -115,20 +122,16 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s, %s)""", \
 			return str(result[0])
 
 
-	def del_one_doc(self, url, table='search'):
-		"""Delete document corresponding to url from the given table.
+	def del_one_doc(self, url):
+		"""Delete document corresponding to url.
 
 		:param url: url of webpage
 		:type url: str
-		:param table: table where given url is
-		:type table: str
-		:param table: table, default to search
-		:type table: str
 		:return: status message
 
 		"""
-		tell('Delete from {} doc: '.format(table) + url)
-		response = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url,))
+		tell('Delete from {} doc: {}'.format(self.t,  url))
+		response = self.send_command("DELETE FROM %s WHERE url = %s", (self.t, url))
 		if 'error' in  response[1]:
 			tell('Doc not removed: {0}, {1}'.format(url, response[1]), 12)
 		return response[1]
@@ -153,17 +156,15 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 0, 1, %s, %s, %s, %s)""", \
 			return suggested_links
 
 
-	def doc_exists(self, url, table='search'):
+	def doc_exists(self, url):
 		"""Check if url is in database.
 
 		:param url: url corresponding to doc
 		:type url: str
-		:param table: table, default to search
-		:type table: str
 		:return: True if doc exists
 
 		"""
-		result, response = self.send_command("SELECT EXISTS(SELECT * FROM {} WHERE url=%s)".format(table), (url,))
+		result, response = self.send_command("SELECT EXISTS(SELECT * FROM %s WHERE url=%s)", (table, url))
 		if 'error' in  response:
 			tell('Failed to check row: ' + response, 14)
 			return None
