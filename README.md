@@ -36,7 +36,7 @@ Currently, it can :
 
 ## Install and usage
 
-### Settup
+### Setup
     virtualenv -p /usr/bin/python3 crawler-env
     source crawler-env/bin/activate
     pip install -r requirements.txt
