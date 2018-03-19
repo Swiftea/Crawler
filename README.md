@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/Swiftea/Swiftea-Crawler/badge.svg?branch=master)](https://coveralls.io/r/Swiftea/Swiftea-Crawler?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=master)](http://crawler.readthedocs.io/en/master/?badge=master)
 [![Code Health](https://landscape.io/github/Swiftea/Old-Crawler/master/landscape.svg?style=flat)](https://landscape.io/github/Swiftea/Old-Crawler/master)
-[![Requirements Status](https://requires.io/github/Swiftea/Old-Crawler/requirements.svg?branch=master)](https://requires.io/github/Swiftea/Old-Crawler/requirements/?branch=master)
+[![Requirements Status](https://requires.io/github/Swiftea/Crawler/requirements.svg?branch=master)](https://requires.io/github/Swiftea/Crawler/requirements/?branch=master)
 
 
 ## Develop branch :
@@ -13,7 +13,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/Swiftea/Swiftea-Crawler/badge.svg?branch=develop)](https://coveralls.io/github/Swiftea/Swiftea-Crawler?branch=develop)
 [![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=master)](http://crawler.readthedocs.io/en/develop/index.html)
 [![Code Health](https://landscape.io/github/Swiftea/Old-Crawler/develop/landscape.svg?style=flat)](https://landscape.io/github/Swiftea/Old-Crawler/develop)
-[![Requirements Status](https://requires.io/github/Swiftea/Old-Crawler/requirements.svg?branch=develop)](https://requires.io/github/Swiftea/Old-Crawler/requirements/?branch=develop)
+[![Requirements Status](https://requires.io/github/Swiftea/Crawler/requirements.svg?branch=develop)](https://requires.io/github/Swiftea/Crawler/requirements/?branch=develop)
 
 ## Description
 
