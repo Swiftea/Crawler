@@ -11,7 +11,7 @@
 ## Develop branch :
 [![Build Status](https://travis-ci.org/Swiftea/Crawler.svg?branch=develop)](https://travis-ci.org/Swiftea/Crawler)
 [![Coverage Status](https://coveralls.io/repos/github/Swiftea/Crawler/badge.svg?branch=develop)](https://coveralls.io/github/Swiftea/Crawler?branch=develop)
-[![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=master)](http://crawler.readthedocs.io/en/develop/index.html)
+[![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=develop)](http://crawler.readthedocs.io/en/develop/index.html)
 [![Code Health](https://landscape.io/github/Swiftea/Crawler/develop/landscape.svg?style=flat)](https://landscape.io/github/Swiftea/Crawler/develop)
 [![Requirements Status](https://requires.io/github/Swiftea/Crawler/requirements.svg?branch=develop)](https://requires.io/github/Swiftea/Crawler/requirements/?branch=develop)
 
