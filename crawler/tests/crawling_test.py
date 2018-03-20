@@ -49,8 +49,8 @@ class TestConnection(CrawlingBaseTest):
 	def test_all_urls(self):
 		request = req.get("https://fr.wikipedia.org")
 		assert all_urls(request) == ["https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Accueil_principal", "https://fr.wikipedia.org"]
-		request = req.get("http://www.wordreference.com/")
-		assert all_urls(request) == ["http://www.wordreference.com"]
+		request = req.get("https://choosealicense.com/")
+		assert all_urls(request) == ["https://choosealicense.com"]
 
 
 class TestWebConnection(CrawlingBaseTest):
