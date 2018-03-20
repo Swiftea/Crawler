@@ -51,15 +51,18 @@ class Crawler(object):
 		on server to know if it's necessary to download it.
 
 		"""
-		if module.is_index():
+		if module.is_index():  # json index
 			inverted_index = self.file_manager.get_inverted_index()
 		else:
-			if self.sftp_manager.compare_indexs():
+			response = self.sftp_manager.compare_indexs()
+			if response == 'server':
 				begining = time()
 				inverted_index = self.sftp_manager.get_inverted_index()
 				index.stats_dl_index(begining, time())
-			else:
+			elif response == 'local':
 				inverted_index = self.file_manager.read_inverted_index()
+			elif response == 'new':
+				inverted_index = {}
 		self.index_manager.setInvertedIndex(inverted_index)
 
 	def start(self):
