@@ -13,7 +13,7 @@ from swiftea_bot.module import tell
 class SFTPSwiftea(FTPManager):
 	"""Class to manage the sftp connection for crawler."""
 	def __init__(self, host, user, password, port):
-		SFTPManager.__init__(self, host, user, password, port)
+		FTPManager.__init__(self, host, user, password, port)
 		self.sftp_index = SFTP_INDEX
 
 	def set_sftp_index(self, sftp_index):
@@ -130,13 +130,13 @@ class SFTPSwiftea(FTPManager):
 	def compare_indexs(self):
 		"""Compare inverted-index in local and in server.
 
-		:return: True if must download from server
+		:return: `server` if must download from server, `new` if there is no inverted index.
 
 		"""
 		local_file = DIR_INDEX + 'FR/' + 'C/' + 'co.sif'
+		self.connection()
 		if path.exists(local_file):
 			local_size = path.getsize(local_file)
-			self.connection()
 			self.cd(self.sftp_index)
 			server_size = 0
 			list_language = self.listdir()
@@ -149,13 +149,16 @@ class SFTPSwiftea(FTPManager):
 					for data in infos_filename:
 						if data.filename == 'co.sif':
 							server_size = data.st_size
-			self.disconnect()
 			if local_size < server_size:
-				return True
+				response = 'server'
 			else:
-				return False
+				response = 'local'
+		elif 'FR' in self.listdir():
+			response = 'server'
 		else:
-			return True
+			response = 'new'
+		self.disconnect()
+		return response
 
 	def download_lists_words(self):
 		"""Download stopwords and badwords."""
@@ -163,6 +166,6 @@ class SFTPSwiftea(FTPManager):
 		self.connection()
 		for filename in ['en.stopwords.txt', 'fr.stopwords.txt', 'en.badwords.txt', 'fr.badwords.txt']:
 			type_ = filename[3:-4] + '/'
-			self.cd('/var/www/html/data/' + type_)
+			self.cd('/public_ftp/data/' + type_)
 			self.get(DIR_DATA + type_ + filename, filename)
 		self.disconnect()

@@ -25,7 +25,7 @@ class FTPManager(FTP):
 	:type password: str
 
 	"""
-	def __init__(self, host, user='', password='', port):
+	def __init__(self, host, user='', password='', port=21):
 		"""Build ftp manager"""
 		FTP.__init__(self, timeout=TIMEOUT)
 		self.host = host

@@ -22,7 +22,7 @@ FILE_BASELINKS = DIR_LINKS + '0'
 FILE_INDEX = DIR_DATA + 'inverted_index.json'
 
 # String for server:
-SFTP_INDEX = 'html/data/inverted_index'
+SFTP_INDEX = 'public_ftp/data/inverted_index'
 HOST = 'http://swiftea.yo.fr'
 
 # Lists for clean up links and keywords:
