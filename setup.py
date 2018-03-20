@@ -39,6 +39,6 @@ setup(
         'Programming Language :: Python :: 3'
     ],
     extras_require={
-        'testing': ['pytest']
+        'testing': ['pytest', 'coverage']
     }
 )
