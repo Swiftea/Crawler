@@ -19,21 +19,22 @@ class FTPManager(FTP):
 
 	:param host: hostname of the ftp server
 	:type host: str
-	:param user: username to use for connexion
+	:param user: username to use for connection
 	:type user: str
-	:param password: password to use for connexion
+	:param password: password to use for connection
 	:type password: str
 
 	"""
-	def __init__(self, host, user='', password=''):
+	def __init__(self, host, user='', password='', port):
 		"""Build ftp manager"""
 		FTP.__init__(self, timeout=TIMEOUT)
 		self.host = host
 		self.user = user
+		self.port = port
 		self.password = password
 
 
-	def connexion(self):
+	def connection(self):
 		"""Connect to ftp server.
 
 		Catch all_errors of ftplib. Use utf-8 encoding.
@@ -43,7 +44,7 @@ class FTPManager(FTP):
 		"""
 		try:
 			# Connexion to ftp server:
-			self.connect(self.host)
+			self.connect(self.host, self.port)
 			# Login:
 			self.login(self.user, self.password)
 		except timeout:
@@ -57,7 +58,7 @@ class FTPManager(FTP):
 		return response
 
 	def disconnect(self):
-		"""Quit connexion to ftp server.
+		"""Quit connection to ftp server.
 
 		Close it if an error occured while trying to quit it.
 
@@ -90,6 +91,21 @@ class FTPManager(FTP):
 		else:
 			return response
 
+	def mkdir(self, dirname):
+		"""Create a directory on the server.
+
+		:param dirname: the directory path and name
+		:type dirname: str
+		:return: server response
+
+		"""
+		try:
+			response = self.mkd(dirname)
+		except all_errors as e:
+			response = e
+		finally:
+			return response
+
 	def listdir(self):
 		"""Return the result of LIST command or
 		a list whose first element is the error response."""
@@ -109,11 +125,11 @@ class FTPManager(FTP):
 		try:
 			result = self.mlsd(path, facts)
 		except  all_errors as error:
-			return 'Error: ' + str(error)
+			return ['Error: ' + str(error)]
 		else:
 			return result
 
-	def upload(self, local_filename, server_filename):
+	def put(self, local_filename, server_filename):
 		"""Upload a file into ftp server.
 
 		The file to upload must exists.
@@ -134,7 +150,7 @@ class FTPManager(FTP):
 				response = 'Send file : ' + response
 		return response
 
-	def download(self, local_filename, server_filename):
+	def get(self, local_filename, server_filename):
 		"""Download a file from ftp server.
 
 		It creates the file to download.
