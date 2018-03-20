@@ -5,11 +5,12 @@ import json
 from os import path
 
 from index.index import count_files_index
-from index.sftp_manager import SFTPManager
+#from index.sftp_manager import SFTPManager as FTPManager
+from index.ftp_manager import FTPManager
 from swiftea_bot.data import DIR_INDEX, SFTP_INDEX, DIR_DATA
 from swiftea_bot.module import tell
 
-class SFTPSwiftea(SFTPManager):
+class SFTPSwiftea(FTPManager):
 	"""Class to manage the sftp connection for crawler."""
 	def __init__(self, host, user, password, port):
 		SFTPManager.__init__(self, host, user, password, port)
