@@ -31,6 +31,7 @@ class DatabaseManager(object):
 		self.password = password  # Password
 		self.name = name  # Database name
 		self.cursor = self.conn = None
+		self.co = False  # True if connected to database
 
 	def set_name(self, name):
 		"""Set base name
@@ -57,6 +58,7 @@ class DatabaseManager(object):
 		else:
 			self.cursor = self.conn.cursor()  # Cursor building
 			response = 'Connected to database'
+			self.co = True
 
 		return response
 
@@ -65,6 +67,7 @@ class DatabaseManager(object):
 		"""Close database connection."""
 		self.cursor.close()
 		self.conn.close()
+		self.co = False
 
 
 	def send_command(self, command, data=tuple(), fetchall=False):
@@ -79,21 +82,27 @@ class DatabaseManager(object):
 		:return: result of the query and status message
 
 		"""
-		response = self.connection()
-		if response != 'Connected to database':
-			return None, response
+		if not self.co:
+			co = True
+			response = self.connection()
+			if response != 'Connected to database':
+				return None, response
 		else:
-			try:
-				self.cursor.execute(command, data)
-				if fetchall:
-					result = self.cursor.fetchall()
-				else:
-					result = self.cursor.fetchone()
-			except pymysql.err.OperationalError:
-				result = None
-				response = 'Operational error'
+			co = False
+		try:
+			response = self.cursor.execute(command, data)
+			if fetchall:
+				result = self.cursor.fetchall()
 			else:
-				response = 'Send command: ok'
+				result = self.cursor.fetchone()
+		except (pymysql.err.OperationalError, pymysql.err.ProgrammingError) as e:
+			result = None
+			response = 'Mysql error: ' + str(e)
+		else:
+			response = 'Send command: ok'
 
+		self.conn.commit()  # addded in March 2018 to fix `insert fail but no error`
+
+		if co:
 			self.close_connection()
-			return result, response
+		return result, [0, str(response)]
