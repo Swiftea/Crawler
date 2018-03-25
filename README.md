@@ -66,6 +66,11 @@ With coverage:
 
     python crawler/main.py
 
+## Build documentation
+
+    cd docs
+    make html
+
 ## How it works?
 
 ### Database:
