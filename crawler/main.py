@@ -190,7 +190,6 @@ class Crawler(object):
 			error = self.database.send_doc(webpage_infos)
 			if error:
 				self.safe_quit()
-				sys.exit(1)  # added in March 2018
 
 	def indexing(self):
 		"""Index crawled webpages.
@@ -238,6 +237,7 @@ class Crawler(object):
 
 	def safe_quit(self):
 		module.tell('exiting', 0, 2,)
+		sys.exit(1)  # added in March 2018
 
 
 def save(crawler):
