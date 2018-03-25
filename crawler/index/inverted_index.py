@@ -84,14 +84,17 @@ class InvertedIndex(object):
 		:type nb_words: int
 
 		"""
-		word, language, first_letter, filename = word_infos['word'], word_infos['language'], \
-			word_infos['first_letter'], word_infos['filename']
+		word = word_infos['word']
+		language = word_infos['language']
+		first_letter = word_infos['first_letter']
+		filename = word_infos['filename']
 		if language in self.inverted_index:
 			if first_letter in self.inverted_index[language]:
 				if filename in self.inverted_index[language][first_letter]:
 					inverted_index = self.inverted_index[language][first_letter][filename]
 				else:
-					self.inverted_index[language][first_letter][filename] = inverted_index = dict()
+					inverted_index = dict()
+					self.inverted_index[language][first_letter][filename] = dict()
 			else:
 				inverted_index = dict()
 				self.inverted_index[language][first_letter] = dict()
@@ -106,6 +109,7 @@ class InvertedIndex(object):
 			inverted_index[word][doc_id] = tf
 		else:
 			inverted_index[word] = {doc_id: tf}
+			# ex: {'foo': {'14': 2.3125, '23': 1.003}, 'bar': {'44': 1.113, '213': 1.103}}
 
 		self.inverted_index[language][first_letter][filename] = inverted_index
 

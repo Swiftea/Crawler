@@ -167,7 +167,7 @@ def stats_send_index(begining, end):
 		myfile.write(str(end - begining) + '\n')
 
 def convert_keys(inverted_index):
-	"""Convert str words keys into int from inverted-index.
+	"""Convert `str` words keys into `int` from inverted-index.
 
 	Json convert doc id key in str, must convert in int.
 

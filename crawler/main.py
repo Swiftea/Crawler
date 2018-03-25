@@ -190,6 +190,7 @@ class Crawler(object):
 			error = self.database.send_doc(webpage_infos)
 			if error:
 				self.safe_quit()
+				sys.exit(1)  # added in March 2018
 
 	def indexing(self):
 		"""Index crawled webpages.
@@ -210,8 +211,8 @@ class Crawler(object):
 		begining = time()
 		self.sftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		index.stats_ul_index(begining, time())
-		for path in listdir(DIR_INDEX):
-			rmtree(DIR_INDEX + path)
+		#for path in listdir(DIR_INDEX):
+		#	rmtree(DIR_INDEX + path)
 
 	def suggestions(self):
 		"""Suggestions:
