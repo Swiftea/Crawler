@@ -8,6 +8,9 @@ from main import Crawler
 from swiftea_bot.data import DIR_LINKS, FILE_CONFIG, MAX_LINKS, FILE_BASELINKS, DIR_CONFIG
 from swiftea_bot.module import create_dirs
 from tests.test_data import reset, BASE_LINKS
+import swiftea_bot.private_data as pvdata
+
+from database.database_swiftea import DatabaseSwiftea
 
 class RedirectOutput(object):
 	def __init__(self, file):
@@ -17,9 +20,30 @@ class RedirectOutput(object):
 		self.output.write(text)
 		self.output.flush()
 
+class TestLocal(object):
+	def test_insert(self):
+		infos = {
+	        'title': 'un titre',
+	        'description': 'une tres longue description',
+	        'url': 'http://une.url.bidon.truc',
+	        'language': 'fr',
+	        'score': '1',
+	        'homepage': '1',
+	        'sanesearch': '1',
+	        'favicon': 'http://une.url.bidon.truc/favicon.ico',
+	    }
+		database_swiftea = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER_DB,
+	        pvdata.PASSWORD_DB, pvdata.NAME_DB, pvdata.NAME_TABLE)
+		response = database_swiftea.send_command(
+		"""INSERT INTO website (title, description, url, first_crawl, last_crawl, language,
+		popularity, score, homepage, sanesearch, favicon)
+		VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""",
+		(infos['title'][:254], infos['description'], infos['url'], infos['language'],
+		infos['score'], infos['homepage'], infos['sanesearch'], infos['favicon']))
+		assert response == (None, [0, 'Send command: ok'])
 
 class TestGlobal(object):
-	def test_crawler(self):
+	def _test_crawler(self):
 		defstdout = sys.__stdout__
 		defstderr = sys.__stderr__
 		sys.stdout = RedirectOutput('log')
