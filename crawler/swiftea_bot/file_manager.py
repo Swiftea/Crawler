@@ -71,7 +71,7 @@ class FileManager(object):
 	def save_links(self, links):
 		"""Save found links in file.
 
-		Save link in a file without doublons and check if the file if full.
+		Save link in a file without doublons.
 
 		:param links: links to save
 		:type links: list
