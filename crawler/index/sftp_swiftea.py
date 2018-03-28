@@ -7,8 +7,9 @@ from os import path
 from index.index import count_files_index
 #from index.sftp_manager import SFTPManager as FTPManager
 from index.ftp_manager import FTPManager
-from swiftea_bot.data import DIR_INDEX, SFTP_INDEX, DIR_DATA
+from swiftea_bot.data import DIR_INDEX, DIR_DATA
 from swiftea_bot.module import tell
+from swiftea_bot.private_data import SFTP_INDEX, FTP_DATA
 
 class SFTPSwiftea(FTPManager):
 	"""Class to manage the sftp connection for crawler."""
@@ -166,6 +167,6 @@ class SFTPSwiftea(FTPManager):
 		self.connection()
 		for filename in ['en.stopwords.txt', 'fr.stopwords.txt', 'en.badwords.txt', 'fr.badwords.txt']:
 			type_ = filename[3:-4] + '/'
-			self.cd('/public_ftp/data/' + type_)
+			self.cd(FTP_DATA + type_)
 			self.get(DIR_DATA + type_ + filename, filename)
 		self.disconnect()

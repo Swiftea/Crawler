@@ -3,8 +3,9 @@
 """Define required data for crawler."""
 
 from socket import setdefaulttimeout
-
 from datetime import timedelta
+
+from swiftea_bot.private_data import HOST
 
 setdefaulttimeout(30)
 
@@ -20,10 +21,6 @@ FILE_CONFIG = DIR_CONFIG + 'config.ini'
 FILE_DOC = DIR_CONFIG + 'Readme'
 FILE_BASELINKS = DIR_LINKS + '0'
 FILE_INDEX = DIR_DATA + 'inverted_index.json'
-
-# String for server:
-SFTP_INDEX = 'public_ftp/data/inverted_index'
-HOST = 'http://swiftea.yo.fr'
 
 # Lists for clean up links and keywords:
 BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif',
