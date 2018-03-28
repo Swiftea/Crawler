@@ -36,7 +36,7 @@ tests.database_test
 
 
 tests.index_test
------------------
+----------------
 .. automodule:: tests.index_test
     :members:
     :undoc-members:

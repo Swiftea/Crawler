@@ -71,6 +71,11 @@ With coverage:
     cd docs
     make html
 
+or
+
+    sphinx-build -b html docs docs/_build/buildir
+
+
 ## How it works?
 
 ### Database:

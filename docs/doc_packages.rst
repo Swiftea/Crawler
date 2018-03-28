@@ -24,14 +24,14 @@ swiftea_bot.file_manager module
 
 
 crawling.web_connection module
------------------------------
+------------------------------
 .. automodule:: crawling.web_connection
     :members:
     :undoc-members:
 
 
 crawling.connection module
--------------------------
+--------------------------
 .. automodule:: crawling.connection
     :members:
     :undoc-members:
