@@ -70,6 +70,8 @@ class WebConnection(object):
 				return 'no connection'
 			else:
 				return None
+		except UnicodeDecodeError as error:
+			tell('UnicodeDecodeError: ' + str(error))
 		else:
 			return request
 
