@@ -127,7 +127,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 			return str(result[0])
 
 
-	def del_one_doc(self, url):
+	def del_one_doc(self, url, table=None):
 		"""Delete document corresponding to url.
 
 		:param url: url of webpage
@@ -135,17 +135,19 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 		:return: status message
 
 		"""
+		if table is None:
+			table = self.t
 		tell('Delete from {} doc: {}'.format(self.t,  url))
-		response = self.send_command("DELETE FROM {} WHERE url = %s".format(self.t), (url))
+		response = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url))
 		if 'error' in  response[1]:
 			tell('Doc not removed: {0}, {1}'.format(url, response[1]), 12)
 		return response[1]
 
 
 	def suggestions(self):
-		"""Get the five first url from Suggestions table and delete them.
+		"""Get the five first URLs from Suggestion table and delete them.
 
-		:return: list of url in Suggestions table and delete them
+		:return: list of url in Suggestion table and delete them
 
 		"""
 		result, response = self.send_command("SELECT url FROM suggestion LIMIT 5", fetchall=True)
