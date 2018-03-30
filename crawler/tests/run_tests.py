@@ -27,8 +27,8 @@ def run_tests(local=False):
     args.append('crawling_test.py')
     args.append('database_test.py')
     args.append('index_test.py')
-    args.append('crawler_test.py')
     if local:
+        args.append('crawler_test.py')
         args.append('global_test.py')
     errno = pytest.main(args)
     reset()
