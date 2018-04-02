@@ -17,7 +17,7 @@ import pytest
 
 try:
     from crawler.tests.test_data import reset
-except ModuleNotFoundError:
+except ImportError:
     from test_data import reset
 
 def run_tests(local=False):

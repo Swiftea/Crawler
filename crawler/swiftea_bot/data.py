@@ -7,7 +7,7 @@ from datetime import timedelta
 
 try:
     from swiftea_bot.private_data import HOST
-except ModuleNotFoundError:
+except ImportError:
     HOST = ''
 
 setdefaulttimeout(30)
