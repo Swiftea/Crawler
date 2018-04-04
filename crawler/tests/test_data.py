@@ -33,6 +33,8 @@ CODE1 = """<!DOCTYPE html>
         <a href="about/nf.php" rel="nofollow">Why use Swiftea ?3</a>
         <img src="public/themes/default/img/github.png" alt="Github Swiftea">
         <img src="public/themes/default/img/twitter.png" alt="Twitter Swiftea">
+        <p>&#0169;</p>
+        <p>&gt;</p>
     </body>
 </html>
 """
