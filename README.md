@@ -109,16 +109,11 @@ Want to contribute? Great!
 
 Fork the repository. Then, run:
 
-    git clone --recursive git@github.com:<username>/Swiftea-Crawler.git
-    cd Swiftea-Crawler
-    git flow init -d
-    git flow feature start <your feature>
+    git clone --recursive git@github.com:<username>/Crawler.git
+    cd Crawler
+    git checkout develop
 
-Then, do work and commit your changes. Finally publish your feature.
-
-    git flow feature publish <your feature>
-
-When done, open a pull request to your feature branch.
+Then, do work and commit your changes. Finally, make a pull request.
 
 ### Commit conventions :
 
