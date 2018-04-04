@@ -82,7 +82,7 @@ class Crawler(object):
 			for _ in range(50):
 				module.tell('Crawl', severity=2)
 				begining = time()
-				while len(self.infos) < 10:
+				while len(self.infos) < 50:
 					module.tell('File {0}, line {1}'.format(
 						str(self.file_manager.reading_file_number),
 						str(self.file_manager.reading_line_number+1)), severity=0)
