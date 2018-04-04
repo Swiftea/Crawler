@@ -33,8 +33,7 @@ Currently, it can :
   - Index them
     - in database
     - in inverted-index
-
-  - archive in .zip file log files
+  - Archive log files in a zip file
 
 ## Install and usage
 
@@ -45,7 +44,7 @@ Currently, it can :
     pip install -r requirements.txt
     export PYTHONPATH=crawler
 
-If the files below don't exist, the crawler will download them from the server :
+If the files below don't exist, the crawler will download them from the server:
 
 - data/stopwords/fr.stopwords.txt
 - data/stopwords/en.stopwords.txt
@@ -91,7 +90,7 @@ The DatabaseSwiftea object can:
 
 ## Version
 
-Current version is 1.0.1
+Current version is 1.0.2
 
 ## Tech
 
