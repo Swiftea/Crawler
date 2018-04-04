@@ -34,6 +34,8 @@ Currently, it can :
     - in database
     - in inverted-index
 
+  - archive in .zip file log files
+
 ## Install and usage
 
 ### Setup
@@ -66,7 +68,7 @@ With coverage:
 
     python crawler/main.py
 
-## Build documentation
+### Build documentation
 
     cd docs
     make html
