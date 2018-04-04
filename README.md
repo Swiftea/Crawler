@@ -99,7 +99,6 @@ Swiftea's Crawler uses a number of open source projects to work properly:
   - [Reppy](https://github.com/seomoz/reppy)
   - [PyMySQL](https://github.com/PyMySQL/PyMySQL/)
   - [Requests](https://github.com/kennethreitz/requests)
-  - [Paramiko](http://www.paramiko.org/)
 
 
 ## Contributing
