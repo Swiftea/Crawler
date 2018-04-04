@@ -196,6 +196,8 @@ class SiteInformations(object):
 		badwords = self.BADWORDS[language]
 		nb_badwords = 0
 		nb_words = len(keywords)
+		if nb_words == 0:
+			return False
 		for keyword in keywords:
 			if keyword in badwords:
 				nb_badwords += 1
