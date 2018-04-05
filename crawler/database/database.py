@@ -10,10 +10,7 @@ def url_is_secure(url):
 	:return: True if url is secure
 
 	"""
-	if url.startswith('https'):
-		return True
-	else:
-		return False
+	return url.startswith('https')
 
 
 def convert_secure(url):
