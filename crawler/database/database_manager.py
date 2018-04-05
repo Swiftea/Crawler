@@ -15,7 +15,7 @@ class DatabaseManager(object):
 
 	where result are data asked and response a message.
 
-	:param host: hostname of the sftp server
+	:param host: hostname of the db server
 	:type host: str
 	:param user: username to use for connection
 	:type user: str

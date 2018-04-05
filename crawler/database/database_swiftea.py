@@ -10,7 +10,7 @@ import database.database as database
 class DatabaseSwiftea(DatabaseManager):
 	"""Class to manage Swiftea database.
 
-	:param host: hostname of the sftp server
+	:param host: hostname of the db server
 	:type host: str
 	:param user: username to use for connection
 	:type user: str

@@ -61,7 +61,7 @@ class TestGlobal(object):
 			myfile.write(BASE_LINKS)
 		crawler = Crawler()
 		crawler.database.set_name('swiftea_tests')
-		crawler.sftp_manager.set_sftp_index('html/data/test_index')
+		crawler.ftp_manager.set_ftp_index('html/data/test_index')
 		config = ConfigParser()
 		config['DEFAULT'] = {
 			'run': 'false',

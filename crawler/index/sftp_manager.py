@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# NOT USED FOR NOW (WE USE FTP INSTEAD OF SFTP)
 
 from socket import timeout
 import paramiko
