@@ -11,6 +11,7 @@ from crawling.site_informations import SiteInformations
 from crawling.parsers import *
 import tests.test_data as test_data
 
+
 class CrawlingBaseTest(object):
 	"""Base class for all crawler test classes."""
 	def setup_method(self, _):
@@ -156,7 +157,6 @@ class TestParsers(CrawlingBaseTest):
 		language, description = meta([('http-equiv', 'content-language'), ('content', 'en')])
 		assert language == 'en'
 
-
 	def test_handle_entityref(self):
 		ExtractData.handle_entityref(self, 'eacute')
 		assert self.title == 'letteré'
@@ -165,7 +165,6 @@ class TestParsers(CrawlingBaseTest):
 
 	def test_handle_charref(self):
 		pass
-
 
 	def test_parser(self):
 		self.parser.feed(self.code1)

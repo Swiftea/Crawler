@@ -4,6 +4,7 @@
 
 from swiftea_bot.data import DIR_STATS
 
+
 def count_files_index(index):
 	"""Return number of file to download are uplaod
 
@@ -18,6 +19,7 @@ def count_files_index(index):
 			nb_files += len(index[language][first_letter])
 	return nb_files
 
+
 def stats_dl_index(begining, end):
 	"""Write the time to download inverted-index.
 
@@ -29,6 +31,7 @@ def stats_dl_index(begining, end):
 	"""
 	with open(DIR_STATS + 'stat_dl_index', 'a') as myfile:
 		myfile.write(str(end - begining) + '\n')
+
 
 def stats_ul_index(begining, end):
 	"""Write the time to upload inverted-index.

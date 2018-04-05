@@ -4,12 +4,14 @@ from index.index import stats_dl_index, stats_ul_index, count_files_index
 from index.inverted_index import InvertedIndex
 from tests.test_data import INVERTED_INDEX
 
+
 class IndexBaseTest(object):
 	def setup_method(self, _):
 		self.inverted_index = {'EN': {
 		'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
 		'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
 		'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
+
 
 class TestIndex(IndexBaseTest):
 	def test_stats_dl_index(self):
@@ -20,6 +22,7 @@ class TestIndex(IndexBaseTest):
 
 	def test_count_files_index(self):
 		assert count_files_index(self.inverted_index) == 4
+
 
 class TestInvertedIndex(IndexBaseTest):
 	def test_create_inverted_index(self):
@@ -33,7 +36,6 @@ class TestInvertedIndex(IndexBaseTest):
 		assert InvertedIndex.getInvertedIndex(self) == self.inverted_index
 		InvertedIndex.setInvertedIndex(self, '')
 		assert InvertedIndex.getInvertedIndex(self) == dict()
-
 
 	def test_add_word(self):
 		# Add language:

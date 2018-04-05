@@ -9,6 +9,7 @@ from html.entities import name2codepoint, html5
 
 from swiftea_bot.data import LIST_TAG_WORDS, LIST_ALONE_TAG_WORDS
 
+
 class ExtractData(HTMLParser):
 	"""Html parser for extract data.
 
@@ -46,7 +47,6 @@ class ExtractData(HTMLParser):
 		self.is_title = False
 		self.word1 = False
 		self.word2 = False
-
 
 	def handle_starttag(self, tag, attrs):
 		"""Call when parser met a starting tag.
@@ -185,6 +185,7 @@ def meta(attrs):
 
 	return language, description
 
+
 def can_append(url, rel):
 	"""Check rel attrs to know if crawler can take this the link.
 
@@ -213,7 +214,6 @@ class ExtractEncoding(HTMLParser):
 	def __init__(self):
 		HTMLParser.__init__(self)
 		self.encoding = str()
-
 
 	def handle_starttag(self, tag, attrs):
 		"""Call when parser met a starting tag.

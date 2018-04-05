@@ -15,12 +15,12 @@ from swiftea_bot.module import tell, remove_duplicates
 from crawling import parsers, connection
 from crawling.searches import clean_link
 
+
 class WebConnection(object):
 	"""Manage the web connection with the page to crawl."""
 	def __init__(self):
 		self.reqrobots = RobotsCache(capacity=100)
 		self.parser_encoding = parsers.ExtractEncoding()
-
 
 	def get_code(self, url):
 		"""Get source code of given url.

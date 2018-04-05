@@ -92,7 +92,6 @@ class SiteInformations(object):
 		results['score'] = score
 		return results, links
 
-
 	def detect_language(self, keywords):
 		"""Detect language of webpage if not given.
 
@@ -120,7 +119,6 @@ class SiteInformations(object):
 
 		return language
 
-
 	def clean_links(self, links, base_url=None):
 		"""Clean webpage's links: rebuild urls with base url and
 		remove anchors, mailto, javascript, .index.
@@ -140,7 +138,6 @@ class SiteInformations(object):
 
 		return remove_duplicates(new_links)
 
-
 	def clean_favicon(self, favicon, base_url):
 		"""Clean favicon.
 
@@ -158,7 +155,6 @@ class SiteInformations(object):
 				favicon = base_url + '/' + favicon
 
 		return favicon
-
 
 	def clean_keywords(self, dirty_keywords, language):
 		"""Clean found keywords.

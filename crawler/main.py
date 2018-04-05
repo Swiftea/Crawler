@@ -243,6 +243,7 @@ class Crawler(object):
 def save(crawler):
 	crawler.file_manager.save_inverted_index(crawler.index_manager.getInvertedIndex())
 
+
 if __name__ == '__main__':
 	module.create_dirs()
 	module.def_links()

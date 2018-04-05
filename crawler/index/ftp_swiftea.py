@@ -20,7 +20,6 @@ class FTPSwiftea(FTPManager):
 	def set_ftp_index(self, ftp_index):
 		self.ftp_index = ftp_index
 
-
 	def get_inverted_index(self):
 		"""Get inverted-index.
 
@@ -60,7 +59,6 @@ class FTPSwiftea(FTPManager):
 		else:
 			tell('Transfer complete', severity=0)
 		return inverted_index
-
 
 	def send_inverted_index(self, inverted_index):
 		"""Send inverted-index.
@@ -103,7 +101,6 @@ class FTPSwiftea(FTPManager):
 		tell('Transfer complete', severity=0)
 		return False
 
-
 	def download(self, language, first_letter, filename):
 		self.downuploaded_files += 1
 		path_index = language + '/' + first_letter + '/' + filename
@@ -118,7 +115,6 @@ class FTPSwiftea(FTPManager):
 			json.dump(index, myfile, ensure_ascii=False)
 		self.put(DIR_INDEX + path_index, two_letters + '.sif')
 
-
 	def tell_progress(self, upload=True):
 		message = 'Uploading' if upload else 'Downloading'
 		if self.nb_files != 0:
@@ -127,7 +123,6 @@ class FTPSwiftea(FTPManager):
 			tell(message)
 		else:
 			tell('No progress data')
-
 
 	def compare_indexs(self):
 		"""Compare inverted-index in local and in server.

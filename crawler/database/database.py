@@ -15,6 +15,7 @@ def url_is_secure(url):
 	else:
 		return False
 
+
 def convert_secure(url):
 	"""Convert https to http and http to https.
 

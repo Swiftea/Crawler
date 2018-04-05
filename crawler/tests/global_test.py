@@ -19,6 +19,7 @@ class TestGlobalTest(CrawlerBaseTest):
 		sys.stdout = RedirectOutput('test_RedirectOutput.ext')
 		print('A test message')
 
+
 class RedirectOutput(object):
 	def __init__(self, file):
 		self.output = open(file, 'w')
@@ -26,6 +27,7 @@ class RedirectOutput(object):
 	def write(self, text):
 		self.output.write(text)
 		self.output.flush()
+
 
 class TestLocal(object):
 	def test_insert(self):

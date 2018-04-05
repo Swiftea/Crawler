@@ -12,6 +12,7 @@ class CrawlerBaseTest(object):
 	def setup_method(self, _):
 		self.defstdout = sys.__stdout__
 
+
 class TestStats(CrawlerBaseTest):
 	def test_stats(self):
 		stats.stats()
