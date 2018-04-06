@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-"""Data of webpage are geted by the python html.parser.
-Here is two parser, the first one for all informations and
-the sencond one only for encoding."""
+"""Data of webpage are provided by the python html.parser.
+There are two parsers : the first one for all informations and
+the second one only for encoding."""
 
 from html.parser import HTMLParser
 from html.entities import name2codepoint, html5
@@ -11,12 +11,12 @@ from swiftea_bot.data import LIST_TAG_WORDS, LIST_ALONE_TAG_WORDS
 
 
 class ExtractData(HTMLParser):
-	"""Html parser for extract data.
+	"""Html parser to extract data.
 
 	self.object : the type of text for title, description and keywords\n
-	dict(attrs).get('content') : convert attrs in a dict and retrun the value
+	dict(attrs).get('content'): convert attrs in a dict and return the value
 
-	Data could be extract:
+	Data that could be extracted:
 		title\n
 		language\n
 		description\n
@@ -30,7 +30,7 @@ class ExtractData(HTMLParser):
 		HTMLParser.__init__(self)
 		self.links = list()  # List of links
 		self.keywords = ''  # All keywords in a string
-		self.is_title = False  # True is data are the title
+		self.is_title = False  # True is data is the title
 		self.word1 = False  # True if data are words
 		self.word2 = False  # True if data are words and tag is a tag use in and out other word tags
 		self.css = False  # True if there is a css link in the source code
@@ -39,7 +39,7 @@ class ExtractData(HTMLParser):
 		self.description = self.language = self.title = self.favicon  = ''
 
 	def re_init(self):
-		"""Call when met html tag, put back all variables to default."""
+		"""Called when we meet html tag, put back all variables to default."""
 		self.links = list()
 		self.first_title = self.keywords = self.description = ''
 		self.language = self.title = self.favicon  = ''
@@ -49,7 +49,7 @@ class ExtractData(HTMLParser):
 		self.word2 = False
 
 	def handle_starttag(self, tag, attrs):
-		"""Call when parser met a starting tag.
+		"""Called when parser meet a starting tag.
 
 		:param tag: starting tag
 		:type tag: str
@@ -97,7 +97,7 @@ class ExtractData(HTMLParser):
 			self.h1 = True  # It's about a h1
 
 	def handle_data(self, data):
-		"""Call when parser met data.
+		"""Called when parser meet data.
 
 		:param tag: starting tag
 		:type tag: str
@@ -113,7 +113,7 @@ class ExtractData(HTMLParser):
 			self.first_title = data
 
 	def handle_endtag(self, tag):
-		"""Call when parser met a ending tag.
+		"""Called when parser meet an ending tag.
 
 		:param tag: starting tag
 		:type tag: str
@@ -155,9 +155,9 @@ class ExtractData(HTMLParser):
 
 
 def meta(attrs):
-	"""Manager searches in meat tag.
+	"""Manage searches in tags.
 
-	Can find:
+	We can find :
 		<meta name='description' content='my description'/>\n
 		<meta name='language' content='en'/>\n
 		<meta http-equiv='content-language' content='en'/>\n
@@ -187,15 +187,15 @@ def meta(attrs):
 
 
 def can_append(url, rel):
-	"""Check rel attrs to know if crawler can take this the link.
+	"""Check rel attrs to know if crawler can crawl the link.
 
-	Add !nofollow! at the end of the url if can't follow links of url.
+	Add !nofollow! at the end of the url if it can't follow links of url.
 
 	:param url: url to add
 	:type url: str
 	:param rel: rel attrs in a tag
 	:type rel: str
-	:return: None if can't add it, otherwise return url
+	:return: None if it can't add it, otherwise return url
 
 	"""
 	if url:
@@ -210,13 +210,13 @@ def can_append(url, rel):
 
 
 class ExtractEncoding(HTMLParser):
-	"""Html parser for extract encoding from source code."""
+	"""Html parser to extract encoding from source code."""
 	def __init__(self):
 		HTMLParser.__init__(self)
 		self.encoding = str()
 
 	def handle_starttag(self, tag, attrs):
-		"""Call when parser met a starting tag.
+		"""Called when parser meet a starting tag.
 
 		:param tag: starting tag
 		:type tag: str
