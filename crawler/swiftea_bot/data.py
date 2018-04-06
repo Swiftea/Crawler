@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""Define required data for crawler."""
+"""Define required data by crawler."""
 
 from socket import setdefaulttimeout
 from datetime import timedelta
@@ -26,7 +26,7 @@ FILE_DOC = DIR_CONFIG + 'Readme'
 FILE_BASELINKS = DIR_LINKS + '0'
 FILE_INDEX = DIR_DATA + 'inverted_index.json'
 
-# Lists for clean up links and keywords:
+# Lists used to clean up links and keywords:
 BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif',
 '.ico', '.svg', '.tiff', '.tif' '.raw', '.flv', '.mpeg', '.mpg', '.wma', '.mp4', '.mp3', '.fla', '.avi', '.gz', '.exe', '.xml')
 ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']

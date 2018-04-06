@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-"""Swiftea-Crawler use lot a files. For example to manage configurations, stuck links...
-Here is a class who manager files of crawler.
+"""Swiftea-Crawler use a lot of files. For example to config the app, save links...
+Here is a class that manage files of crawler.
 """
 
 from os import path, remove, listdir, mkdir, rename
@@ -17,9 +17,9 @@ class FileManager(object):
 	"""File manager for Swiftea-Crawler.
 
 	Save and read links, read and write configuration variables,
-	read inverted-index from json file saved and from file using when send it.
+	read inverted-index from json saved file and from used file when sending it.
 
-	Create configuration file if doesn't exists	or read it.
+	Create configuration file if it doesn't exists or read it.
 
 	"""
 	def __init__(self):
@@ -52,7 +52,7 @@ class FileManager(object):
 			self.max_links = int(self.config['DEFAULT']['max_links'])
 
 	def check_stop_crawling(self):
-		"""Check if the user want to stop program."""
+		"""Check if the user wants to stop program."""
 		self.config.read_file(open(FILE_CONFIG))
 		self.run = self.config['DEFAULT']['run']
 
@@ -71,7 +71,7 @@ class FileManager(object):
 	def save_links(self, links):
 		"""Save found links in file.
 
-		Save link in a file without doublons.
+		Save links in a file without doublons.
 
 		:param links: links to save
 		:type links: list
@@ -155,7 +155,7 @@ class FileManager(object):
 	def save_inverted_index(self, inverted_index):
 		"""Save inverted-index in local.
 
-		Save it in a .json file when can't send.
+		Save it in a json file when we can't send it.
 
 		:param inverted_index: inverted-index
 		:type inverted_index: dict
@@ -168,8 +168,8 @@ class FileManager(object):
 	def get_inverted_index(self):
 		"""Get inverted-index in local.
 
-		Call after a connxion error. Read a .json file conatin inverted-index.
-		Delete this file after reading.
+		Called after a connection error. Read a json file that contains the inverted-index.
+		Delete this file after reading it.
 
 		:return: inverted-index
 
@@ -183,8 +183,8 @@ class FileManager(object):
 	def read_inverted_index(self):
 		"""Get inverted-index in local.
 
-		Call after sending inverted-index without error.
-		Read all files created for sending inverted-index.
+		Called after sending inverted-index without error.
+		Read all files created to send inverted-index.
 
 		:return: inverted-index
 
@@ -203,7 +203,7 @@ class FileManager(object):
 	def get_lists_words(self):
 		"""Get lists words from data
 
-		Check for dirs lists words, create it if don't exists.
+		Check for dirs lists words, create them if they don't exist.
 
 		:return: stopwords, badwords
 

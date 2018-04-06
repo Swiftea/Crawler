@@ -11,7 +11,7 @@ import swiftea_bot.data as data
 def tell(message, error_code='', severity=1):
 	"""Manage newspaper.
 
-	Print in console that program doing and save a copy with time in event file.
+	Print in console what the program is doing and save this in a copy with time in an event file.
 
 	:param message: message to print and write
 	:type message: str
@@ -57,9 +57,9 @@ def errors(message, error_code):
 
 
 def create_dirs():
-	"""Manage crawler's runing.
+	"""Manage crawler's running.
 
-	Test lot of things:
+	Test a lot of things:
 		create config directory\n
 		create doc file if  doesn't exists\n
 		create config file if it doesn't exists\n
@@ -98,7 +98,7 @@ def def_links():
 		elif rep == '2':
 			open(data.FILE_BASELINKS, 'w').close()
 			print("""
-Create a file '0' without extention who contains a list of 20 links maximum.
+Create a file '0' without extention that contains a list of 20 links maximum.
 They must start with 'http://' or 'https://' and no ends with '/'.
 Choose popular websites.
 Press enter when done.""")
@@ -121,7 +121,7 @@ def is_index():
 
 
 def can_add_doc(docs, new_doc):
-	"""to avoid documents duplicate, look for all url doc.
+	"""To avoid documents duplicate, look for all url doc.
 
 	Parse self.infos of Crawler and return True if new_doc isn't in it.
 
