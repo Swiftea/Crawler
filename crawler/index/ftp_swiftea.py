@@ -5,21 +5,20 @@ import json
 from os import path
 
 from index.index import count_files_index
-#from index.sftp_manager import SFTPManager as FTPManager
+#from index.ftp_manager import SFTPManager as FTPManager
 from index.ftp_manager import FTPManager
 from swiftea_bot.data import DIR_INDEX, DIR_DATA
 from swiftea_bot.module import tell
-from swiftea_bot.private_data import SFTP_INDEX, FTP_DATA
+from swiftea_bot.private_data import FTP_INDEX, FTP_DATA
 
-class SFTPSwiftea(FTPManager):
-	"""Class to manage the sftp connection for crawler."""
+class FTPSwiftea(FTPManager):
+	"""Class to manage the ftp connection for crawler."""
 	def __init__(self, host, user, password, port):
 		FTPManager.__init__(self, host, user, password, port)
-		self.sftp_index = SFTP_INDEX
+		self.ftp_index = FTP_INDEX
 
-	def set_sftp_index(self, sftp_index):
-		self.sftp_index = sftp_index
-
+	def set_ftp_index(self, ftp_index):
+		self.ftp_index = ftp_index
 
 	def get_inverted_index(self):
 		"""Get inverted-index.
@@ -31,7 +30,7 @@ class SFTPSwiftea(FTPManager):
 		self.downuploaded_files = 0
 		inverted_index = dict()
 		self.connection()
-		self.cd(self.sftp_index)
+		self.cd(self.ftp_index)
 		self.nb_files = self.countfiles()  # Count files on server (prepare to download)
 		list_language = self.listdir()
 
@@ -73,7 +72,7 @@ class SFTPSwiftea(FTPManager):
 		self.downuploaded_files = 0
 		self.nb_files = count_files_index(inverted_index)  # Count files from index (prepare to upload)
 		self.connection()
-		self.cd(self.sftp_index)
+		self.cd(self.ftp_index)
 
 		for language in inverted_index:
 			list_language = self.listdir()
@@ -102,7 +101,6 @@ class SFTPSwiftea(FTPManager):
 		tell('Transfer complete', severity=0)
 		return False
 
-
 	def download(self, language, first_letter, filename):
 		self.downuploaded_files += 1
 		path_index = language + '/' + first_letter + '/' + filename
@@ -117,7 +115,6 @@ class SFTPSwiftea(FTPManager):
 			json.dump(index, myfile, ensure_ascii=False)
 		self.put(DIR_INDEX + path_index, two_letters + '.sif')
 
-
 	def tell_progress(self, upload=True):
 		message = 'Uploading' if upload else 'Downloading'
 		if self.nb_files != 0:
@@ -126,7 +123,6 @@ class SFTPSwiftea(FTPManager):
 			tell(message)
 		else:
 			tell('No progress data')
-
 
 	def compare_indexs(self):
 		"""Compare inverted-index in local and in server.
@@ -138,7 +134,7 @@ class SFTPSwiftea(FTPManager):
 		self.connection()
 		if path.exists(local_file):
 			local_size = path.getsize(local_file)
-			self.cd(self.sftp_index)
+			self.cd(self.ftp_index)
 			server_size = 0
 			list_language = self.listdir()
 			if 'FR' in list_language:

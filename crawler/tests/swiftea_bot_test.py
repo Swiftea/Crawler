@@ -7,6 +7,7 @@ from swiftea_bot.module import *
 from swiftea_bot.file_manager import *
 from tests.test_data import URL, INVERTED_INDEX, BASE_LINKS
 
+
 class SwifteaBotBaseTest(object):
 	def setup_method(self, _):
 		self.url = URL
@@ -44,6 +45,7 @@ class TestModule(SwifteaBotBaseTest):
 
 	def test_stats_webpages(self):
 		stats_webpages(100, 1200)
+
 
 class TestFileManager(SwifteaBotBaseTest):
 	def test_init(self):

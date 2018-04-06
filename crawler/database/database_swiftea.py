@@ -7,10 +7,11 @@ from swiftea_bot.data import CRAWL_DELAY
 from database.database_manager import DatabaseManager
 import database.database as database
 
+
 class DatabaseSwiftea(DatabaseManager):
 	"""Class to manage Swiftea database.
 
-	:param host: hostname of the sftp server
+	:param host: hostname of the db server
 	:type host: str
 	:param user: username to use for connection
 	:type user: str
@@ -23,7 +24,6 @@ class DatabaseSwiftea(DatabaseManager):
 	def __init__(self, host, user, password, name, table):
 		DatabaseManager.__init__(self, host, user, password, name)
 		self.t = table
-
 
 	def send_doc(self, webpage_infos):
 		"""send documents informations to database.
@@ -60,7 +60,6 @@ class DatabaseSwiftea(DatabaseManager):
 		self.close_connection()
 		return error  # All is correct
 
-
 	def update(self, infos, popularity):
 		"""Update a document in database.
 
@@ -86,7 +85,6 @@ WHERE url = %s""".format(self.t)
 		else:
 			return False
 
-
 	def insert(self, infos):
 		"""Insert a new document in database.
 
@@ -110,7 +108,6 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 		else:
 			return False
 
-
 	def get_doc_id(self, url):
 		"""Get id of a document in database.
 
@@ -125,7 +122,6 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 			return None
 		else:
 			return str(result[0])
-
 
 	def del_one_doc(self, url, table=None):
 		"""Delete document corresponding to url.
@@ -142,7 +138,6 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 		if 'error' in  response[1]:
 			tell('Doc not removed: {0}, {1}'.format(url, response[1]), 12)
 		return response[1]
-
 
 	def suggestions(self):
 		"""Get the five first URLs from Suggestion table and delete them.
@@ -161,7 +156,6 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 					suggested_links.append(element[0])
 					self.del_one_doc(element[0], 'suggestions')
 			return suggested_links
-
 
 	def doc_exists(self, url):
 		"""Check if `url` is in database.

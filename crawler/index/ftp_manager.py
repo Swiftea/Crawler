@@ -5,6 +5,7 @@ from ftplib import FTP, all_errors
 
 from swiftea_bot.data import TIMEOUT
 
+
 class MyFtpError(Exception):
 	"""How to use it: raise MyFtpError('Error message')"""
 	def __init__(self, value):
@@ -32,7 +33,6 @@ class FTPManager(FTP):
 		self.user = user
 		self.port = port
 		self.password = password
-
 
 	def connection(self):
 		"""Connect to ftp server.
@@ -74,7 +74,6 @@ class FTPManager(FTP):
 		else:
 			self.close()
 		return response
-
 
 	def cd(self, path):
 		"""Set the current directory on the server.

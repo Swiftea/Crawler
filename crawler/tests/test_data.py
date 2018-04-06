@@ -5,6 +5,7 @@ from os import remove
 
 from swiftea_bot.data import DIR_DATA, BASE_LINKS
 
+
 URL = "http://aetfiws.ovh"
 
 SUGGESTIONS = ['http://suggestions.ovh/page1.html', 'http://suggestions.ovh/page2.html']

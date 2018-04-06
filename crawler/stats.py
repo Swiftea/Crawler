@@ -4,6 +4,7 @@
 
 from swiftea_bot.data import DIR_STATS
 
+
 def stats(dir_stats=DIR_STATS):
 	try:
 		with open(dir_stats + 'stat_links', 'r') as myfile:
@@ -41,11 +42,13 @@ def stats(dir_stats=DIR_STATS):
 	result += stat_up_index + '\n'
 	return result
 
+
 def compress_stats(filename):
 	with open(filename, 'r+') as myfile:
 		content = average(myfile.read().split())
 		myfile.seek(0)
 		myfile.write(str(content))
+
 
 def average(content):
 	"""Calculate average.
@@ -60,6 +63,7 @@ def average(content):
 		total += float(value)
 	moy = total / len(content)
 	return round(moy, 2)
+
 
 if __name__ == '__main__':
 	print(stats())

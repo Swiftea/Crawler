@@ -4,6 +4,7 @@ import pymysql
 
 from swiftea_bot.data import TIMEOUT
 
+
 class DatabaseManager(object):
 	"""Class to manage query to Database using PyMySQL.
 
@@ -15,7 +16,7 @@ class DatabaseManager(object):
 
 	where result are data asked and response a message.
 
-	:param host: hostname of the sftp server
+	:param host: hostname of the db server
 	:type host: str
 	:param user: username to use for connection
 	:type user: str
@@ -42,7 +43,6 @@ class DatabaseManager(object):
 		"""
 		self.name = name
 
-
 	def connection(self):
 		"""Connect to database."""
 		try:
@@ -62,13 +62,11 @@ class DatabaseManager(object):
 
 		return response
 
-
 	def close_connection(self):
 		"""Close database connection."""
 		self.cursor.close()
 		self.conn.close()
 		self.co = False
-
 
 	def send_command(self, command, data=tuple(), fetchall=False):
 		"""Send a query to database.

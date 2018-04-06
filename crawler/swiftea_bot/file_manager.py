@@ -12,6 +12,7 @@ from zipfile import ZipFile
 from swiftea_bot.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX, DIR_DATA, FILE_EVENTS, FILE_ERRORS, MAX_SIZE
 from swiftea_bot.module import tell, remove_duplicates, convert_keys
 
+
 class FileManager(object):
 	"""File manager for Swiftea-Crawler.
 
@@ -66,7 +67,6 @@ class FileManager(object):
 		}
 		with open(FILE_CONFIG, 'w') as configfile:
 			self.config.write(configfile)
-
 
 	def save_links(self, links):
 		"""Save found links in file.
@@ -151,7 +151,6 @@ class FileManager(object):
 				# The program have read all the links: next reading_file_number
 				tell('Next reading file: ' + str(self.reading_file_number), severity=-1)
 			return url
-
 
 	def save_inverted_index(self, inverted_index):
 		"""Save inverted-index in local.

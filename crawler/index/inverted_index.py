@@ -2,6 +2,7 @@
 
 from swiftea_bot.data import ALPHABET
 
+
 class InvertedIndex(object):
 	"""Manage inverted-index for crawler.
 
@@ -34,7 +35,6 @@ class InvertedIndex(object):
 	def getInvertedIndex(self):
 		""":return: inverted-index"""
 		return self.inverted_index
-
 
 	def add_doc(self, keywords, doc_id, language):
 		"""Add all words of a doc in inverted-index.

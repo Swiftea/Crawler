@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# NOT USED FOR NOW (WE USE FTP INSTEAD OF SFTP)
 
 from socket import timeout
 import paramiko
@@ -48,7 +49,6 @@ class SFTPManager(object):
         self.transport.close()
         self.sftp = None
         self.transport = None
-
 
     def cd(self, path):
         """Set the current directory on the server.

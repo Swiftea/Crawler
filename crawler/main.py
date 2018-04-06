@@ -12,7 +12,7 @@ try:
 except ImportError:
 	pass
 
-from index.sftp_swiftea import SFTPSwiftea
+from index.ftp_swiftea import FTPSwiftea
 from crawling.web_connection import WebConnection
 from crawling.site_informations import SiteInformations
 from database.database_swiftea import DatabaseSwiftea
@@ -26,13 +26,13 @@ class Crawler(object):
 	"""Crawler main class."""
 	def __init__(self):
 		self.infos = list()
-		self.sftp_manager = SFTPSwiftea(pvdata.HOST_SSH, pvdata.USER_SSH,
+		self.ftp_manager = FTPSwiftea(pvdata.HOST_SSH, pvdata.USER_SSH,
 			pvdata.PASSWORD_SSH, pvdata.SSH_PORT)
 		self.site_informations = SiteInformations()
 		self.file_manager = FileManager()
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
 		if stopwords == dict() or badwords == dict():
-			self.sftp_manager.download_lists_words()  # Download all lists of words (bad and stop)
+			self.ftp_manager.download_lists_words()  # Download all lists of words (bad and stop)
 			stopwords, badwords = self.file_manager.get_lists_words()
 		self.site_informations.set_listswords(stopwords, badwords)
 
@@ -54,10 +54,10 @@ class Crawler(object):
 		if module.is_index():  # json index
 			inverted_index = self.file_manager.get_inverted_index()
 		else:
-			response = self.sftp_manager.compare_indexs()
+			response = self.ftp_manager.compare_indexs()
 			if response == 'server':
 				begining = time()
-				inverted_index = self.sftp_manager.get_inverted_index()
+				inverted_index = self.ftp_manager.get_inverted_index()
 				index.stats_dl_index(begining, time())
 			elif response == 'local':
 				inverted_index = self.file_manager.read_inverted_index()
@@ -208,7 +208,7 @@ class Crawler(object):
 	def send_inverted_index(self):
 		"""Send inverted-index generate by indexing to server."""
 		begining = time()
-		self.sftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
+		self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
 		index.stats_ul_index(begining, time())
 		#for path in listdir(DIR_INDEX):
 		#	rmtree(DIR_INDEX + path)
@@ -242,6 +242,7 @@ class Crawler(object):
 
 def save(crawler):
 	crawler.file_manager.save_inverted_index(crawler.index_manager.getInvertedIndex())
+
 
 if __name__ == '__main__':
 	module.create_dirs()

@@ -19,6 +19,7 @@ class TestGlobalTest(CrawlerBaseTest):
 		sys.stdout = RedirectOutput('test_RedirectOutput.ext')
 		print('A test message')
 
+
 class RedirectOutput(object):
 	def __init__(self, file):
 		self.output = open(file, 'w')
@@ -26,6 +27,7 @@ class RedirectOutput(object):
 	def write(self, text):
 		self.output.write(text)
 		self.output.flush()
+
 
 class TestLocal(object):
 	def test_insert(self):
@@ -61,7 +63,7 @@ class TestGlobal(object):
 			myfile.write(BASE_LINKS)
 		crawler = Crawler()
 		crawler.database.set_name('swiftea_tests')
-		crawler.sftp_manager.set_sftp_index('html/data/test_index')
+		crawler.ftp_manager.set_ftp_index('html/data/test_index')
 		config = ConfigParser()
 		config['DEFAULT'] = {
 			'run': 'false',

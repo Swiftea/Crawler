@@ -8,6 +8,7 @@ from swiftea_bot.module import remove_duplicates
 from crawling.searches import clean_link
 from swiftea_bot.module import tell
 
+
 def no_connection(url='https://github.com'):
 	"""Check connection.
 
@@ -25,6 +26,7 @@ def no_connection(url='https://github.com'):
 	else:
 		return False
 
+
 def is_nofollow(url):
 	"""Check if take links.
 
@@ -39,6 +41,7 @@ def is_nofollow(url):
 		return True, url[:-10]
 	else:
 		return False, url
+
 
 def duplicate_content(code1, code2):
 	"""Compare code1 and code2.
@@ -90,6 +93,7 @@ def duplicate_content(code1, code2):
 		is_duplicate = True
 
 	return is_duplicate
+
 
 def all_urls(request):
 	"""Return all urls from request.history.

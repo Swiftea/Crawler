@@ -7,6 +7,7 @@ from os import path, mkdir
 
 import swiftea_bot.data as data
 
+
 def tell(message, error_code='', severity=1):
 	"""Manage newspaper.
 
@@ -38,6 +39,7 @@ def tell(message, error_code='', severity=1):
 
 	with open(data.FILE_EVENTS, 'a') as myfile:
 		myfile.write(strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
+
 
 def errors(message, error_code):
 	"""Write the error report with the time in errors file.
@@ -75,6 +77,7 @@ def create_dirs():
 	if not path.isdir(data.DIR_STATS):
 		mkdir(data.DIR_STATS)
 
+
 def def_links():
 	"""Create directory of links if it doesn't exist
 
@@ -104,6 +107,7 @@ Press enter when done.""")
 			print('Please enter 1 or 2.')
 			quit()
 
+
 def is_index():
 	"""Check if there is a saved inverted-index file.
 
@@ -114,6 +118,7 @@ def is_index():
 		return True
 	else:
 		return False
+
 
 def can_add_doc(docs, new_doc):
 	"""to avoid documents duplicate, look for all url doc.
@@ -132,6 +137,7 @@ def can_add_doc(docs, new_doc):
 			return False
 	return True
 
+
 def remove_duplicates(old_list):
 	"""Remove duplicates from a list.
 
@@ -145,6 +151,7 @@ def remove_duplicates(old_list):
 		if elt not in new_list:
 			new_list.append(elt)
 	return new_list
+
 
 def stats_webpages(begining, end):
 	"""Write the time in second to crawl 10 webpages.
@@ -161,10 +168,12 @@ def stats_webpages(begining, end):
 	with open(data.DIR_STATS + 'stat_webpages', 'a') as myfile:
 		myfile.write(str(nb_webpages) + '\n')
 
+
 def stats_send_index(begining, end):
 	"""Time spent between two sending of index"""
 	with open(data.DIR_STATS + 'stats_send_index', 'a') as myfile:
 		myfile.write(str(end - begining) + '\n')
+
 
 def convert_keys(inverted_index):
 	"""Convert `str` words keys into `int` from inverted-index.

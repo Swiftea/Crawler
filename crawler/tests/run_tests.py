@@ -20,6 +20,7 @@ try:
 except ImportError:
     from test_data import reset
 
+
 def run_tests(local=False):
     os.chdir('crawler/tests')
     args = ['--strict', '--verbose']
@@ -33,6 +34,7 @@ def run_tests(local=False):
     errno = pytest.main(args)
     reset()
     return errno
+
 
 if __name__ == '__main__':
     run_tests(True)

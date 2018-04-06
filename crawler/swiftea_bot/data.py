@@ -10,6 +10,7 @@ try:
 except ImportError:
     HOST = ''
 
+
 setdefaulttimeout(30)
 
 # Strings for directories and files:

@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 
 from swiftea_bot.data import BAD_EXTENTIONS, DIR_STATS
 
+
 regex = compile_regex(r'(\w+|\d+)')
 
 def clean_text(text):
@@ -19,6 +20,7 @@ def clean_text(text):
 	"""
 	return ' '.join(text.split())
 
+
 def get_base_url(url):
 	"""Get base url using urlparse.
 
@@ -30,6 +32,7 @@ def get_base_url(url):
 	infos_url = urlparse(url)
 	base_url = infos_url.scheme + '://' + infos_url.netloc
 	return base_url
+
 
 def is_homepage(url):
 	"""Check if url is the homepage.
@@ -50,6 +53,7 @@ def is_homepage(url):
 			return False
 	else:
 		return False
+
 
 def clean_link(url, base_url=None):
 	"""Clean a link.
@@ -97,6 +101,7 @@ def clean_link(url, base_url=None):
 	else:
 		return None
 
+
 def capitalize(text):
 	"""Upper the first letter of given text
 
@@ -109,6 +114,7 @@ def capitalize(text):
 		return text[0].upper() + text[1:]
 	else:
 		return ''
+
 
 def stats_links(stats):
 	"""Write the number of links for statistics.

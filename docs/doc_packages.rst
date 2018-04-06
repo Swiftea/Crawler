@@ -95,17 +95,17 @@ index.inverted_index module
     :undoc-members:
 
 
-index.sftp_manager module
+index.ftp_manager module
 -------------------------
-.. automodule:: index.sftp_manager
+.. automodule:: index.ftp_manager
     :members:
     :undoc-members:
     :show-inheritance:
 
 
-index.sftp_swiftea module
+index.ftp_swiftea module
 -------------------------
-.. automodule:: index.sftp_swiftea
+.. automodule:: index.ftp_swiftea
     :members:
     :undoc-members:
     :show-inheritance:
