@@ -26,14 +26,14 @@ class DatabaseSwiftea(DatabaseManager):
 		self.t = table
 
 	def send_doc(self, webpage_infos):
-		"""send documents informations to database.
+		"""Send document informations to database.
 
 		:param infos: informations to send to database
 		:type infos: list
 		:return: True if an error occured
 
 		"""
-		error = False  # False: no error
+		error = False  # no error
 		response = self.connection()
 		result, response = self.send_command(
 			"SELECT popularity, last_crawl FROM {} WHERE url = %s".format(self.t),
@@ -42,17 +42,17 @@ class DatabaseSwiftea(DatabaseManager):
 			tell('Popularity and last_crawl query failed: ' + response, 16)
 			error = True
 		if result != ():
-			# Url found in database, there is a answer:
+			# Url found in database, there is an answer:
 			last_crawl = result[0][1]  # datetime.datetime object
 			if (datetime.now() - last_crawl) > CRAWL_DELAY:
-				# The program already crawled this website
+				# The program have already crawled this website
 				response = self.update(webpage_infos, result[0][0]+1)
 				if error:
 					error = True
 			else:
 				tell('Recently crawled: ' + webpage_infos['url'])
 		else:
-			# Url not found in database, the url don't exists in the database,
+			# Url not found in database, the url doesn't exist in the database,
 			# we add it:
 			error = self.insert(webpage_infos)
 			if error:

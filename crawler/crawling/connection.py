@@ -12,7 +12,7 @@ from swiftea_bot.module import tell
 def no_connection(url='https://github.com'):
 	"""Check connection.
 
-	Try to connect to swiftea website.
+	Try to connect to a website.
 
 	:param url: url use by test
 	:return: True if no connection
