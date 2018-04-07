@@ -90,7 +90,7 @@ def def_links():
 		print("""No links directory,
 1: let program choose a list...
 2: fill a file yourself...""")
-		rep = input("What's your choice ? (1/2) : ")
+		rep = input("What's your choice ? (1/2): ")
 		if rep == '1':
 			# Basic links
 			with open(data.FILE_BASELINKS, 'w') as myfile:

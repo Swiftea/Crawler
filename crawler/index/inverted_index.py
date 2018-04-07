@@ -11,7 +11,7 @@ class InvertedIndex(object):
 		-> values are dict, each keys are two first letters\n
 		-> values are dict, each keys are word\n
 		-> values are dict, each keys are id\n
-		-> values are int : tf\n
+		-> values are int: tf\n
 
 	example:
 	['FR']['A']['av']['avion'][21] is tf of word 'avion' in doc 21 in french.

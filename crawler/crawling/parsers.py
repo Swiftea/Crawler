@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 """Data of webpage are provided by the python html.parser.
-There are two parsers : the first one for all informations and
+There are two parsers: the first one for all informations and
 the second one only for encoding."""
 
 from html.parser import HTMLParser
@@ -13,7 +13,7 @@ from swiftea_bot.data import LIST_TAG_WORDS, LIST_ALONE_TAG_WORDS
 class ExtractData(HTMLParser):
 	"""Html parser to extract data.
 
-	self.object : the type of text for title, description and keywords\n
+	self.object: the type of text for title, description and keywords\n
 	dict(attrs).get('content'): convert attrs in a dict and return the value
 
 	Data that could be extracted:
@@ -157,7 +157,7 @@ class ExtractData(HTMLParser):
 def meta(attrs):
 	"""Manage searches in tags.
 
-	We can find :
+	We can find:
 		<meta name='description' content='my description'/>\n
 		<meta name='language' content='en'/>\n
 		<meta http-equiv='content-language' content='en'/>\n

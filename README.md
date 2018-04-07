@@ -1,6 +1,6 @@
 # Swiftea's Open Source Web Crawler
 
-## Master branch :
+## Master branch:
 [![Build Status](https://travis-ci.org/Swiftea/Crawler.svg?branch=master)](https://travis-ci.org/Swiftea/Crawler)
 [![Coverage Status](https://coveralls.io/repos/github/Swiftea/Crawler/badge.svg?branch=master)](https://coveralls.io/github/Swiftea/Crawler?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=master)](http://crawler.readthedocs.io/en/master/?badge=master)
@@ -8,7 +8,7 @@
 [![Requirements Status](https://requires.io/github/Swiftea/Crawler/requirements.svg?branch=master)](https://requires.io/github/Swiftea/Crawler/requirements/?branch=master)
 
 
-## Develop branch :
+## Develop branch:
 [![Build Status](https://travis-ci.org/Swiftea/Crawler.svg?branch=develop)](https://travis-ci.org/Swiftea/Crawler)
 [![Coverage Status](https://coveralls.io/repos/github/Swiftea/Crawler/badge.svg?branch=develop)](https://coveralls.io/github/Swiftea/Crawler?branch=develop)
 [![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=develop)](http://crawler.readthedocs.io/en/develop/index.html)
@@ -19,7 +19,7 @@
 
 Swiftea-Crawler is an open source web crawler for Swiftea search engine.
 
-Currently, it can :
+Currently, it can:
   - Visit websites
     - check robots.txt
     - search encoding
@@ -104,19 +104,19 @@ Fork the repository. Then, run:
 
 Then, do your work and commit your changes. Finally, make a pull request.
 
-### Commit conventions :
+### Commit conventions:
 
 #### General
   - Use the present tense
   - Use the imperative mood
 
 #### Examples
-  - Add something : "Add feature ..."
-  - Update : "Update ..."
-  - Improve something : "Improve ..."
-  - Change something : "Change ..."
-  - Fix something : "Fix ..."
-  - Fix an issue : "Fix #123456" or "Close #123456"
+  - Add something: "Add feature ..."
+  - Update: "Update ..."
+  - Improve something: "Improve ..."
+  - Change something: "Change ..."
+  - Fix something: "Fix ..."
+  - Fix an issue: "Fix #123456" or "Close #123456"
 
 License
 ----

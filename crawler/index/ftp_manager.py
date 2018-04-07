@@ -68,7 +68,7 @@ class FTPManager(FTP):
 		try:
 			response = self.quit()
 		except all_errors as error:
-			response = "Can't quit server : " + str(error)
+			response = "Can't quit server: " + str(error)
 		except AttributeError:
 			response = 'Connexion already exited.'
 		else:
@@ -144,9 +144,9 @@ class FTPManager(FTP):
 			try:
 				response = self.storbinary('STOR ' + server_filename, myfile)
 			except all_errors as error:
-				response = 'Failed to send file ' +	local_filename + ' : ' + str(error)
+				response = 'Failed to send file ' +	local_filename + ': ' + str(error)
 			else:
-				response = 'Send file : ' + response
+				response = 'Send file: ' + response
 		return response
 
 	def get(self, local_filename, server_filename):
