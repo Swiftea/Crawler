@@ -44,7 +44,7 @@ Currently, it can :
     pip install -r requirements.txt
     export PYTHONPATH=crawler
 
-If the files below don't exist, the crawler will download them from the server:
+If the files below don't exist, the crawler will download them from our server:
 
 - data/stopwords/fr.stopwords.txt
 - data/stopwords/en.stopwords.txt
@@ -69,24 +69,14 @@ With coverage:
 
 ### Build documentation
 
+In order to build the documentation, you need to install *sphinx* by running :
+
+    pip install -U sphinx
+
+Then, run:
+
     cd docs
     make html
-
-or
-
-    sphinx-build -b html docs docs/_build/buildir
-
-
-## How it works?
-
-### Database:
-The DatabaseSwiftea object can:
- - send documents
- - get the id of a document by the url
- - delete a document
- - select the suggestions
- - check if a doc exists
- - check for http and https duplicate
 
 ## Version
 
@@ -112,7 +102,7 @@ Fork the repository. Then, run:
     cd Crawler
     git checkout develop
 
-Then, do work and commit your changes. Finally, make a pull request.
+Then, do your work and commit your changes. Finally, make a pull request.
 
 ### Commit conventions :
 
