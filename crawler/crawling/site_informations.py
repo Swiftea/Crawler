@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-"""After parse source code, data extracted must be classify and clean.
-Here is a class who use the html parser and manage all results."""
+"""After parsing source code, extracted data must be classified and cleaned.
+Here is a class that use the html parser and manage all results."""
 
 from urllib.parse import urlparse
 
@@ -10,7 +10,7 @@ from crawling import parsers, searches
 
 
 class SiteInformations(object):
-	"""Class to manage searches in source codes."""
+	"""Class to manage searches in source code."""
 	def __init__(self):
 		"""Build searches manager."""
 		self.parser = parsers.ExtractData()
@@ -20,7 +20,7 @@ class SiteInformations(object):
 		self.BADWORDS = badwords
 
 	def get_infos(self, url, code, nofollow, score):
-		"""Manager all searches of webpage's informations.
+		"""Manage all searches of webpage's informations.
 
 		:param url: url of webpage
 		:type url: str
@@ -180,7 +180,7 @@ class SiteInformations(object):
 		return cleaned_keywords
 
 	def sane_search(self, keywords, language, max_ratio=.2):
-		"""Filter adults websites.
+		"""Filter pages not suitable for a young audience.
 
 		:param: keywords: webpage's keywords
 		:type keywords: list

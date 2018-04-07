@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
-"""Connection to webpage are manage with requests module.
-Thoses errors are waiting for: timeout with socket module and with urllib3 mudule
-and all RequestException errors."""
+"""Connection to webpage is managed by requests module.
+Those errors are waiting for: timeout with socket module and urllib3 module and all RequestException errors."""
 
 import requests
 from urllib.parse import urlparse
@@ -76,7 +75,7 @@ class WebConnection(object):
 			return request
 
 	def search_encoding(self, headers, code):
-		"""Searche encoding of webpage in source code.
+		"""Search encoding of webpage in source code.
 
 		If an encoding is found in source code, score is 1, but if not
 		score is 0 and encoding is utf-8.

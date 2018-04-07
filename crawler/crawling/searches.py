@@ -11,7 +11,7 @@ from swiftea_bot.data import BAD_EXTENTIONS, DIR_STATS
 regex = compile_regex(r'(\w+|\d+)')
 
 def clean_text(text):
-	"""Clean up text by removing tabulation, blank and carriage return.
+	"""Clean up text by removing tabulations, blanks and carriage returns.
 
 	:param text: text to clean_text
 	:type text: str
@@ -59,7 +59,7 @@ def clean_link(url, base_url=None):
 	"""Clean a link.
 
 	Rebuild url with base url, pass mailto and javascript,
-	remove anchors, pass if more than 5 query, pass if more than 255 chars,
+	remove anchors, pass if more than 5 queries, pass if more than 255 chars,
 	remove /index.xxx, remove last /.
 
 	:param url: links to clean

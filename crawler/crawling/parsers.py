@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-"""Data of webpage are provided by the python html.parser.
+"""Data of webpage is provided by the python html.parser.
 There are two parsers: the first one for all informations and
 the second one only for encoding."""
 
