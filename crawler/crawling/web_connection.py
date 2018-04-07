@@ -66,10 +66,10 @@ class WebConnection(object):
 			return None
 		except (requests.exceptions.RequestException, requests.exceptions.ConnectionError) as error:
 			tell('Connection failed: {}, {}'.format(str(error), url), 5)
-			if connection.no_connection():
-				return 'no connection'
-			else:
+			if connection.check_connection():
 				return None
+			else:
+				return 'no connection'
 		except UnicodeDecodeError as error:
 			tell('UnicodeDecodeError: ' + str(error))
 		else:

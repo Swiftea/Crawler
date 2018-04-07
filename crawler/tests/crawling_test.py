@@ -31,9 +31,9 @@ class CrawlingBaseTest(object):
 
 
 class TestConnection(CrawlingBaseTest):
-	def test_no_connection(self):
-		assert no_connection(self.url) == True
-		assert no_connection() == False
+	def test_check_connection(self):
+		assert check_connection(self.url) == False
+		assert check_connection() == True
 
 	def test_is_nofollow(self):
 		nofollow, url = is_nofollow(self.url + '!nofollow!')

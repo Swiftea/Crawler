@@ -9,22 +9,22 @@ from crawling.searches import clean_link
 from swiftea_bot.module import tell
 
 
-def no_connection(url='https://github.com'):
-	"""Check connection.
+def check_connection(url='https://github.com'):
+	"""Test internet connection.
 
 	Try to connect to a website.
 
-	:param url: url use by test
-	:return: True if no connection
+	:param url: url used to test the connection
+	:return: True if connected to internet
 
 	"""
 	try:
 		requests.get(url)
 	except requests.exceptions.RequestException:
 		tell('No connection')
-		return True
-	else:
 		return False
+	else:
+		return True
 
 
 def is_nofollow(url):
