@@ -58,7 +58,7 @@ class InvertedIndex(object):
 					# Second char is a letter
 					word_infos['filename'] = word[:2]
 				else:
-						# second char isn't a letter
+					# second char isn't a letter
 					word_infos['filename'] = word_infos['first_letter'].lower() + '-sp'
 			else:
 				# First char isn't a letter

@@ -1,24 +1,23 @@
 #!/usr/bin/python3
 
-from os import mkdir
+from os import mkdir, path, walk
 import json
-from os import path
 
 from index.index import count_files_index
 #from index.ftp_manager import SFTPManager as FTPManager
 from index.ftp_manager import FTPManager
 from swiftea_bot.data import DIR_INDEX, DIR_DATA
 from swiftea_bot.module import tell
-from swiftea_bot.private_data import FTP_INDEX, FTP_DATA
 
 class FTPSwiftea(FTPManager):
 	"""Class to manage the ftp connection for crawler."""
-	def __init__(self, host, user, password, port):
+	def __init__(self, host, user, password, port, path_index, path_data):
 		FTPManager.__init__(self, host, user, password, port)
-		self.ftp_index = FTP_INDEX
+		self.path_index = path_index
+		self.path_data = path_data
 
-	def set_ftp_index(self, ftp_index):
-		self.ftp_index = ftp_index
+	def set_ftp_index(self, path_index):
+		self.path_index = path_index
 
 	def get_inverted_index(self):
 		"""Get inverted-index.
@@ -30,7 +29,7 @@ class FTPSwiftea(FTPManager):
 		self.downuploaded_files = 0
 		inverted_index = dict()
 		self.connection()
-		self.cd(self.ftp_index)
+		self.cd(self.path_index)
 		self.nb_files = self.countfiles()  # Count files on server (prepare to download)
 		list_language = self.listdir()
 
@@ -72,7 +71,7 @@ class FTPSwiftea(FTPManager):
 		self.downuploaded_files = 0
 		self.nb_files = count_files_index(inverted_index)  # Count files from index (prepare to upload)
 		self.connection()
-		self.cd(self.ftp_index)
+		self.cd(self.path_index)
 
 		for language in inverted_index:
 			list_language = self.listdir()
@@ -130,30 +129,29 @@ class FTPSwiftea(FTPManager):
 		:return: `server` if must download from server, `new` if there is no inverted index.
 
 		"""
-		local_file = DIR_INDEX + 'FR/' + 'C/' + 'co.sif'
 		self.connection()
-		if path.exists(local_file):
-			local_size = path.getsize(local_file)
-			self.cd(self.ftp_index)
-			server_size = 0
-			list_language = self.listdir()
-			if 'FR' in list_language:
-				self.cd('FR')
-				list_first_letter = self.listdir()
-				if 'C' in list_first_letter:
-					self.cd('C')
-					infos_filename = self.listdir_attr()
-					for data in infos_filename:
-						if data.filename == 'co.sif':
-							server_size = data.st_size
+		self.cd(self.path_index)
+		if path.exists(DIR_INDEX):
+
+			def get_size(start_path = '.'):
+			    total_size = 0
+			    for dirpath, dirnames, filenames in walk(start_path):
+			        for f in filenames:
+			            fp = path.join(dirpath, f)
+			            total_size += path.getsize(fp)
+			    return total_size
+
+			local_size = get_size(DIR_INDEX)
+			server_sive = self.get_total_size()
 			if local_size < server_size:
 				response = 'server'
 			else:
 				response = 'local'
-		elif 'FR' in self.listdir():
+		elif 'FR' in self.listdir(self.path_index):
 			response = 'server'
 		else:
 			response = 'new'
+
 		self.disconnect()
 		return response
 
@@ -163,6 +161,6 @@ class FTPSwiftea(FTPManager):
 		self.connection()
 		for filename in ['en.stopwords.txt', 'fr.stopwords.txt', 'en.badwords.txt', 'fr.badwords.txt']:
 			type_ = filename[3:-4] + '/'
-			self.cd(FTP_DATA + type_)
+			self.cd(self.path_data + type_)
 			self.get(DIR_DATA + type_ + filename, filename)
 		self.disconnect()

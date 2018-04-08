@@ -118,7 +118,7 @@ class FTPManager(FTP):
 			else:
 				return ['Empty list']
 
-	def infos_listdir(self, path='.', facts=[]):
+	def listdir_attr(self, path='.', facts=[]):
 		"""Return the result of mlsd command of ftplib or
 		a list whose first element is the error response."""
 		try:
@@ -127,6 +127,17 @@ class FTPManager(FTP):
 			return ['Error: ' + str(error)]
 		else:
 			return result
+
+	def get_total_size(self, directory='.'):
+	    size = 0
+	    for filename in self.nlst(directory):
+	        try:
+	            self.cwd(filename)
+	            size += self.get_total_size(filename)
+	        except:
+	            self.voidcmd('TYPE I')
+	            size += self.size(filename)
+	    return size
 
 	def put(self, local_filename, server_filename):
 		"""Upload a file into ftp server.
