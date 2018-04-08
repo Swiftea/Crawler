@@ -90,7 +90,7 @@ class FileManager(object):
 
 		return links
 
-	def ckeck_size_links(self, links):
+	def check_size_links(self, links):
 		"""Check number of links in file.
 
 		:param links: links saved in file

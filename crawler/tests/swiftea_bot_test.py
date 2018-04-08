@@ -73,9 +73,9 @@ class TestFileManager(SwifteaBotBaseTest):
 		self.reading_file_number = 1
 		assert FileManager.get_url(self) == 'stop'
 
-	def test_ckeck_size_links(self):
+	def test_check_size_links(self):
 		self.max_links = 2
-		FileManager.ckeck_size_links(self, self.links)
+		FileManager.check_size_links(self, self.links)
 
 	def test_save_inverted_index(self):
 		FileManager.save_inverted_index(self, self.inverted_index)
