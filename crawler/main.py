@@ -252,7 +252,7 @@ class Crawler(object):
 				module.tell('No suggestions')
 
 	def safe_quit(self):
-		module.tell('exiting', 0, 2,)
+		module.tell('exiting', 0, 2)
 		sys.exit(1)  # added in March 2018
 
 
