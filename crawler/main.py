@@ -87,19 +87,20 @@ class Crawler(object):
 				module.tell('Crawl', severity=2)
 				begining = time()
 				while len(self.infos) < 50:
+					# Start of crawling loop
 					module.tell('File {0}, line {1}'.format(
 						str(self.file_manager.reading_file_number),
-						str(self.file_manager.reading_line_number+1)), severity=0)
+						str(self.file_manager.reading_line_number + 1)), severity=0)
 					url = self.file_manager.get_url()  # Get the url of the website
 					if url == 'stop':
 						self.safe_quit()
 					result = self.crawl_webpage(url)
-					# result[0]: webpage_infos ; result[1]: links
+					# result[0]: webpage_infos, result[1]: links
 					if result:
 						self.infos.append(result[0])
 						links = self.file_manager.save_links(result[1])
 						self.file_manager.check_size_links(result[1])
-				# End of crawling loop
+					# End of crawling loop
 
 				module.tell('{} new documents!'.format(self.crawled_websites), severity=-1)
 

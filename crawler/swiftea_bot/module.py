@@ -87,25 +87,23 @@ def def_links():
 	"""
 	if not path.isdir(data.DIR_LINKS):
 		mkdir(data.DIR_LINKS)
-		print("""No links directory,
-1: let program choose a list...
-2: fill a file yourself...""")
-		rep = input("What's your choice ? (1/2): ")
+		print("""No links file to start crawling:
+1: let the crawler uses it default list
+2: fill a file yourself""")
+		rep = ''
+		while rep not in ('1', '2'):
+			rep = input("What's your choice? (1/2): ")
+
 		if rep == '1':
 			# Basic links
 			with open(data.FILE_BASELINKS, 'w') as myfile:
 				myfile.write(data.BASE_LINKS)
 		elif rep == '2':
 			open(data.FILE_BASELINKS, 'w').close()
-			print("""
-Create a file '0' without extention that contains a list of 20 links maximum.
-They must start with 'http://' or 'https://' and no ends with '/'.
-Choose popular websites.
+			print("""Create a file called "0" in the "data/links" directory that contains a list of 20 links maximum.
+They must start with "http://" or "https://" and not ends with a "/".
 Press enter when done.""")
 			input()
-		else:
-			print('Please enter 1 or 2.')
-			quit()
 
 
 def is_index():
