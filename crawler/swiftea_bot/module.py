@@ -101,7 +101,7 @@ def def_links():
 		elif rep == '2':
 			open(data.FILE_BASELINKS, 'w').close()
 			print("""Create a file called "0" in the "data/links" directory that contains a list of 20 links maximum.
-They must start with "http://" or "https://" and not ends with a "/".
+They must start with "http://" or "https://" and not end with a "/".
 Press enter when done.""")
 			input()
 
