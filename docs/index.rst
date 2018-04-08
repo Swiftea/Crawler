@@ -7,7 +7,6 @@ Welcome to Crawler's documentation!
 ===========================================
 
 Crawler is an open source web crawler for Swiftea.
-It can't be run by contributors because it needs private_data.py which is not upload for obvious reasons.
 
 .. toctree::
    :maxdepth: 4
