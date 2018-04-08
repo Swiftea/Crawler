@@ -26,8 +26,8 @@ class Crawler(object):
 	"""Crawler main class."""
 	def __init__(self):
 		self.infos = list()
-		self.ftp_manager = FTPSwiftea(pvdata.HOST_SSH, pvdata.USER_SSH,
-			pvdata.PASSWORD_SSH, pvdata.SSH_PORT, pvdata.FTP_INDEX,
+		self.ftp_manager = FTPSwiftea(pvdata.FTP_HOST, pvdata.FTP_USER,
+			pvdata.FTP_PASSWORD, pvdata.FTP_PORT, pvdata.FTP_INDEX,
 			pvdata.FTP_DATA)
 		self.site_informations = SiteInformations()
 		self.file_manager = FileManager()
@@ -38,8 +38,8 @@ class Crawler(object):
 		self.site_informations.set_listswords(stopwords, badwords)
 
 		self.index_manager = InvertedIndex()
-		self.database = DatabaseSwiftea(pvdata.HOST_DB, pvdata.USER_DB,
-			pvdata.PASSWORD_DB, pvdata.NAME_DB, pvdata.NAME_TABLE)
+		self.database = DatabaseSwiftea(pvdata.DB_HOST, pvdata.DB_USER,
+			pvdata.DB_PASSWORD, pvdata.DB_NAME, pvdata.TABLE_NAME)
 		self.web_connection = WebConnection()
 
 		self.get_inverted_index()
