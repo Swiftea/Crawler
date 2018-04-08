@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 """Swiftea-Crawler use a lot of files. For example to config the app, save links...
 Here is a class that manage files of crawler.

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # NOT USED FOR NOW (WE USE FTP INSTEAD OF SFTP)
 
 from socket import timeout

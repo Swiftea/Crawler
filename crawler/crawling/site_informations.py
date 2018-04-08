@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 """After parsing source code, extracted data must be classified and cleaned.
 Here is a class that use the html parser and manage all results."""

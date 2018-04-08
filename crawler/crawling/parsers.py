@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 """Data of webpage is provided by the python html.parser.
 There are two parsers: the first one for all informations and

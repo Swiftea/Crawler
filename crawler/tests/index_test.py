@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 from index.index import stats_dl_index, stats_ul_index, count_files_index
 from index.inverted_index import InvertedIndex

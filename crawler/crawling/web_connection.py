@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 """Connection to webpage is managed by requests module.
 Those errors are waiting for: timeout with socket module and urllib3 module and all RequestException errors."""
