@@ -27,7 +27,8 @@ class Crawler(object):
 	def __init__(self):
 		self.infos = list()
 		self.ftp_manager = FTPSwiftea(pvdata.HOST_SSH, pvdata.USER_SSH,
-			pvdata.PASSWORD_SSH, pvdata.SSH_PORT)
+			pvdata.PASSWORD_SSH, pvdata.SSH_PORT, pvdata.FTP_INDEX,
+			pvdata.FTP_DATA)
 		self.site_informations = SiteInformations()
 		self.file_manager = FileManager()
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
@@ -51,6 +52,9 @@ class Crawler(object):
 		on server to know if it's necessary to download it.
 
 		"""
+		inverted_index = self.file_manager.read_inverted_index()
+		self.index_manager.setInvertedIndex(inverted_index)
+		return
 		if module.is_index():  # json index
 			inverted_index = self.file_manager.get_inverted_index()
 		else:
@@ -89,8 +93,12 @@ class Crawler(object):
 					url = self.file_manager.get_url()  # Get the url of the website
 					if url == 'stop':
 						self.safe_quit()
-					self.crawl_webpage(url)
-
+					result = self.crawl_webpage(url)
+					# result[0]: webpage_infos ; result[1]: links
+					if result:
+						self.infos.append(result[0])
+						links = self.file_manager.save_links(result[1])
+						self.file_manager.check_size_links(result[1])
 				# End of crawling loop
 
 				module.tell('{} new documents!'.format(self.crawled_websites), severity=-1)
@@ -130,27 +138,30 @@ class Crawler(object):
 		# Get webpage's html code:
 		new_url, html_code, nofollow, score, all_urls = self.web_connection.get_code(url)
 		if html_code is None:
-			self.delete_if_exists(all_urls)  # Failed to get code, must delete from database.
+			self.delete_bad_url(all_urls)  # Failed to get code, must delete from database.
+			return
 		elif html_code == 'no connection':
-			sys.exit()
+			self.safe_quit()
 		elif html_code == 'ignore':  # There was something wrong and maybe a redirection.
-			self.delete_if_exists(all_urls)
+			self.delete_bad_url(all_urls)
+			return
 		else:
 			module.tell('New url: ' + new_url, severity=0)
-			self.delete_if_exists(all_urls)  # Except new url
+			self.delete_bad_url(all_urls)  # Except new url
 			webpage_infos, links = self.site_informations.get_infos(new_url, html_code, nofollow, score)
 			webpage_infos['url'] = new_url
 
 			if webpage_infos['title'] != '':
 				if module.can_add_doc(self.infos, webpage_infos):  # Duplicate only with url
-					self.infos.append(webpage_infos)
 					self.crawled_websites += 1
-					links = self.file_manager.save_links(links)
-					self.file_manager.ckeck_size_links(links)
+					return webpage_infos, links
+				else:
+					return
 			else:
-				self.delete_if_exists(new_url)
+				self.delete_bad_url(new_url)
+				return
 
-	def delete_if_exists(self, urls):
+	def delete_bad_url(self, urls):
 		"""Delete bad doc if exists.
 
 		Check if doc exists in database and delete it from database and inverted-index.
@@ -185,7 +196,7 @@ class Crawler(object):
 		for webpage_infos in self.infos:
 			webpage_infos['url'], url_to_del = self.database.https_duplicate(webpage_infos['url'])
 			if url_to_del:
-				self.delete_if_exists(url_to_del)
+				self.delete_bad_url(url_to_del)
 			module.tell('New url (to add): ' + webpage_infos['url'], severity=-1)
 			error = self.database.send_doc(webpage_infos)
 			if error:
@@ -228,7 +239,12 @@ class Crawler(object):
 			if len(suggestions) > 0:
 				module.tell('Suggestions', severity=2)
 				for url in suggestions:
-					self.crawl_webpage(url)
+					result = self.crawl_webpage(url)
+					# result[0]: webpage_infos ; result[1]: links
+					if result:
+						self.infos.append(result[0])
+						links = self.file_manager.save_links(result[1])
+						self.file_manager.check_size_links(result[1])
 				self.send_to_db()
 				self.indexing()
 				self.infos.clear()  # Reset the list of dict of informations of websites.
@@ -241,12 +257,19 @@ class Crawler(object):
 
 
 def save(crawler):
-	crawler.file_manager.save_inverted_index(crawler.index_manager.getInvertedIndex())
-
+	crawler.file_manager.save_inverted_index(
+		crawler.index_manager.getInvertedIndex()
+	)
 
 if __name__ == '__main__':
 	module.create_dirs()
-	module.def_links()
 	crawler = Crawler()
 	atexit.register(save, crawler)
-	crawler.start()
+	urls = sys.argv[1:]
+	if urls:
+		for url in urls:
+			result = crawler.crawl_webpage(url)
+			print(result)
+	else:
+		module.def_links()
+		crawler.start()
