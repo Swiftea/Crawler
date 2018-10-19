@@ -69,14 +69,21 @@ With coverage:
 
 ### Build documentation
 
-In order to build the documentation, you need to install *sphinx* by running :
-
-    pip install -U sphinx
-
-Then, run:
+You must install `python3-sphinx` package.
 
     cd docs
     make html
+
+## How it works?
+
+### Database:
+The DatabaseSwiftea object can:
+ - send documents
+ - get the id of a document by the url
+ - delete a document
+ - select the suggestions
+ - check if a doc exists
+ - check for http and https duplicate
 
 ## Version
 

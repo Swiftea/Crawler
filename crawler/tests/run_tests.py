@@ -20,7 +20,6 @@ try:
 except ImportError:
     from tests.test_data import reset
 
-
 def run_tests(local=False):
     os.chdir('crawler/tests')
     args = ['--strict', '--verbose']
