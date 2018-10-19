@@ -18,7 +18,7 @@ import pytest
 try:
     from crawler.tests.test_data import reset
 except ImportError:
-    from test_data import reset
+    from tests.test_data import reset
 
 def run_tests(local=False):
     os.chdir('crawler/tests')
