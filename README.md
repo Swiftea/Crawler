@@ -69,13 +69,10 @@ With coverage:
 
 ### Build documentation
 
+You must install `python3-sphinx` package.
+
     cd docs
     make html
-
-or
-
-    sphinx-build -b html docs docs/_build/buildir
-
 
 ## How it works?
 
