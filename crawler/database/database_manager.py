@@ -51,7 +51,7 @@ class DatabaseManager(object):
 				passwd=self.password,
 				db=self.name,
 				use_unicode=True,
-				charset='utf8',
+				charset='utf8mb4',
 				connect_timeout=TIMEOUT)
 		except pymysql.err.OperationalError as error:
 			response = 'Connection error: ' + str(error)
