@@ -13,7 +13,7 @@ import swiftea_bot.private_data as pvdata
 from database.database_swiftea import DatabaseSwiftea
 from tests.crawler_test import CrawlerBaseTest
 
-class TestGlobalTest(CrawlerBaseTest):
+class TestGlobalTest:
 	def test_RedirectOutput(self):
 		sys.stdout = RedirectOutput('test_RedirectOutput.ext')
 		print('A test message')
