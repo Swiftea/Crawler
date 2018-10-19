@@ -10,11 +10,10 @@ from swiftea_bot.data import DIR_LINKS, FILE_CONFIG, MAX_LINKS, FILE_BASELINKS, 
 from swiftea_bot.module import create_dirs
 from tests.test_data import reset, BASE_LINKS
 import swiftea_bot.private_data as pvdata
-from tests.global_test import RedirectOutput
 from database.database_swiftea import DatabaseSwiftea
 
 
-class TestGlobalTest(CrawlerBaseTest):
+class TestGlobalTest:
 	def test_RedirectOutput(self):
 		sys.stdout = RedirectOutput('test_RedirectOutput.ext')
 		print('A test message')
