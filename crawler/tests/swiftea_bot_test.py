@@ -20,6 +20,7 @@ class SwifteaBotBaseTest(object):
 		self.reading_line_number = 0
 		self.config = ConfigParser()
 		self.run = 'true'
+		self.max_size_file = 2
 
 
 class TestModule(SwifteaBotBaseTest):
@@ -64,6 +65,16 @@ class TestFileManager(SwifteaBotBaseTest):
 			mkdir(DIR_LINKS)
 		FileManager.save_links(self, BASE_LINKS.split())
 		FileManager.save_links(self, BASE_LINKS[5:].split())
+
+	def test_check_size_files(self):
+		FileManager.check_size_files(self)
+		self.max_size_file = 1
+		tell('Simple message')
+		tell('Simple message')
+		FileManager.check_size_files(self)
+		tell('Simple message')
+		tell('Simple message')
+		FileManager.check_size_files(self)
 
 	def test_get_url(self):
 		with open(DIR_LINKS + '1', 'w') as myfile:
