@@ -5,10 +5,7 @@
 from socket import setdefaulttimeout
 from datetime import timedelta
 
-try:
-    from swiftea_bot.private_data import HOST
-except ImportError:
-    HOST = ''
+from swiftea_bot.private_data import HOST
 
 
 setdefaulttimeout(30)
