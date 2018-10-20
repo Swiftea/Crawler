@@ -37,6 +37,14 @@ class TestInvertedIndex(IndexBaseTest):
 		InvertedIndex.setInvertedIndex(self, '')
 		assert InvertedIndex.getInvertedIndex(self) == dict()
 
+	def test_add_doc(self):
+		index = InvertedIndex()
+		index.setInvertedIndex(self.inverted_index)
+		keywords = ['le', '2015', 'bureau', 'word', 'example', 'oiseau', 'quoi', 'epee', 'clock', 'çochon', '12h', 'a3']
+		index.add_doc(keywords, 13, 'fr')
+		assert index.inverted_index == {'EN': {'A': {'ab': {'above': {1: 0.3, 2: 0.1}, 'abort': {1: 0.3, 2: 0.1}}}, 'W': {'wo': {'word': {1: 0.3, 30: 0.4}}}}, 'FR': {'B': {'ba': {'bateau': {1: 0.5}}, 'bo': {'boule': {1: 0.25, 2: 0.8}}, 'bu': {'bureau': {13: 0.0833333}}}, 'L': {'le': {'le': {13: 0.0833333}}}, 'SP': {'sp-sp': {'2015': {13: 0.0833333}, '12h': {13: 0.0833333}}, 'sp-o': {'çochon': {13: 0.0833333}}}, 'W': {'wo': {'word': {13: 0.0833333}}}, 'E': {'ex': {'example': {13: 0.0833333}}, 'ep': {'epee': {13: 0.0833333}}}, 'O': {'oi': {'oiseau': {13: 0.0833333}}}, 'Q': {'qu': {'quoi': {13: 0.0833333}}}, 'C': {'cl': {'clock': {13: 0.0833333}}}, 'A': {'a-sp': {'a3': {13: 0.0833333}}}}}
+
+
 	def test_add_word(self):
 		# Add language:
 		word_infos = {'word': 'fiesta', 'language': 'ES', 'first_letter': 'F', 'filename': 'fi', 'occurence': 6}
