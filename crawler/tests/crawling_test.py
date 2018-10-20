@@ -44,8 +44,18 @@ class TestConnection(CrawlingBaseTest):
 		assert url == self.url
 
 	def test_duplicate_content(self):
-		assert duplicate_content('un premier code', 'un deuxieme code') == True
-		assert duplicate_content('un premier code un peu plus grand', 'un deuxieme code') == False
+		assert duplicate_content('un premier code', 'un deuxieme code') == True  # percent >= 65 and percent < 95 and size_code1 <= size_code2
+		assert duplicate_content('un premier code         ', 'un deuxieme code') == False  # percent >= 65 and percent < 95 and size_code1 <= size_code2
+		assert duplicate_content('un deuxieme code', 'un premier code') == True  # percent >= 65 and percent < 95 and size_code1 > size_code2
+		assert duplicate_content('un deuxieme code', 'un premier code         ') == False  # percent >= 65 and percent < 95 and size_code1 > size_code2
+		assert duplicate_content('le meme code', 'le meme code') == True  # code1 == code2
+		t1 = 'le meme code le meme code le meme code le meme code le meme code'
+		t2 = 'le meme code le meme code le meme code le meme code le meme code0'
+		assert duplicate_content(t1, t2) == True  # size_code1 < size_code2
+		t3 = 'le meme0 code le meme0 code le meme0 code le meme code le meme0 code'
+		t4 = 'le meme code le meme code le meme code le meme code le meme code'
+		assert duplicate_content(t3, t4) == True  # percent >= 95
+		assert duplicate_content('un premier code un peu plus grand', 'un deuxieme code') == False  # persont < 65
 
 	def test_all_urls(self):
 		request = req.get("https://fr.wikipedia.org")
