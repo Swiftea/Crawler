@@ -23,3 +23,6 @@ docs/_build
 Crawler.egg-info/
 .eggs/
 *~
+
+.mypy_cache
+prospector_report.json

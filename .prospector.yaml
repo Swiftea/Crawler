@@ -1,0 +1,24 @@
+# Usage: prospector >>  prospector_report.json
+
+output-format: json
+
+strictness: veryhigh
+
+test-warnings: true
+doc-warnings: true
+member-warnings: true
+
+pep8:
+    full: true
+
+# pip install prospector[with_pyroma]
+pyroma:
+  run: true
+
+# pip install prospector[with_vulture]
+vulture:
+  run: true
+
+# pip install prospector[with_mypy]
+mypy:
+  run: true
