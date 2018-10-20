@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from shutil import rmtree
-from os import remove
+from os import remove, path
 
 from swiftea_bot.data import DIR_DATA, BASE_LINKS
 
@@ -68,7 +68,8 @@ INVERTED_INDEX = {'EN': {
 'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
 
 def reset():
-    try: rmtree(DIR_DATA)
-    except FileNotFoundError: pass
-    try: remove('test_RedirectOutput.ext')
-    except FileNotFoundError: pass
+    if path.exists(DIR_DATA):
+        rmtree(DIR_DATA)
+    # for global tests:
+    if path.exists('test_RedirectOutput.ext'):
+        remove('test_RedirectOutput.ext')
