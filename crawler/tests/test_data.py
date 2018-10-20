@@ -21,7 +21,7 @@ CODE1 = """<!DOCTYPE html>
     </head>
     <body>
         <p>une <a href="demo">CSS Demo</a> ici!</p>
-        <h1>Gros titre</h1>
+        <h1>Gros titre🤣 </h1>
         <h2>Moyen titre</h2>
         <h3>petit titre</h3>
         <p><strong>strong </strong><em>em</em></p>
