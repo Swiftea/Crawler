@@ -20,7 +20,9 @@ try:
 except ImportError:
     from tests.test_data import reset
 
-import main  # Test coverage
+# Test coverage:
+import main
+import index.sftp_manager
 
 def run_tests(local=False):
     os.chdir('crawler/tests')
@@ -29,6 +31,7 @@ def run_tests(local=False):
     args.append('crawling_test.py')
     args.append('database_test.py')
     args.append('index_test.py')
+    args.append('crawler_test.py')
     if local:
         args.append('crawler_test.py')
         args.append('global_test.py')

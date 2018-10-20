@@ -7,13 +7,7 @@ import stats
 import main
 from swiftea_bot.data import DIR_STATS
 
-
-class CrawlerBaseTest(object):
-	def setup_method(self, _):
-		self.defstdout = sys.__stdout__
-
-
-class TestStats(CrawlerBaseTest):
+class TestStats:
 	def test_stats(self):
 		stats.stats()
 
