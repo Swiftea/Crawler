@@ -118,6 +118,11 @@ class TestSiteInformations(CrawlingBaseTest):
 		assert var.STOPWORDS == {'en': ['then', 'already']}
 		assert var.BADWORDS == {'en': ['verybadword']}
 
+	def test_get_info(self):
+		site_informations = SiteInformations()
+		site_informations.set_listswords(stopwords={'en': []}, badwords={'en':[]})
+		site_informations.get_infos('http://aetfiws.ovh', test_data.CODE1, True, 0)
+
 	def test_clean_links(self):
 		links = ['page.php', 'http://aetfiws.ovh/', 'mailto:test@test.fr',
 			'//www.example.fr?w=word', 'http://aetfiws.ovh/page1/index.html',
