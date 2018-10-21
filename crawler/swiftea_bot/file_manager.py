@@ -86,7 +86,7 @@ class FileManager(object):
 			with open(filename, 'r+', errors='replace', encoding='utf8') as myfile:
 				old_links = myfile.read().splitlines()
 				myfile.seek(0)
-				links = remove_duplicates(old_links + links)
+				links = list(tuple(old_links))
 				myfile.write('\n'.join(links))
 
 		return links
