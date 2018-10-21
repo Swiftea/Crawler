@@ -161,7 +161,7 @@ def stats_webpages(begining, end):
 
 	"""
 	delta = end - begining  # Time to crawl ten webpages
-	time = delta / 10  # Time in second to crawl 10 webpages
+	time = delta / 10  # Time in second to crawl n webpages
 	nb_webpages = 60 / time  # Number of webpages crawled in 1 minute
 	with open(data.DIR_STATS + 'stat_webpages', 'a') as myfile:
 		myfile.write(str(nb_webpages) + '\n')

@@ -22,7 +22,7 @@ def stats(dir_stats=DIR_STATS):
 	except FileNotFoundError:
 		stat_webpages = 'File ' +  dir_stats + 'stat_webpages' + ' not found.'
 	else:
-		stat_webpages = 'Time to crawl ten webpages: ' + str(average(content))
+		stat_webpages = 'Time to crawl n webpages: ' + str(average(content))
 	result += stat_webpages + '\n'
 	try:
 		with open(dir_stats + 'stat_dl_index', 'r') as myfile:
