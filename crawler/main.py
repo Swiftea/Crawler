@@ -19,6 +19,7 @@ from database.database_swiftea import DatabaseSwiftea
 from swiftea_bot.file_manager import FileManager
 from index.inverted_index import InvertedIndex
 from swiftea_bot.data import DIR_INDEX
+import swiftea_bot.data as data
 import swiftea_bot.module as module
 import index.index as index
 
@@ -86,7 +87,8 @@ class Crawler(object):
 			for _ in range(50):
 				module.tell('Crawl', severity=2)
 				begining = time()
-				while len(self.infos) < 50:
+				while len(self.infos) < 10:
+					begining = time()
 					# Start of crawling loop
 					module.tell('File {0}, line {1}'.format(
 						str(self.file_manager.reading_file_number),
@@ -94,12 +96,16 @@ class Crawler(object):
 					url = self.file_manager.get_url()  # Get the url of the website
 					if url == 'stop':
 						self.safe_quit()
+
 					result = self.crawl_webpage(url)
+
 					# result[0]: webpage_infos, result[1]: links
 					if result:
 						self.infos.append(result[0])
 						links = self.file_manager.save_links(result[1])
 						self.file_manager.check_size_links(result[1])
+					with open(data.DIR_STATS + 'stat_crawl_one_webpage', 'a') as myfile:
+						myfile.write(str(time() - begining) + '\n')
 					# End of crawling loop
 
 				module.tell('{} new documents!'.format(self.crawled_websites), severity=-1)
