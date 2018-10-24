@@ -11,7 +11,7 @@ from reppy.exceptions import ServerError
 
 from swiftea_bot.data import USER_AGENT, HEADERS, TIMEOUT
 from swiftea_bot.module import tell, remove_duplicates
-from crawling import parsers, connection
+from crawling import parsers, data_processing
 from crawling.searches import clean_link
 
 
@@ -29,7 +29,7 @@ class WebConnection(object):
 		:return: source code, True if no take links, score and new url (redirection)
 
 		"""
-		nofollow, url = connection.is_nofollow(url)
+		nofollow, url = data_processing.is_nofollow(url)
 		result = self.send_request(url)
 		if not isinstance(result, requests.models.Response):
 			return None, result, None, None, url
@@ -41,7 +41,7 @@ class WebConnection(object):
 				# Search encoding of webpage:
 				request.encoding, score = self.search_encoding(request.headers, request.text)
 				new_url, code = self.duplicate_content(request, url)  # new_url is clean and maybe without params
-				all_urls = connection.all_urls(request)  # List of urls to delete
+				all_urls = data_processing.all_urls(request)  # List of urls to delete
 				if new_url in all_urls:  # new_url don't be delete
 					all_urls.remove(new_url)
 				return new_url, code, nofollow, score, all_urls
@@ -49,7 +49,7 @@ class WebConnection(object):
 				tell('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
 					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed), severity=0)
 				# All redirections urls, the first and the last:
-				all_urls = connection.all_urls(request)
+				all_urls = data_processing.all_urls(request)
 				all_urls.append(request.url)
 				all_urls.append(url)
 				return None, 'ignore', None, None, remove_duplicates(all_urls)
@@ -65,7 +65,7 @@ class WebConnection(object):
 			return None
 		except (requests.exceptions.RequestException, requests.exceptions.ConnectionError) as error:
 			tell('Connection failed: {}, {}'.format(str(error), url), 5)
-			if connection.check_connection():
+			if data_processing.check_connection():
 				return None
 			else:
 				return 'no connection'
@@ -151,7 +151,7 @@ class WebConnection(object):
 			url2 = clean_link(request2.url)
 			if url2 is None:
 				return url1, request1.text
-			if connection.duplicate_content(request1.text, request2.text):
+			if data_processing.duplicate_content(request1.text, request2.text):
 				tell("Same content: " + url1 + " and " + url2)   # Tests
 				return url2, request2.text
 			else:

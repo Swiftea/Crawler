@@ -6,14 +6,16 @@ Here is a class that use the html parser and manage all results."""
 from urllib.parse import urlparse
 
 from swiftea_bot.module import tell, remove_duplicates
-from crawling import parsers, searches
+from crawling import parsers, searches, data_processing
 
 
-class SiteInformations(object):
+class SiteInformations:
 	"""Class to manage searches in source code."""
 	def __init__(self):
 		"""Build searches manager."""
 		self.parser = parsers.ExtractData()
+		self.STOPWORDS = None
+		self.BADWORDS = None
 
 	def set_listswords(self, stopwords, badwords):
 		self.STOPWORDS = stopwords
@@ -78,7 +80,7 @@ class SiteInformations(object):
 			if nofollow:
 				links = list()
 			else:
-				links = self.clean_links(self.parser.links, base_url)
+				links = data_processing.clean_links(self.parser.links, base_url)
 				searches.stats_links(len(links))
 			if self.parser.favicon != '':
 				results['favicon'] = self.clean_favicon(self.parser.favicon, base_url)
@@ -118,25 +120,6 @@ class SiteInformations(object):
 			language = ''
 
 		return language
-
-	def clean_links(self, links, base_url=None):
-		"""Clean webpage's links: rebuild urls with base url and
-		remove anchors, mailto, javascript, .index.
-
-		:param links: links to clean
-		:type links: list
-		:return: cleanen links without duplicate
-
-		"""
-		links = remove_duplicates(links)
-		new_links = list()
-
-		for url in links:
-			new_url = searches.clean_link(url, base_url)
-			if new_url:
-				new_links.append(new_url)
-
-		return remove_duplicates(new_links)
 
 	def clean_favicon(self, favicon, base_url):
 		"""Clean favicon.
@@ -201,5 +184,4 @@ class SiteInformations(object):
 		if ratio >= max_ratio:
 			tell('bad site detected')
 			return True
-		else:
-			return False
+		return False

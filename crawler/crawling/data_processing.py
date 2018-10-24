@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-"""Define several functions WebConnection."""
+"""Define several functions for WebConnection."""
 
 import requests
 
-from swiftea_bot.module import remove_duplicates
+from swiftea_bot.module import remove_duplicates, tell
 from crawling.searches import clean_link
-from swiftea_bot.module import tell
 
 
 def check_connection(url='https://github.com'):
@@ -39,8 +38,8 @@ def is_nofollow(url):
 	"""
 	if url.endswith('!nofollow!'):
 		return True, url[:-10]
-	else:
-		return False, url
+
+	return False, url
 
 
 def duplicate_content(code1, code2):
@@ -71,22 +70,15 @@ def duplicate_content(code1, code2):
 
 		if percent >= 95:
 			is_duplicate = True
-		elif percent >= 65 and percent < 95:
+		elif 65 < percent < 95:
 			# Advanced verification to confirm or not
 			# Difference percent of size.
 			difference = 15
 			if size_code1 > size_code2:
-				percent_difference = (size_code1 - size_code2) * 100 / size_code1
-				if percent_difference <= difference:
-					is_duplicate = True
-				else:
-					is_duplicate = False
-			else:
-				percent_difference = (size_code2 - size_code1) * 100 / size_code2
-				if percent_difference <= difference:
-					is_duplicate = True
-				else:
-					is_duplicate = False
+				size_code2, size_code1 = size_code1, size_code2
+			percent_difference = (size_code2 - size_code1) * 100 / size_code2
+
+			is_duplicate = percent_difference <= difference
 		else:
 			is_duplicate = False
 	else:
@@ -113,3 +105,42 @@ def all_urls(request):
 		if url:
 			urls.append(url)
 	return remove_duplicates(urls)
+
+
+def clean_links(links, base_url=None):
+	"""Clean webpage's links: rebuild urls with base url and
+	remove anchors, mailto, javascript, .index.
+
+	:param links: links to clean
+	:type links: list
+	:return: cleanen links without duplicate
+
+	"""
+	links = remove_duplicates(links)
+	new_links = list()
+
+	for url in links:
+		new_url = clean_link(url, base_url)
+		if new_url:
+			new_links.append(new_url)
+
+	return remove_duplicates(new_links)
+
+
+def clean_favicon(favicon, base_url):
+	"""Clean favicon.
+
+	:param favicon: favicon url to clean
+	:type favicon: str
+	:return: cleaned favicon
+
+	"""
+	if not favicon.startswith('http') and not favicon.startswith('www'):
+		if favicon.startswith('//'):
+			favicon = 'http:' + favicon
+		elif favicon.startswith('/'):
+			favicon = base_url + favicon
+		else:
+			favicon = base_url + '/' + favicon
+
+	return favicon
