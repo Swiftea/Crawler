@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+"""Define the class the handle the inverted index."""
+
 from swiftea_bot.data import ALPHABET
 
 
-class InvertedIndex(object):
-	"""Manage inverted-index for crawler.
+class InvertedIndex:
+	r"""Manage inverted-index for crawler.
 
 	Inverted-index is a dict, each keys are language\n
 		-> values are a dict, each keys are first letter\n
@@ -20,7 +22,7 @@ class InvertedIndex(object):
 	def __init__(self):
 		self.inverted_index = dict()
 
-	def setInvertedIndex(self, inverted_index):
+	def set_inverted_index(self, inverted_index):
 		"""Define inverted-index at the beginning.
 
 		:param inverted_index: inverted-index
@@ -32,7 +34,7 @@ class InvertedIndex(object):
 		else:
 			self.inverted_index = dict()
 
-	def getInvertedIndex(self):
+	def get_inverted_index(self):
 		""":return: inverted-index"""
 		return self.inverted_index
 
@@ -50,7 +52,11 @@ class InvertedIndex(object):
 		language = language.upper()
 		nb_words = len(keywords)
 		for word in keywords:
-			word_infos = {'word': word, 'language': language, 'occurence': keywords.count(word)}
+			word_infos = {
+				'word': word,
+				'language': language,
+				'occurence': keywords.count(word)
+			}
 			if word[0] in ALPHABET:
 				word_infos['first_letter'] = word[0].upper()
 				# First char is a letter
@@ -130,10 +136,9 @@ class InvertedIndex(object):
 			del self.inverted_index[language][first_letter][filename][word]
 
 	def delete_id_word(self, word_infos, doc_id):
-		"""Delete a id of a word in inverted-index
+		"""Delete an id of a word in inverted-index.
 
 		This method delete a word from a document.
-		Remove a words from a doc.
 
 		:param word_infos: word infos: word, language, first letter and two first letters
 		:type word_infos: dict

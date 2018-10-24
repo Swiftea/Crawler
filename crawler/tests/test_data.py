@@ -71,5 +71,5 @@ def reset():
     if path.exists(DIR_DATA):
         rmtree(DIR_DATA)
     # for global tests:
-    if path.exists('test_RedirectOutput.ext'):
-        remove('test_RedirectOutput.ext')
+    if path.exists('test_redirect_output.ext'):
+        remove('test_redirect_output.ext')

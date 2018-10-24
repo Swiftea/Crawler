@@ -5,7 +5,13 @@ from index.inverted_index import InvertedIndex
 from tests.test_data import INVERTED_INDEX
 
 
-class IndexBaseTest(object):
+inverted_index = {'EN': {
+'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
+'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
+'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
+
+
+class IndexBaseTest:
 	def setup_method(self, _):
 		self.inverted_index = {'EN': {
 		'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
@@ -13,33 +19,31 @@ class IndexBaseTest(object):
 		'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
 
 
-class TestIndex(IndexBaseTest):
-	def test_stats_dl_index(self):
-		stats_dl_index(100, 130)
+def test_stats_dl_index():
+	stats_dl_index(100, 130)
 
-	def test_stats_ul_index(self):
-		stats_ul_index(100, 130)
+def test_stats_ul_index():
+	stats_ul_index(100, 130)
 
-	def test_count_files_index(self):
-		assert count_files_index(self.inverted_index) == 4
+def test_count_files_index():
+	assert count_files_index(inverted_index) == 4
 
+def test_create_inverted_index():
+	InvertedIndex()
 
 class TestInvertedIndex(IndexBaseTest):
-	def test_create_inverted_index(self):
-		inverted_index = InvertedIndex()
+	def test_get_inverted_index(self):
+		assert InvertedIndex.get_inverted_index(self) == INVERTED_INDEX
 
-	def test_getInvertedIndex(self):
-		assert InvertedIndex.getInvertedIndex(self) == INVERTED_INDEX
-
-	def test_setInvertedIndex(self):
-		InvertedIndex.setInvertedIndex(self, self.inverted_index)
-		assert InvertedIndex.getInvertedIndex(self) == self.inverted_index
-		InvertedIndex.setInvertedIndex(self, '')
-		assert InvertedIndex.getInvertedIndex(self) == dict()
+	def test_set_inverted_index(self):
+		InvertedIndex.set_inverted_index(self, self.inverted_index)
+		assert InvertedIndex.get_inverted_index(self) == self.inverted_index
+		InvertedIndex.set_inverted_index(self, '')
+		assert InvertedIndex.get_inverted_index(self) == dict()
 
 	def test_add_doc(self):
 		index = InvertedIndex()
-		index.setInvertedIndex(self.inverted_index)
+		index.set_inverted_index(self.inverted_index)
 		keywords = ['le', '2015', 'bureau', 'word', 'example', 'oiseau', 'quoi', 'epee', 'clock', 'çochon', '12h', 'a3']
 		index.add_doc(keywords, 13, 'fr')
 		assert index.inverted_index == {'EN': {'A': {'ab': {'above': {1: 0.3, 2: 0.1}, 'abort': {1: 0.3, 2: 0.1}}}, 'W': {'wo': {'word': {1: 0.3, 30: 0.4}}}}, 'FR': {'B': {'ba': {'bateau': {1: 0.5}}, 'bo': {'boule': {1: 0.25, 2: 0.8}}, 'bu': {'bureau': {13: 0.0833333}}}, 'L': {'le': {'le': {13: 0.0833333}}}, 'SP': {'sp-sp': {'2015': {13: 0.0833333}, '12h': {13: 0.0833333}}, 'sp-o': {'çochon': {13: 0.0833333}}}, 'W': {'wo': {'word': {13: 0.0833333}}}, 'E': {'ex': {'example': {13: 0.0833333}}, 'ep': {'epee': {13: 0.0833333}}}, 'O': {'oi': {'oiseau': {13: 0.0833333}}}, 'Q': {'qu': {'quoi': {13: 0.0833333}}}, 'C': {'cl': {'clock': {13: 0.0833333}}}, 'A': {'a-sp': {'a3': {13: 0.0833333}}}}}

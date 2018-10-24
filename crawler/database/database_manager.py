@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Define a class that deal with the low level database manager."""
+
 import pymysql
 
 from swiftea_bot.data import TIMEOUT

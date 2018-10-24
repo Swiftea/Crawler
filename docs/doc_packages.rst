@@ -30,9 +30,9 @@ crawling.web_connection module
     :undoc-members:
 
 
-crawling.connection module
---------------------------
-.. automodule:: crawling.connection
+crawling.data_processing module
+-------------------------------
+.. automodule:: crawling.data_processing
     :members:
     :undoc-members:
 

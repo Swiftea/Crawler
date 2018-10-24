@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 """Data of webpage is provided by the python html.parser.
+
 There are two parsers: the first one for all informations and
-the second one only for encoding."""
+the second one only for encoding.
+"""
 
 from html.parser import HTMLParser
 from html.entities import name2codepoint, html5
@@ -11,7 +13,7 @@ from swiftea_bot.data import LIST_TAG_WORDS, LIST_ALONE_TAG_WORDS
 
 
 class ExtractData(HTMLParser):
-	"""Html parser to extract data.
+	r"""Html parser to extract data.
 
 	self.object: the type of text for title, description and keywords\n
 	dict(attrs).get('content'): convert attrs in a dict and return the value
@@ -36,20 +38,20 @@ class ExtractData(HTMLParser):
 		self.css = False  # True if there is a css link in the source code
 		self.h1 = False  # True if parsing the title of webpage
 		self.first_title = ''  # The first title (h1) of the web site
-		self.description = self.language = self.title = self.favicon  = ''
+		self.description = self.language = self.title = self.favicon = ''
 
 	def re_init(self):
-		"""Called when we meet html tag, put back all variables to default."""
+		"""Call when we meet html tag, put back all variables to default."""
 		self.links = list()
 		self.first_title = self.keywords = self.description = ''
-		self.language = self.title = self.favicon  = ''
+		self.language = self.title = self.favicon = ''
 		self.css = self.h1 = False
 		self.is_title = False
 		self.word1 = False
 		self.word2 = False
 
 	def handle_starttag(self, tag, attrs):
-		"""Called when parser meet a starting tag.
+		"""Call when parser meet a starting tag.
 
 		:param tag: starting tag
 		:type tag: str
@@ -57,7 +59,7 @@ class ExtractData(HTMLParser):
 		:type attrs: list
 
 		"""
-		if tag =='html':
+		if tag == 'html':
 			self.re_init()
 			if len(dict(attrs).get('lang', '')) >= 2:
 				self.language = dict(attrs).get('lang').lower().strip()[:2]
@@ -72,7 +74,7 @@ class ExtractData(HTMLParser):
 			if rel == 'stylesheet':
 				# LINK REL="STYLESHEET" TYPE="text/css"
 				self.css = True
-			elif rel == 'icon' or rel == 'shortcut icon':
+			elif rel in ['icon', 'shortcut icon']:
 				# LINK REL="ICON" HREF="FAVICON.ICO"
 				self.favicon = dict(attrs).get('href', '')
 
@@ -97,7 +99,7 @@ class ExtractData(HTMLParser):
 			self.h1 = True  # It's about a h1
 
 	def handle_data(self, data):
-		"""Called when parser meet data.
+		"""Call when parser meet data.
 
 		:param tag: starting tag
 		:type tag: str
@@ -113,7 +115,7 @@ class ExtractData(HTMLParser):
 			self.first_title = data
 
 	def handle_endtag(self, tag):
-		"""Called when parser meet an ending tag.
+		"""Call when parser meet an ending tag.
 
 		:param tag: starting tag
 		:type tag: str
@@ -155,7 +157,7 @@ class ExtractData(HTMLParser):
 
 
 def meta(attrs):
-	"""Manage searches in tags.
+	r"""Manage searches in tags.
 
 	We can find:
 		<meta name='description' content='my description'/>\n
@@ -203,10 +205,6 @@ def can_append(url, rel):
 			if 'nofollow' in rel:
 				url += '!nofollow!'
 			return url
-		else:
-			return None
-	else:
-		return None
 
 
 class ExtractEncoding(HTMLParser):
@@ -216,7 +214,7 @@ class ExtractEncoding(HTMLParser):
 		self.encoding = str()
 
 	def handle_starttag(self, tag, attrs):
-		"""Called when parser meet a starting tag.
+		"""Call when parser meet a starting tag.
 
 		:param tag: starting tag
 		:type tag: str

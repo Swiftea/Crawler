@@ -8,7 +8,30 @@ from swiftea_bot.file_manager import *
 from tests.test_data import URL, INVERTED_INDEX, BASE_LINKS
 
 
-class SwifteaBotBaseTest(object):
+def test_create_dirs():
+	create_dirs()
+
+
+def test_tell():
+	tell('Simple message', 0)
+	tell('Hard message', severity=2)
+
+
+def test_is_index():
+	assert is_index() == False
+	open(FILE_INDEX, 'w').close()
+	assert is_index() == True
+
+
+def test_remove_duplicates():
+	assert remove_duplicates(['word', 'word']) == ['word']
+
+
+def test_stats_webpages():
+	stats_webpages(100, 1200)
+
+
+class SwifteaBotBaseTest:
 	def setup_method(self, _):
 		self.url = URL
 		self.inverted_index = INVERTED_INDEX
@@ -24,28 +47,10 @@ class SwifteaBotBaseTest(object):
 
 
 class TestModule(SwifteaBotBaseTest):
-	def test_create_dirs(self):
-		create_dirs()
-
-	def test_tell(self):
-		tell('Simple message', 0)
-		tell('Hard message', severity=2)
-
-	def test_is_index(self):
-		assert is_index() == False
-		open(FILE_INDEX, 'w').close()
-		assert is_index() == True
-
 	def test_can_add_doc(self):
 		docs = [{'url': self.url}]
 		assert can_add_doc(docs, {'url': self.url}) == False
 		assert can_add_doc(docs, {'url': self.url + '/page'}) == True
-
-	def test_remove_duplicates(self):
-		assert remove_duplicates(['word', 'word']) == ['word']
-
-	def test_stats_webpages(self):
-		stats_webpages(100, 1200)
 
 
 class TestFileManager(SwifteaBotBaseTest):
