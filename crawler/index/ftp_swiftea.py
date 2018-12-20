@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Define a class that deal with the high level ftp manager."""
+
 from os import mkdir, path, walk
 import json
 
@@ -142,12 +144,12 @@ class FTPSwiftea(FTPManager):
 			    return total_size
 
 			local_size = get_size(DIR_INDEX)
-			server_sive = self.get_total_size()
+			server_size = self.get_total_size()
 			if local_size < server_size:
 				response = 'server'
 			else:
 				response = 'local'
-		elif 'FR' in self.listdir(self.path_index):
+		elif 'FR' in self.listdir():
 			response = 'server'
 		else:
 			response = 'new'

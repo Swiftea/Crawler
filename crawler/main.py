@@ -15,20 +15,22 @@ except ImportError:
 from index.ftp_swiftea import FTPSwiftea
 from crawling.web_connection import WebConnection
 from crawling.site_informations import SiteInformations
+from crawling import data_processing
 from database.database_swiftea import DatabaseSwiftea
 from swiftea_bot.file_manager import FileManager
 from index.inverted_index import InvertedIndex
 from swiftea_bot.data import DIR_INDEX
-import swiftea_bot.module as module
-import index.index as index
+from swiftea_bot import data, module
+from index import index
 
-class Crawler(object):
+
+class Crawler:
 	"""Crawler main class."""
 	def __init__(self):
 		self.infos = list()
-		self.ftp_manager = FTPSwiftea(pvdata.FTP_HOST, pvdata.FTP_USER,
-			pvdata.FTP_PASSWORD, pvdata.FTP_PORT, pvdata.FTP_INDEX,
-			pvdata.FTP_DATA)
+		self.ftp_manager = FTPSwiftea(
+			pvdata.FTP_HOST, pvdata.FTP_USER, pvdata.FTP_PASSWORD,
+			pvdata.FTP_PORT, pvdata.FTP_INDEX, pvdata.FTP_DATA)
 		self.site_informations = SiteInformations()
 		self.file_manager = FileManager()
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
@@ -38,8 +40,9 @@ class Crawler(object):
 		self.site_informations.set_listswords(stopwords, badwords)
 
 		self.index_manager = InvertedIndex()
-		self.database = DatabaseSwiftea(pvdata.DB_HOST, pvdata.DB_USER,
-			pvdata.DB_PASSWORD, pvdata.DB_NAME, pvdata.TABLE_NAME)
+		self.database = DatabaseSwiftea(
+			pvdata.DB_HOST, pvdata.DB_USER, pvdata.DB_PASSWORD, pvdata.DB_NAME,
+			pvdata.TABLE_NAME)
 		self.web_connection = WebConnection()
 
 		self.get_inverted_index()
@@ -53,21 +56,20 @@ class Crawler(object):
 
 		"""
 		inverted_index = self.file_manager.read_inverted_index()
-		self.index_manager.setInvertedIndex(inverted_index)
-		return
-		if module.is_index():  # json index
-			inverted_index = self.file_manager.get_inverted_index()
-		else:
-			response = self.ftp_manager.compare_indexs()
-			if response == 'server':
-				begining = time()
-				inverted_index = self.ftp_manager.get_inverted_index()
-				index.stats_dl_index(begining, time())
-			elif response == 'local':
-				inverted_index = self.file_manager.read_inverted_index()
-			elif response == 'new':
-				inverted_index = {}
-		self.index_manager.setInvertedIndex(inverted_index)
+		self.index_manager.set_inverted_index(inverted_index)
+		# if module.is_index():  # json index
+		# 	inverted_index = self.file_manager.get_inverted_index()
+		# else:
+		# 	response = self.ftp_manager.compare_indexs()
+		# 	if response == 'server':
+		# 		begining = time()
+		# 		inverted_index = self.ftp_manager.get_inverted_index()
+		# 		index.stats_dl_index(begining, time())
+		# 	elif response == 'local':
+		# 		inverted_index = self.file_manager.read_inverted_index()
+		# 	elif response == 'new':
+		# 		inverted_index = {}
+		# self.index_manager.set_inverted_index(inverted_index)
 
 	def start(self):
 		"""Start main loop of crawling.
@@ -86,7 +88,8 @@ class Crawler(object):
 			for _ in range(50):
 				module.tell('Crawl', severity=2)
 				begining = time()
-				while len(self.infos) < 50:
+				while len(self.infos) < 10:
+					begining = time()
 					# Start of crawling loop
 					module.tell('File {0}, line {1}'.format(
 						str(self.file_manager.reading_file_number),
@@ -94,12 +97,16 @@ class Crawler(object):
 					url = self.file_manager.get_url()  # Get the url of the website
 					if url == 'stop':
 						self.safe_quit()
+
 					result = self.crawl_webpage(url)
+
 					# result[0]: webpage_infos, result[1]: links
 					if result:
 						self.infos.append(result[0])
 						links = self.file_manager.save_links(result[1])
 						self.file_manager.check_size_links(result[1])
+					with open(data.DIR_STATS + 'stat_crawl_one_webpage', 'a') as myfile:
+						myfile.write(str(time() - begining) + '\n')
 					# End of crawling loop
 
 				module.tell('{} new documents!'.format(self.crawled_websites), severity=-1)
@@ -140,12 +147,12 @@ class Crawler(object):
 		new_url, html_code, nofollow, score, all_urls = self.web_connection.get_code(url)
 		if html_code is None:
 			self.delete_bad_url(all_urls)  # Failed to get code, must delete from database.
-			return
-		elif html_code == 'no connection':
+			return None
+		if html_code == 'no connection':
 			self.safe_quit()
-		elif html_code == 'ignore':  # There was something wrong and maybe a redirection.
+		if html_code == 'ignore':  # There was something wrong and maybe a redirection.
 			self.delete_bad_url(all_urls)
-			return
+			return None
 		else:
 			module.tell('New url: ' + new_url, severity=0)
 			self.delete_bad_url(all_urls)  # Except new url
@@ -157,10 +164,10 @@ class Crawler(object):
 					self.crawled_websites += 1
 					return webpage_infos, links
 				else:
-					return
+					return None
 			else:
 				self.delete_bad_url(new_url)
-				return
+				return None
 
 	def delete_bad_url(self, urls):
 		"""Delete bad doc if exists.
@@ -220,10 +227,10 @@ class Crawler(object):
 	def send_inverted_index(self):
 		"""Send inverted-index generate by indexing to server."""
 		begining = time()
-		self.ftp_manager.send_inverted_index(self.index_manager.getInvertedIndex())
+		self.ftp_manager.send_inverted_index(self.index_manager.get_inverted_index())
 		index.stats_ul_index(begining, time())
-		#for path in listdir(DIR_INDEX):
-		#	rmtree(DIR_INDEX + path)
+		# for path in listdir(DIR_INDEX):
+		# 	rmtree(DIR_INDEX + path)
 
 	def suggestions(self):
 		"""Suggestions:
@@ -236,7 +243,7 @@ class Crawler(object):
 		if suggestions is None:
 			module.tell('Failed to get suggestions')
 		else:
-			suggestions = self.site_informations.clean_links(suggestions)
+			suggestions = data_processing.clean_links(suggestions)
 			if len(suggestions) > 0:
 				module.tell('Suggestions', severity=2)
 				for url in suggestions:
@@ -259,8 +266,9 @@ class Crawler(object):
 
 def save(crawler):
 	crawler.file_manager.save_inverted_index(
-		crawler.index_manager.getInvertedIndex()
+		crawler.index_manager.get_inverted_index()
 	)
+
 
 if __name__ == '__main__':
 	module.create_dirs()

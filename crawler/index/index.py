@@ -6,7 +6,7 @@ from swiftea_bot.data import DIR_STATS
 
 
 def count_files_index(index):
-	"""Return number of file to download are uplaod
+	"""Return number of file to download are upload.
 
 	Parse languages and letters from the given index.
 

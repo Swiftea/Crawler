@@ -8,7 +8,30 @@ from swiftea_bot.file_manager import *
 from tests.test_data import URL, INVERTED_INDEX, BASE_LINKS
 
 
-class SwifteaBotBaseTest(object):
+def test_create_dirs():
+	create_dirs()
+
+
+def test_tell():
+	tell('Simple message', 0)
+	tell('Hard message', severity=2)
+
+
+def test_is_index():
+	assert is_index() == False
+	open(FILE_INDEX, 'w').close()
+	assert is_index() == True
+
+
+def test_remove_duplicates():
+	assert remove_duplicates(['word', 'word']) == ['word']
+
+
+def test_stats_webpages():
+	stats_webpages(100, 1200)
+
+
+class SwifteaBotBaseTest:
 	def setup_method(self, _):
 		self.url = URL
 		self.inverted_index = INVERTED_INDEX
@@ -20,31 +43,14 @@ class SwifteaBotBaseTest(object):
 		self.reading_line_number = 0
 		self.config = ConfigParser()
 		self.run = 'true'
+		self.max_size_file = 2
 
 
 class TestModule(SwifteaBotBaseTest):
-	def test_create_dirs(self):
-		create_dirs()
-
-	def test_tell(self):
-		tell('Simple message', 0)
-		tell('Hard message', severity=2)
-
-	def test_is_index(self):
-		assert is_index() == False
-		open(FILE_INDEX, 'w').close()
-		assert is_index() == True
-
 	def test_can_add_doc(self):
 		docs = [{'url': self.url}]
 		assert can_add_doc(docs, {'url': self.url}) == False
 		assert can_add_doc(docs, {'url': self.url + '/page'}) == True
-
-	def test_remove_duplicates(self):
-		assert remove_duplicates(['word', 'word']) == ['word']
-
-	def test_stats_webpages(self):
-		stats_webpages(100, 1200)
 
 
 class TestFileManager(SwifteaBotBaseTest):
@@ -64,6 +70,16 @@ class TestFileManager(SwifteaBotBaseTest):
 			mkdir(DIR_LINKS)
 		FileManager.save_links(self, BASE_LINKS.split())
 		FileManager.save_links(self, BASE_LINKS[5:].split())
+
+	def test_check_size_files(self):
+		FileManager.check_size_files(self)
+		self.max_size_file = 1
+		tell('Simple message')
+		tell('Simple message')
+		FileManager.check_size_files(self)
+		tell('Simple message')
+		tell('Simple message')
+		FileManager.check_size_files(self)
 
 	def test_get_url(self):
 		with open(DIR_LINKS + '1', 'w') as myfile:

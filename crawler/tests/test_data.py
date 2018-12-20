@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from shutil import rmtree
-from os import remove
+from os import remove, path
 
 from swiftea_bot.data import DIR_DATA, BASE_LINKS
 
@@ -21,7 +21,7 @@ CODE1 = """<!DOCTYPE html>
     </head>
     <body>
         <p>une <a href="demo">CSS Demo</a> ici!</p>
-        <h1>Gros titre</h1>
+        <h1>Gros titre🤣 </h1>
         <h2>Moyen titre</h2>
         <h3>petit titre</h3>
         <p><strong>strong </strong><em>em</em></p>
@@ -68,7 +68,8 @@ INVERTED_INDEX = {'EN': {
 'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
 
 def reset():
-    try: rmtree(DIR_DATA)
-    except FileNotFoundError: pass
-    try: remove('test_RedirectOutput.ext')
-    except FileNotFoundError: pass
+    if path.exists(DIR_DATA):
+        rmtree(DIR_DATA)
+    # for global tests:
+    if path.exists('test_redirect_output.ext'):
+        remove('test_redirect_output.ext')

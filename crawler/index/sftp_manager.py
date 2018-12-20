@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # NOT USED FOR NOW (WE USE FTP INSTEAD OF SFTP)
 
+"""Define a class that deal with the low level sftp manager."""
+
 from socket import timeout
 import paramiko
 

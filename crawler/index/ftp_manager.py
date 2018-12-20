@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Define a class that deal with the low level ftp manager."""
+
 from socket import timeout
 from ftplib import FTP, all_errors
 

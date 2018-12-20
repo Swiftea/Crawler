@@ -4,11 +4,11 @@ import requests as req
 from reppy.cache import RobotsCache
 
 from swiftea_bot.data import HEADERS
-from crawling.connection import *
-from crawling.searches import *
+from crawling import data_processing
+from crawling import searches
 from crawling.web_connection import WebConnection
 from crawling.site_informations import SiteInformations
-from crawling.parsers import *
+from crawling import parsers
 import tests.test_data as test_data
 
 
@@ -20,8 +20,8 @@ class CrawlingBaseTest(object):
 		self.code1 = test_data.CODE1
 		self.code2 = test_data.CODE2
 		self.code3 = test_data.CODE3
-		self.parser = ExtractData()
-		self.parser_encoding = ExtractEncoding()
+		self.parser = parsers.ExtractData()
+		self.parser_encoding = parsers.ExtractEncoding()
 		self.STOPWORDS = {'fr':('mot', 'pour', 'de')}
 		self.BADWORDS = {'fr': ('pipe', 'xxx')}
 		self.is_title = True
@@ -32,26 +32,36 @@ class CrawlingBaseTest(object):
 
 class TestConnection(CrawlingBaseTest):
 	def test_check_connection(self):
-		assert check_connection(self.url) == False
-		assert check_connection() == True
+		assert data_processing.check_connection(self.url) == False
+		assert data_processing.check_connection() == True
 
 	def test_is_nofollow(self):
-		nofollow, url = is_nofollow(self.url + '!nofollow!')
+		nofollow, url = data_processing.is_nofollow(self.url + '!nofollow!')
 		assert nofollow == True
 		assert url == self.url
-		nofollow, url = is_nofollow(self.url)
+		nofollow, url = data_processing.is_nofollow(self.url)
 		assert nofollow == False
 		assert url == self.url
 
 	def test_duplicate_content(self):
-		assert duplicate_content('un premier code', 'un deuxieme code') == True
-		assert duplicate_content('un premier code un peu plus grand', 'un deuxieme code') == False
+		assert data_processing.duplicate_content('un premier code', 'un deuxieme code') == True  # percent >= 65 and percent < 95 and size_code1 <= size_code2
+		assert data_processing.duplicate_content('un premier code         ', 'un deuxieme code') == False  # percent >= 65 and percent < 95 and size_code1 <= size_code2
+		assert data_processing.duplicate_content('un deuxieme code', 'un premier code') == True  # percent >= 65 and percent < 95 and size_code1 > size_code2
+		assert data_processing.duplicate_content('un deuxieme code', 'un premier code         ') == False  # percent >= 65 and percent < 95 and size_code1 > size_code2
+		assert data_processing.duplicate_content('le meme code', 'le meme code') == True  # code1 == code2
+		t1 = 'le meme code le meme code le meme code le meme code le meme code'
+		t2 = 'le meme code le meme code le meme code le meme code le meme code0'
+		assert data_processing.duplicate_content(t1, t2) == True  # size_code1 < size_code2
+		t3 = 'le meme0 code le meme0 code le meme0 code le meme code le meme0 code'
+		t4 = 'le meme code le meme code le meme code le meme code le meme code'
+		assert data_processing.duplicate_content(t3, t4) == True  # percent >= 95
+		assert data_processing.duplicate_content('un premier code un peu plus grand', 'un deuxieme code') == False  # persont < 65
 
 	def test_all_urls(self):
 		request = req.get("https://fr.wikipedia.org")
-		assert all_urls(request) == ["https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Accueil_principal", "https://fr.wikipedia.org"]
+		assert data_processing.all_urls(request) == ["https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Accueil_principal", "https://fr.wikipedia.org"]
 		request = req.get("https://choosealicense.com/")
-		assert all_urls(request) == ["https://choosealicense.com"]
+		assert data_processing.all_urls(request) == ["https://choosealicense.com"]
 
 
 class TestWebConnection(CrawlingBaseTest):
@@ -78,27 +88,27 @@ class TestWebConnection(CrawlingBaseTest):
 
 class TestSearches(CrawlingBaseTest):
 	def test_clean_text(self):
-		text = clean_text('Sample text with non-desired \r whitespaces \t chars \n')
+		text = searches.clean_text('Sample text with non-desired \r whitespaces \t chars \n')
 		assert '\n' not in text and '\r' not in text and '\t' not in text
 
 	def test_get_base_url(self):
-		assert get_base_url(self.url + '/page1.php') == self.url
+		assert searches.get_base_url(self.url + '/page1.php') == self.url
 
 	def test_is_homepage(self):
-		assert is_homepage('http://www.bfmtv.com') == True
-		assert is_homepage('http://www.bfmtv.com/page.html') == False
-		assert is_homepage('https://github.com') == True
-		assert is_homepage('http://bfmbusiness.bfmtv.com') == False
+		assert searches.is_homepage('http://www.bfmtv.com') == True
+		assert searches.is_homepage('http://www.bfmtv.com/page.html') == False
+		assert searches.is_homepage('https://github.com') == True
+		assert searches.is_homepage('http://bfmbusiness.bfmtv.com') == False
 
 	def test_capitalize(self):
-		assert capitalize('ceci est un Titre') == 'Ceci est un Titre'
-		assert capitalize('') == ''
+		assert searches.capitalize('ceci est un Titre') == 'Ceci est un Titre'
+		assert searches.capitalize('') == ''
 
 	def test_clean_link(self):
-		assert clean_link('http://www.example.fr?w=word#big_title') == 'http://www.example.fr?w=word'
+		assert searches.clean_link('http://www.example.fr?w=word#big_title') == 'http://www.example.fr?w=word'
 
 	def test_stats_links(self):
-		stats_links(50)
+		searches.stats_links(50)
 
 
 class TestSiteInformations(CrawlingBaseTest):
@@ -108,11 +118,16 @@ class TestSiteInformations(CrawlingBaseTest):
 		assert var.STOPWORDS == {'en': ['then', 'already']}
 		assert var.BADWORDS == {'en': ['verybadword']}
 
+	def test_get_info(self):
+		site_informations = SiteInformations()
+		site_informations.set_listswords(stopwords={'en': []}, badwords={'en':[]})
+		site_informations.get_infos('http://aetfiws.ovh', test_data.CODE1, True, 0)
+
 	def test_clean_links(self):
 		links = ['page.php', 'http://aetfiws.ovh/', 'mailto:test@test.fr',
 			'//www.example.fr?w=word', 'http://aetfiws.ovh/page1/index.html',
 			'/page1', 'http:/', '://www.sportetstyle.fr']
-		links = SiteInformations.clean_links(self, links, self.url)
+		links = data_processing.clean_links(links, self.url)
 		assert links == ['http://aetfiws.ovh/page.php', self.url,
 			'http://www.example.fr?w=word', 'http://aetfiws.ovh/page1',
 			'http://www.sportetstyle.fr']
@@ -144,34 +159,31 @@ class TestSiteInformations(CrawlingBaseTest):
 
 class TestParsers(CrawlingBaseTest):
 	def test_can_append(self):
-		assert can_append('about/ninf.php', 'noindex, nofollow') == None
-		assert can_append('about/ninf.php', 'nofollow') == 'about/ninf.php!nofollow!'
-		assert can_append('about/ninf.php', '') == 'about/ninf.php'
-		assert can_append(None, '') is None
+		assert parsers.can_append('about/ninf.php', 'noindex, nofollow') == None
+		assert parsers.can_append('about/ninf.php', 'nofollow') == 'about/ninf.php!nofollow!'
+		assert parsers.can_append('about/ninf.php', '') == 'about/ninf.php'
+		assert parsers.can_append(None, '') is None
 
 	def test_meta(self):
-		language, description = meta([('name', 'description'), ('content', 'Communauté du Libre partage')])
+		language, description = parsers.meta([('name', 'description'), ('content', 'Communauté du Libre partage')])
 		assert description == 'Communauté du Libre partage'
-		language, description = meta([('name', 'language'), ('content', 'fr')])
+		language, description = parsers.meta([('name', 'language'), ('content', 'fr')])
 		assert language == 'fr'
-		language, description = meta([('http-equiv', 'content-language'), ('content', 'en')])
+		language, description = parsers.meta([('http-equiv', 'content-language'), ('content', 'en')])
 		assert language == 'en'
 
 	def test_handle_entityref(self):
-		ExtractData.handle_entityref(self, 'eacute')
+		parsers.ExtractData.handle_entityref(self, 'eacute')
 		assert self.title == 'letteré'
-		ExtractData.handle_entityref(self, 'agrave')
+		parsers.ExtractData.handle_entityref(self, 'agrave')
 		assert self.title == 'letteréà'
-
-	def test_handle_charref(self):
-		pass
 
 	def test_parser(self):
 		self.parser.feed(self.code1)
 		assert self.parser.links == ['demo', 'index', 'about/nf.php!nofollow!']
-		assert clean_text(self.parser.first_title) == 'Gros titre'
-		keywords = 'une CSS Demo ici! Gros titre Moyen titre petit titre strong em Why use Swiftea ?1 Why use Swiftea ?2 Why use Swiftea ?3 © >'
-		assert clean_text(self.parser.keywords) == keywords
+		assert searches.clean_text(self.parser.first_title) == 'Gros titre🤣'
+		keywords = 'une CSS Demo ici! Gros titre🤣 Moyen titre petit titre strong em Why use Swiftea ?1 Why use Swiftea ?2 Why use Swiftea ?3 © >'
+		assert searches.clean_text(self.parser.keywords) == keywords
 		assert self.parser.css == True
 		assert self.parser.description == 'Moteur de recherche'
 		assert self.parser.language == 'en'

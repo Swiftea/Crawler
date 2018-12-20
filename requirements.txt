@@ -1,6 +1,7 @@
-reppy==0.4.9
-PyMySQL==0.8.0
-pytest==3.5.0
+cachetools==2.0.0
+reppy==0.4.11
+PyMySQL==0.9.3
+pytest==4.0.2
 requests
 coverage
 sphinx_rtd_theme

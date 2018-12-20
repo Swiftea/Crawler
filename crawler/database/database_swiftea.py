@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Define a class that deal with the high level database manager."""
+
 from datetime import datetime
 
 from swiftea_bot.module import tell

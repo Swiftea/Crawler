@@ -29,6 +29,7 @@ class FileManager(object):
 		self.max_links = MAX_LINKS  # Number of maximum links in a file
 		self.run = 'true'  # Run program bool
 		self.config = ConfigParser()
+		self.max_size_file = MAX_SIZE
 
 		if not path.exists(FILE_CONFIG):
 			# Create the config file:
@@ -85,7 +86,7 @@ class FileManager(object):
 			with open(filename, 'r+', errors='replace', encoding='utf8') as myfile:
 				old_links = myfile.read().splitlines()
 				myfile.seek(0)
-				links = remove_duplicates(old_links + links)
+				links = list(tuple(old_links))
 				myfile.write('\n'.join(links))
 
 		return links
@@ -110,7 +111,7 @@ class FileManager(object):
 			filearchive = filelog[:-3] + 'zip'
 			with open(filelog, 'r') as myfile:
 				content = myfile.readlines()
-			if len(content) > MAX_SIZE:
+			if len(content) > self.max_size_file:
 				if not path.exists(filearchive):
 					ZipFile(file=filearchive, mode='w').close()
 					filename = '0'
