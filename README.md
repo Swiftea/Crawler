@@ -1,19 +1,10 @@
 # Swiftea's Open Source Web Crawler
 
-## Master branch:
 [![Build Status](https://travis-ci.org/Swiftea/Crawler.svg?branch=master)](https://travis-ci.org/Swiftea/Crawler)
 [![Coverage Status](https://coveralls.io/repos/github/Swiftea/Crawler/badge.svg?branch=master)](https://coveralls.io/github/Swiftea/Crawler?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=master)](http://crawler.readthedocs.io/en/master/?badge=master)
 [![Code Health](https://landscape.io/github/Swiftea/Crawler/master/landscape.svg?style=flat)](https://landscape.io/github/Swiftea/Crawler/master)
 [![Requirements Status](https://requires.io/github/Swiftea/Crawler/requirements.svg?branch=master)](https://requires.io/github/Swiftea/Crawler/requirements/?branch=master)
-
-
-## Develop branch:
-[![Build Status](https://travis-ci.org/Swiftea/Crawler.svg?branch=develop)](https://travis-ci.org/Swiftea/Crawler)
-[![Coverage Status](https://coveralls.io/repos/github/Swiftea/Crawler/badge.svg?branch=develop)](https://coveralls.io/github/Swiftea/Crawler?branch=develop)
-[![Documentation Status](https://readthedocs.org/projects/crawler/badge/?version=develop)](http://crawler.readthedocs.io/en/develop/index.html)
-[![Code Health](https://landscape.io/github/Swiftea/Crawler/develop/landscape.svg?style=flat)](https://landscape.io/github/Swiftea/Crawler/develop)
-[![Requirements Status](https://requires.io/github/Swiftea/Crawler/requirements.svg?branch=develop)](https://requires.io/github/Swiftea/Crawler/requirements/?branch=develop)
 
 ## Description
 
@@ -105,9 +96,8 @@ Want to contribute? Great!
 
 Fork the repository. Then, run:
 
-    git clone --recursive git@github.com:<username>/Crawler.git
+    git clone git@github.com:<username>/Crawler.git
     cd Crawler
-    git checkout develop
 
 Then, do your work and commit your changes. Finally, make a pull request.
 
