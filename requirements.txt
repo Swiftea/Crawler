@@ -1,5 +1,4 @@
-cachetools==2.0.0
-reppy==0.4.11
+reppy==0.4.12
 PyMySQL==0.9.3
 pytest==4.0.2
 requests
