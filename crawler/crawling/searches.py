@@ -2,13 +2,12 @@
 
 """Define several functions SiteInformations."""
 
-from re import compile as compile_regex
+
 from urllib.parse import urlparse
+
 
 from swiftea_bot.data import BAD_EXTENTIONS, DIR_STATS
 
-
-regex = compile_regex(r'(\w+|\d+)')
 
 def clean_text(text):
 	"""Clean up text by removing tabulations, blanks and carriage returns.

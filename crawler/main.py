@@ -5,6 +5,10 @@ import atexit
 from os import listdir
 from shutil import rmtree
 import sys
+from urllib.parse import urlparse
+
+
+import click
 
 
 try:
@@ -26,13 +30,13 @@ from index import index
 
 class Crawler:
 	"""Crawler main class."""
-	def __init__(self):
+	def __init__(self, crawl_option):
 		self.infos = list()
 		self.ftp_manager = FTPSwiftea(
 			pvdata.FTP_HOST, pvdata.FTP_USER, pvdata.FTP_PASSWORD,
 			pvdata.FTP_PORT, pvdata.FTP_INDEX, pvdata.FTP_DATA)
 		self.site_informations = SiteInformations()
-		self.file_manager = FileManager()
+		self.file_manager = FileManager(crawl_option)
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
 		if stopwords == dict() or badwords == dict():
 			self.ftp_manager.download_lists_words()  # Download all lists of words (bad and stop)
@@ -42,7 +46,7 @@ class Crawler:
 		self.index_manager = InvertedIndex()
 		self.database = DatabaseSwiftea(
 			pvdata.DB_HOST, pvdata.DB_USER, pvdata.DB_PASSWORD, pvdata.DB_NAME,
-			pvdata.TABLE_NAME)
+			pvdata.TABLE_NAME, crawl_option['domaine'])
 		self.web_connection = WebConnection()
 
 		self.get_inverted_index()
@@ -269,16 +273,29 @@ def save(crawler):
 		crawler.index_manager.get_inverted_index()
 	)
 
+@click.command()
+@click.option('-u', '--url')  # initial url
+@click.option('-sd', '--sub-domaine', default=True)  # True or False
+@click.option('-l', '--level', default=1)
+def main(url, sub_domaine, level):
+	print(url)
+	print(sub_domaine)
+	print(level)
+	crawl_option = dict()
+	crawl_option['domaine'] = urlparse(url).netloc
+	crawl_option['sub-domaine'] = sub_domaine
+	crawl_option['level'] = level
+	if url is not None:
+		print('Starting with', crawl_option['domaine'])
+	else:
+		print('Starting with base urls')
+	input('Continue?')
+	module.create_dirs()
+	crawler = Crawler(crawl_option)
+	atexit.register(save, crawler)
+	module.def_links()
+	crawler.start()
+
 
 if __name__ == '__main__':
-	module.create_dirs()
-	crawler = Crawler()
-	atexit.register(save, crawler)
-	urls = sys.argv[1:]
-	if urls:
-		for url in urls:
-			result = crawler.crawl_webpage(url)
-			print(result)
-	else:
-		module.def_links()
-		crawler.start()
+	main()

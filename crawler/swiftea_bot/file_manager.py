@@ -22,7 +22,14 @@ class FileManager(object):
 	Create configuration file if it doesn't exists or read it.
 
 	"""
-	def __init__(self):
+	def __init__(self, crawl_option):
+		"""With `url`, filter links to save, and read filtered links.
+
+		:param url: the crawler was called with this starting url
+		:type url: str
+
+		"""
+		self.crawl_option = crawl_option
 		self.writing_file_number = 1  # Meter of the writing file
 		self.reading_file_number = 0  # Meter of the reading file
 		self.reading_line_number = 0  # Meter of links in the reading file
