@@ -84,9 +84,9 @@ class FileManager(object):
 				myfile.write('\n'.join(links))
 		else:
 			with open(filename, 'r+', errors='replace', encoding='utf8') as myfile:
-				old_links = myfile.read().splitlines()
+				links = myfile.read().splitlines()
 				myfile.seek(0)
-				links = list(tuple(old_links))
+				# links = list(tuple(links))
 				myfile.write('\n'.join(links))
 
 		return links
