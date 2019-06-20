@@ -278,6 +278,8 @@ def save(crawler):
 @click.option('-sd', '--sub-domaine', default=True)  # True or False
 @click.option('-l', '--level', default=1)
 def main(url, sub_domaine, level):
+	# python main.py -u http://idesys.org -sd False -l 2
+	# python main.py -u http://idesys.org -l 1
 	print(url)
 	print(sub_domaine)
 	print(level)

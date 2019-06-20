@@ -4,10 +4,13 @@
 
 
 from urllib.parse import urlparse
+from re import compile as compile_regex
 
 
 from swiftea_bot.data import BAD_EXTENTIONS, DIR_STATS
 
+
+regex = compile_regex(r'(\w+|\d+)')  # used in site_informations.py
 
 def clean_text(text):
 	"""Clean up text by removing tabulations, blanks and carriage returns.

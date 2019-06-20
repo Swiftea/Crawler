@@ -23,7 +23,7 @@ class DatabaseSwiftea(DatabaseManager):
 	:type name: str
 
 	"""
-	def __init__(self, host, user, password, name, table):
+	def __init__(self, host, user, password, name, table, domaine):
 		DatabaseManager.__init__(self, host, user, password, name)
 		self.t = table
 
@@ -135,9 +135,9 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 		"""
 		if table is None:
 			table = self.t
-		tell('Delete from {} doc: {}'.format(self.t,  url))
+		tell('Delete from {} doc: {}'.format(table,  url))
 		response = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url))
-		if 'error' in  response[1]:
+		if 'error' in  response[1] or response[1][1] != 'Send command: ok':
 			tell('Doc not removed: {0}, {1}'.format(url, response[1]), 12)
 		return response[1]
 
@@ -148,7 +148,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 
 		"""
 		result, response = self.send_command("SELECT url FROM suggestion LIMIT 5", fetchall=True)
-		if 'error' in  response[1]:
+		if 'error' in  response[1] or result is None:
 			tell('Failed to get url: ' + response, 13)
 			return None
 		else:
@@ -156,7 +156,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 			for element in result:
 				if len(suggested_links) < 5:
 					suggested_links.append(element[0])
-					self.del_one_doc(element[0], 'suggestions')
+					self.del_one_doc(element[0], 'suggestion')
 			return suggested_links
 
 	def doc_exists(self, url):

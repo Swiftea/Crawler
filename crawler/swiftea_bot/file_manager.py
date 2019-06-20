@@ -147,6 +147,8 @@ class FileManager(object):
 			tell('Reading file is not found in get_url: ' + filename, 4)
 			return 'stop'
 		else:
+			if not len(list_links):
+				return 'stop'
 			url = list_links[self.reading_line_number]
 			self.reading_line_number += 1
 			# If it is the last links of the file:
