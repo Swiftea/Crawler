@@ -55,8 +55,8 @@ class TestModule(SwifteaBotBaseTest):
 
 class TestFileManager(SwifteaBotBaseTest):
 	def test_init(self):
-		FileManager.__init__(self)
-		FileManager.__init__(self)
+		FileManager.__init__(self, {})
+		FileManager.__init__(self, {})
 
 	def test_check_stop_crawling(self):
 		FileManager.check_stop_crawling(self)
@@ -69,7 +69,9 @@ class TestFileManager(SwifteaBotBaseTest):
 		if not path.exists(DIR_LINKS):
 			mkdir(DIR_LINKS)
 		FileManager.save_links(self, BASE_LINKS.split())
-		FileManager.save_links(self, BASE_LINKS[5:].split())
+		links = ['http://www.planet-libre.org', 'http://www.actu-environnement.com', 'http://a.fr']
+		links.extend(BASE_LINKS.split())
+		FileManager.save_links(self, links)
 
 	def test_check_size_files(self):
 		FileManager.check_size_files(self)

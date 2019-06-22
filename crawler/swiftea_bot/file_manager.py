@@ -86,17 +86,10 @@ class FileManager(object):
 
 		"""
 		filename = DIR_LINKS + str(self.writing_file_number)
-		if not path.exists(filename):
-			with open(filename, 'w', errors='replace', encoding='utf8') as myfile:
-				myfile.write('\n'.join(links))
-		else:
-			with open(filename, 'r+', errors='replace', encoding='utf8') as myfile:
-				links = myfile.read().splitlines()
-				myfile.seek(0)
-				# links = list(tuple(links))
-				myfile.write('\n'.join(links))
-
-		return links
+		mode = 'a' if path.exists(filename) else 'w'
+		prefix = '\n' if path.exists(filename) else ''
+		with open(filename, mode, errors='replace', encoding='utf8') as myfile:
+			myfile.write(prefix + '\n'.join(links))
 
 	def check_size_links(self, links):
 		"""Check number of links in file.
