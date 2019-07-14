@@ -4,6 +4,9 @@
 
 from time import strftime
 from os import path, mkdir
+import sys
+import json
+
 
 import swiftea_bot.data as data
 
@@ -40,6 +43,9 @@ def tell(message, error_code='', severity=1):
 	with open(data.FILE_EVENTS, 'a') as myfile:
 		myfile.write(strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
 
+def safe_quit():
+	tell('exiting', 0, 2)
+	sys.exit(1)
 
 def errors(message, error_code):
 	"""Write the error report with the time in errors file.
@@ -76,17 +82,26 @@ def create_dirs():
 		mkdir(data.DIR_INDEX)
 	if not path.isdir(data.DIR_STATS):
 		mkdir(data.DIR_STATS)
+	if not path.isdir(data.DIR_LINKS):
+		mkdir(data.DIR_LINKS)
 
 
-def def_links():
+def def_links(url=None, domaine=None):
 	"""Create directory of links if it doesn't exist
 
 	Ask to user what doing if there isn't basic links.
 	Create a basic links file if user what it.
 
+	:param url: url for domaine crawl
+	:type url: str
+
 	"""
-	if not path.isdir(data.DIR_LINKS):
-		mkdir(data.DIR_LINKS)
+	if url is not None and domaine is not None:
+		with open(data.FILE_BASELINKS, 'w') as link_file:
+			link_file.write(url + '\n')
+		# with open(data.FILE_LINKS, 'w') as link_file:
+		# 	json.dump([{'domaine': domaine, 'level': 0, 'completed': 0}], link_file)
+	else:
 		print("""No links file to start crawling:
 1: let the crawler uses it default list
 2: fill a file yourself""")

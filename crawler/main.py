@@ -4,7 +4,6 @@ from time import time
 import atexit
 from os import listdir
 from shutil import rmtree
-import sys
 from urllib.parse import urlparse
 
 
@@ -25,18 +24,20 @@ from swiftea_bot.file_manager import FileManager
 from index.inverted_index import InvertedIndex
 from swiftea_bot.data import DIR_INDEX
 from swiftea_bot import data, module
+import swiftea_bot.links
 from index import index
 
 
 class Crawler:
 	"""Crawler main class."""
 	def __init__(self, crawl_option):
+		self.crawl_option = crawl_option
 		self.infos = list()
 		self.ftp_manager = FTPSwiftea(
 			pvdata.FTP_HOST, pvdata.FTP_USER, pvdata.FTP_PASSWORD,
 			pvdata.FTP_PORT, pvdata.FTP_INDEX, pvdata.FTP_DATA)
 		self.site_informations = SiteInformations()
-		self.file_manager = FileManager(crawl_option)
+		self.file_manager = FileManager(self.crawl_option)
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
 		if stopwords == dict() or badwords == dict():
 			self.ftp_manager.download_lists_words()  # Download all lists of words (bad and stop)
@@ -46,7 +47,7 @@ class Crawler:
 		self.index_manager = InvertedIndex()
 		self.database = DatabaseSwiftea(
 			pvdata.DB_HOST, pvdata.DB_USER, pvdata.DB_PASSWORD, pvdata.DB_NAME,
-			pvdata.TABLE_NAME, crawl_option['domaine'])
+			pvdata.TABLE_NAMES, self.crawl_option['domaine'])
 		self.web_connection = WebConnection()
 
 		self.get_inverted_index()
@@ -86,6 +87,10 @@ class Crawler:
 
 		"""
 		run = True
+		url, level_complete = self.file_manager.main([], self.crawl_option)
+		print(level_complete)
+		if url == 'error':
+			module.safe_quit()
 		while run:
 			stats_send_index = time()
 			self.suggestions()
@@ -93,27 +98,40 @@ class Crawler:
 				module.tell('Crawl', severity=2)
 				begining = time()
 				while len(self.infos) < 10:
+					input('continue?')
+
 					begining = time()
 					# Start of crawling loop
-					module.tell('File {0}, line {1}'.format(
-						str(self.file_manager.reading_file_number),
-						str(self.file_manager.reading_line_number + 1)), severity=0)
-					url = self.file_manager.get_url()  # Get the url of the website
-					if url == 'stop':
-						self.safe_quit()
-
 					result = self.crawl_webpage(url)
-
 					# result[0]: webpage_infos, result[1]: links
+
 					if result:
 						self.infos.append(result[0])
-						links = self.file_manager.save_links(result[1])
-						self.file_manager.check_size_links(result[1])
+						# save links and get next url:
+						url, level_complete = self.file_manager.main(
+							result[1],
+							self.crawl_option
+						)
+						if url == 'error':
+							module.safe_quit()
+						if level_complete:
+							self.crawl_option['level'] += 1
+							self.file_manager.set_level(self.crawl_option['level'])
+							module.tell('Level complete, new level: ', self.crawl_option['level'])
+							if self.crawl_option['level'] == self.crawl_option['target-level']:
+								module.tell('Level complete, new level: ', self.crawl_option['level'])
+								break
+
+
 					with open(data.DIR_STATS + 'stat_crawl_one_webpage', 'a') as myfile:
 						myfile.write(str(time() - begining) + '\n')
+
 					# End of crawling loop
 
-				module.tell('{} new documents!'.format(self.crawled_websites), severity=-1)
+				module.tell(
+					'{} new documents!'.format(self.crawled_websites),
+					severity=-1
+				)
 
 				self.send_to_db()
 				self.indexing()
@@ -125,8 +143,11 @@ class Crawler:
 				self.file_manager.save_config()
 				if self.file_manager.run == 'false':
 					module.tell('User wants stop program')
-					self.safe_quit()
-					run = False
+					module.safe_quit()
+					# run = False  # TODO: remove this line
+					# break  # TODO: remove this line
+
+				if self.crawl_option['level'] == self.crawl_option['target-level']:
 					break
 
 			# End of loop range(n)
@@ -153,7 +174,7 @@ class Crawler:
 			self.delete_bad_url(all_urls)  # Failed to get code, must delete from database.
 			return None
 		if html_code == 'no connection':
-			self.safe_quit()
+			module.safe_quit()
 		if html_code == 'ignore':  # There was something wrong and maybe a redirection.
 			self.delete_bad_url(all_urls)
 			return None
@@ -192,9 +213,9 @@ class Crawler:
 					self.database.del_one_doc(url)
 					self.index_manager.delete_doc_id(doc_id)
 				else:
-					self.safe_quit()
+					module.safe_quit()
 			elif doc_exists is None:
-				self.safe_quit()
+				module.safe_quit()
 			else:
 				module.tell('Ignore: ' + url, severity=-1)
 
@@ -212,7 +233,7 @@ class Crawler:
 			module.tell('New url (to add): ' + webpage_infos['url'], severity=-1)
 			error = self.database.send_doc(webpage_infos)
 			if error:
-				self.safe_quit()
+				module.safe_quit()
 
 	def indexing(self):
 		"""Index crawled webpages.
@@ -224,7 +245,7 @@ class Crawler:
 		for webpage_infos in self.infos:
 			doc_id = self.database.get_doc_id(webpage_infos['url'])
 			if doc_id is None:
-				self.safe_quit()
+				module.safe_quit()
 			module.tell('Indexing {0} {1}'.format(doc_id, webpage_infos['url']))
 			self.index_manager.add_doc(webpage_infos['keywords'], doc_id, webpage_infos['language'])
 
@@ -256,16 +277,11 @@ class Crawler:
 					if result:
 						self.infos.append(result[0])
 						links = self.file_manager.save_links(result[1])
-						self.file_manager.check_size_links(result[1])
 				self.send_to_db()
 				self.indexing()
 				self.infos.clear()  # Reset the list of dict of informations of websites.
 			else:
 				module.tell('No suggestions')
-
-	def safe_quit(self):
-		module.tell('exiting', 0, 2)
-		sys.exit(1)  # added in March 2018
 
 
 def save(crawler):
@@ -280,22 +296,20 @@ def save(crawler):
 def main(url, sub_domaine, level):
 	# python main.py -u http://idesys.org -sd False -l 2
 	# python main.py -u http://idesys.org -l 1
-	print(url)
-	print(sub_domaine)
-	print(level)
-	crawl_option = dict()
-	crawl_option['domaine'] = urlparse(url).netloc
-	crawl_option['sub-domaine'] = sub_domaine
-	crawl_option['level'] = level
-	if url is not None:
+	crawl_option = {'domaine': '', 'level': -1}
+	if url:
+		crawl_option['domaine'] = urlparse(url).netloc
+		crawl_option['sub-domaine'] = sub_domaine
+		crawl_option['target-level'] = level
+		crawl_option['level'] = swiftea_bot.links.get_level(crawl_option)
 		print('Starting with', crawl_option['domaine'])
+		input('Go?')
 	else:
 		print('Starting with base urls')
-	input('Continue?')
 	module.create_dirs()
 	crawler = Crawler(crawl_option)
 	atexit.register(save, crawler)
-	module.def_links()
+	module.def_links(url, crawl_option['domaine'])
 	crawler.start()
 
 

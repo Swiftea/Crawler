@@ -17,6 +17,7 @@ setdefaulttimeout(30)
 # Strings for directories and files:
 DIR_DATA = 'data/'
 DIR_LINKS = DIR_DATA + 'links/'
+FILE_LINKS = DIR_LINKS + 'links.json'
 DIR_CONFIG = DIR_DATA + 'config/'
 DIR_INDEX = DIR_DATA + 'inverted_index/'
 DIR_STATS = DIR_DATA + 'stats/'

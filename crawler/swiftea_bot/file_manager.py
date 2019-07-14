@@ -9,8 +9,10 @@ from configparser import ConfigParser
 import json
 from zipfile import ZipFile
 
-from swiftea_bot.data import MAX_LINKS, FILE_CONFIG, DIR_LINKS, FILE_INDEX, DIR_INDEX, DIR_DATA, FILE_EVENTS, FILE_ERRORS, MAX_SIZE
-from swiftea_bot.module import tell, remove_duplicates, convert_keys
+
+from swiftea_bot import data
+from swiftea_bot.module import tell, remove_duplicates, convert_keys, safe_quit
+import swiftea_bot.links
 
 
 class FileManager(object):
@@ -30,50 +32,51 @@ class FileManager(object):
 
 		"""
 		self.crawl_option = crawl_option
-		self.writing_file_number = 1  # Meter of the writing file
-		self.reading_file_number = 0  # Meter of the reading file
 		self.reading_line_number = 0  # Meter of links in the reading file
-		self.max_links = MAX_LINKS  # Number of maximum links in a file
+		self.max_links = data.MAX_LINKS  # Number of maximum links in a file
 		self.run = 'true'  # Run program bool
 		self.config = ConfigParser()
-		self.max_size_file = MAX_SIZE
 
-		if not path.exists(FILE_CONFIG):
+		if not path.exists(data.FILE_CONFIG):
 			# Create the config file:
 			self.config['DEFAULT'] = {
 				'run': 'true',
-				'reading_file_number': '0',
-				'writing_file_number': '1',
 				'reading_line_number': '0',
-				'max_links': MAX_LINKS
+				'max_links': data.MAX_LINKS
 			}
 
-			with open(FILE_CONFIG, 'w') as configfile:
+			with open(data.FILE_CONFIG, 'w') as configfile:
 				self.config.write(configfile)
 		else:
 			# Read the config file:
-			self.config.read_file(open(FILE_CONFIG))
+			self.config.read_file(open(data.FILE_CONFIG))
 			self.run = self.config['DEFAULT']['run']
-			self.reading_file_number = int(self.config['DEFAULT']['reading_file_number'])
-			self.writing_file_number = int(self.config['DEFAULT']['writing_file_number'])
 			self.reading_line_number = int(self.config['DEFAULT']['reading_line_number'])
 			self.max_links = int(self.config['DEFAULT']['max_links'])
 
+	def main(self, links, crawl_option):
+		"""Save links and get next url"""
+		if links:
+			self.save_links(links)
+		url, level_complete = self.get_url()
+		return url, level_complete
+
+	def set_level(self, level):
+		self.crawl_option['level'] = level
+
 	def check_stop_crawling(self):
 		"""Check if the user wants to stop program."""
-		self.config.read_file(open(FILE_CONFIG))
+		self.config.read_file(open(data.FILE_CONFIG))
 		self.run = self.config['DEFAULT']['run']
 
 	def save_config(self):
 		"""Save all configurations in config file."""
 		self.config['DEFAULT'] = {
 			'run': self.run,
-			'reading_file_number': str(self.reading_file_number),
-			'writing_file_number': str(self.writing_file_number),
 			'reading_line_number': str(self.reading_line_number),
 			'max_links': str(self.max_links)
 		}
-		with open(FILE_CONFIG, 'w') as configfile:
+		with open(data.FILE_CONFIG, 'w') as configfile:
 			self.config.write(configfile)
 
 	def save_links(self, links):
@@ -84,34 +87,21 @@ class FileManager(object):
 		:param links: links to save
 		:type links: list
 
-		"""
-		filename = DIR_LINKS + str(self.writing_file_number)
-		mode = 'a' if path.exists(filename) else 'w'
-		prefix = '\n' if path.exists(filename) else ''
-		with open(filename, mode, errors='replace', encoding='utf8') as myfile:
-			myfile.write(prefix + '\n'.join(links))
-
-	def check_size_links(self, links):
-		"""Check number of links in file.
-
-		:param links: links saved in file
-		:type links: str
+		:return: True is the level is completed
 
 		"""
-		if len(links) > self.max_links:  # Check the size
-			self.writing_file_number += 1
-			tell(
-				'More than {0} links : {1} : writing file {2}.'.format(
-				str(self.max_links), str(len(links)),
-				str(self.writing_file_number)), severity=-1
-			)
+		return swiftea_bot.links.save_links(
+			links,
+			self.crawl_option,
+			self.max_links
+		)
 
 	def check_size_files(self):
-		for filelog in [FILE_EVENTS, FILE_ERRORS]:
+		for filelog in [data.FILE_EVENTS, data.FILE_ERRORS]:
 			filearchive = filelog[:-3] + 'zip'
 			with open(filelog, 'r') as myfile:
 				content = myfile.readlines()
-			if len(content) > self.max_size_file:
+			if len(content) > data.MAX_SIZE:
 				if not path.exists(filearchive):
 					ZipFile(file=filearchive, mode='w').close()
 					filename = '0'
@@ -132,28 +122,52 @@ class FileManager(object):
 		:return: url of webpage to crawl
 
 		"""
-		filename = DIR_LINKS + str(self.reading_file_number)
-		try:
+		domaines = swiftea_bot.links.get_domaines()
+		level_complete = False
+		print(self.crawl_option)
+
+		(filename_ptr,
+		save,
+		domaines,
+		no_domaine_ptr) = swiftea_bot.links.get_filename(
+			domaines,
+			self.crawl_option,
+			self.max_links
+		)
+		print(filename_ptr,
+		save,
+		domaines,
+		no_domaine_ptr)
+
+		filename = data.DIR_LINKS + str(filename_ptr)
+		tell('File {0}, line {1}'.format(
+			str(filename_ptr),
+			str(self.reading_line_number + 1)), severity=0)
+		if path.exists(filename):
 			with open(filename, 'r', errors='replace', encoding='utf8') as myfile:
 				list_links = myfile.read().splitlines()  # List of urls
-		except FileNotFoundError:
-			tell('Reading file is not found in get_url: ' + filename, 4)
-			return 'stop'
 		else:
-			if not len(list_links):
-				return 'stop'
-			url = list_links[self.reading_line_number]
-			self.reading_line_number += 1
-			# If it is the last links of the file:
-			if len(list_links) == (self.reading_line_number):
-				self.reading_line_number = 0
-				if self.reading_file_number != 0:
-					remove(filename)
-					tell('File ' + filename + ' removed', severity=-1)
-				self.reading_file_number += 1
-				# The program have read all the links: next reading_file_number
-				tell('Next reading file: ' + str(self.reading_file_number), severity=-1)
-			return url
+			tell('Reading file not found in get_url: ' + filename, 4)
+			# tell('Level completed')  # no
+			return 'error', False
+
+		# if not len(list_links):
+			# return 'error'
+
+		url = list_links[self.reading_line_number]
+		self.reading_line_number += 1
+		# If it's the last links of the file:
+		if len(list_links) == (self.reading_line_number):
+			level_complete = True
+			self.reading_line_number = 0
+			#  remove(filename)
+			#  tell('File ' + filename + ' removed', severity=-1)
+			domaines[filename_ptr]['completed'] = 1
+			print('dump domaines', domaines)
+			with open(data.FILE_LINKS, 'w') as json_file:
+				json.dump(domaines, json_file, indent=2)
+
+		return url, level_complete
 
 	def save_inverted_index(self, inverted_index):
 		"""Save inverted-index in local.
@@ -165,7 +179,7 @@ class FileManager(object):
 
 		"""
 		tell('Save inverted-index in save file')
-		with open(FILE_INDEX, 'w') as myfile:
+		with open(data.FILE_INDEX, 'w') as myfile:
 			json.dump(inverted_index, myfile, ensure_ascii=False)
 
 	def get_inverted_index(self):
@@ -178,9 +192,9 @@ class FileManager(object):
 
 		"""
 		tell('Get inverted-index from save file')
-		with open(FILE_INDEX, 'r') as myfile:
+		with open(data.FILE_INDEX, 'r') as myfile:
 			inverted_index = json.load(myfile)
-		remove(FILE_INDEX)
+		remove(data.FILE_INDEX)
 		return convert_keys(inverted_index)
 
 	def read_inverted_index(self):
@@ -194,12 +208,12 @@ class FileManager(object):
 		"""
 		tell('Get inverted-index in local')
 		inverted_index = dict()
-		for language in listdir(DIR_INDEX):
+		for language in listdir(data.DIR_INDEX):
 			inverted_index[language] = dict()
-			for first_letter in listdir(DIR_INDEX + language):
+			for first_letter in listdir(data.DIR_INDEX + language):
 				inverted_index[language][first_letter] = dict()
-				for filename in listdir(DIR_INDEX + language + '/' + first_letter):
-					with open(DIR_INDEX + language + '/' + first_letter + '/' + filename, 'r', encoding='utf-8') as myfile:
+				for filename in listdir(data.DIR_INDEX + language + '/' + first_letter):
+					with open(data.DIR_INDEX + language + '/' + first_letter + '/' + filename, 'r', encoding='utf-8') as myfile:
 						inverted_index[language][first_letter][filename[:-4]] = json.load(myfile)
 		return convert_keys(inverted_index)
 
@@ -213,16 +227,16 @@ class FileManager(object):
 		"""
 		stopwords = dict()
 		badwords = dict()
-		if path.isdir(DIR_DATA + 'stopwords/'):
-			for filename in listdir(DIR_DATA + 'stopwords/'):
-				with open(DIR_DATA + 'stopwords/' + filename, 'r') as myfile:
+		if path.isdir(data.DIR_DATA + 'stopwords/'):
+			for filename in listdir(data.DIR_DATA + 'stopwords/'):
+				with open(data.DIR_DATA + 'stopwords/' + filename, 'r') as myfile:
 					stopwords[filename[:2]] = myfile.read().split()
 		else:
-			mkdir(DIR_DATA + 'stopwords/')
-		if path.isdir(DIR_DATA + 'badwords/'):
-			for filename in listdir(DIR_DATA + 'badwords/'):
-				with open(DIR_DATA + 'badwords/' + filename, 'r') as myfile:
+			mkdir(data.DIR_DATA + 'stopwords/')
+		if path.isdir(data.DIR_DATA + 'badwords/'):
+			for filename in listdir(data.DIR_DATA + 'badwords/'):
+				with open(data.DIR_DATA + 'badwords/' + filename, 'r') as myfile:
 					badwords[filename[:2]] = myfile.read().split()
 		else:
-			mkdir(DIR_DATA + 'badwords/')
+			mkdir(data.DIR_DATA + 'badwords/')
 		return stopwords, badwords

@@ -26,7 +26,7 @@ import index.sftp_manager
 
 def run_tests(local=False):
     os.chdir('crawler/tests')
-    args = ['--strict', '--verbose']
+    args = ['--strict', '--verbose', '-vv']
     args.append('swiftea_bot_test.py')
     args.append('crawling_test.py')
     args.append('database_test.py')
