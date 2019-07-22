@@ -36,7 +36,7 @@ class FileManager(object):
 		self.max_links = data.MAX_LINKS  # Number of maximum links in a file
 		self.run = 'true'  # Run program bool
 		self.config = ConfigParser()
-		self.domaines = []  # in FILE_LINKS
+		self.domains = []  # in FILE_LINKS
 
 		if not path.exists(data.FILE_CONFIG):
 			# Create the config file:
@@ -84,7 +84,7 @@ class FileManager(object):
 		:return: True is the level is completed
 
 		"""
-		self.domaines = swiftea_bot.links.save_links(
+		self.domains = swiftea_bot.links.save_links(
 			links,
 			self.crawl_option,
 			self.max_links
@@ -115,7 +115,7 @@ class FileManager(object):
 		if url == '#level_complete#':
 			tell('Level completed in file_manager')
 			self.crawl_option['level'] += 1
-			self.save_domaines()
+			self.save_domains()
 			return self.read_links(), True
 		return url, False
 
@@ -127,11 +127,11 @@ class FileManager(object):
 		:return: url of webpage to crawl
 
 		"""
-		self.domaines = swiftea_bot.links.get_domaines()
+		self.domains = swiftea_bot.links.get_domains()
 		print(self.crawl_option)
 
 		filename_ptr = swiftea_bot.links.get_filename_read(
-			self.domaines,
+			self.domains,
 			self.crawl_option
 		)
 
@@ -147,7 +147,7 @@ class FileManager(object):
 		# If it's the last links of the file:
 		if len(list_links) == (self.reading_line_number):
 			self.reading_line_number = 0
-			self.domaines[filename_ptr]['completed'] = 1
+			self.domains[filename_ptr]['completed'] = 1
 			return '#level_complete#'
 
 		tell('File {0}, line {1}'.format(
@@ -158,10 +158,10 @@ class FileManager(object):
 
 		return url
 
-	def save_domaines(self):
-		print('dump domaines file_manager', self.domaines)
+	def save_domains(self):
+		print('dump domains file_manager', self.domains)
 		with open(data.FILE_LINKS, 'w') as json_file:
-			json.dump(self.domaines, json_file, indent=2)
+			json.dump(self.domains, json_file, indent=2)
 
 	def save_inverted_index(self, inverted_index):
 		"""Save inverted-index in local.

@@ -87,20 +87,20 @@ def create_dirs():
 		mkdir(data.DIR_LINKS)
 
 
-def def_links(url=None, domaine=None):
+def def_links(url=None, domain=None):
 	"""Create directory of links if it doesn't exist
 
 	Ask to user what doing if there isn't basic links.
 	Create a basic links file if user what it.
 
-	:param url: url for domaine crawl
+	:param url: url for domain crawl
 	:type url: str
 
 	"""
-	if url is not None and domaine is not None:
+	if url is not None and domain is not None:
 		with open(data.FILE_BASELINKS, 'w') as link_file:
 			link_file.write(url + '\n')
-		domaines = links.add_domaine(domaine)
+		domains = links.add_domain(domain)
 	else:
 		print("""No links file to start crawling:
 1: let the crawler uses it default list

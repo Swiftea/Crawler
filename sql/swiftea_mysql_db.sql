@@ -39,7 +39,7 @@ CREATE TABLE `website` (
   `homepage` tinyint(1) NOT NULL DEFAULT 0,
   `sanesearch` tinyint(1) NOT NULL DEFAULT 0,
   `favicon` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `domaine` text COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `domain` text COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

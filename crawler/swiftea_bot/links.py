@@ -7,138 +7,138 @@ from swiftea_bot.data import DIR_LINKS, FILE_LINKS
 
 LINK_FILE_MAX_SIZE = 50000
 
-def get_level(domaine=''):
-	if domaine == '':
+def get_level(domain=''):
+	if domain == '':
 		return -1
-	domaines = get_domaines()
+	domains = get_domains()
 
-	domaine_info = {}
-	for key, d in enumerate(domaines):
-		if d['domaine'] == domaine:
-			domaine_info = d
+	domain_info = {}
+	for key, d in enumerate(domains):
+		if d['domain'] == domain:
+			domain_info = d
 
-	if domaine_info == {}:
+	if domain_info == {}:
 		return 0
-	return domaine_info['level']
+	return domain_info['level']
 
 def filter_links(links, crawl_option):
-	if crawl_option['domaine'] == '':
+	if crawl_option['domain'] == '':
 		return links
 
-	domaine_links = []
+	domain_links = []
 	next_level_links = []
 
 	for link in links:
-		if crawl_option['sub-domaine']:
-			if crawl_option['domaine'] in urlparse(link).netloc:
-				domaine_links.append(link)
+		if crawl_option['sub-domain']:
+			if crawl_option['domain'] in urlparse(link).netloc:
+				domain_links.append(link)
 			else:
 				next_level_links.append(link)
 		else:
-			if crawl_option['domaine'] == urlparse(link).netloc:
-				domaine_links.append(link)
+			if crawl_option['domain'] == urlparse(link).netloc:
+				domain_links.append(link)
 			else:
 				next_level_links.append(link)
 
-	return domaine_links, next_level_links
+	return domain_links, next_level_links
 
-def get_filename(domaines, crawl_option, LINK_FILE_MAX_SIZE=50000):
+def get_filename(domains, crawl_option, LINK_FILE_MAX_SIZE=50000):
 	"""
 	level_filename_ptr: 11,
-	domaines:
+	domains:
 	[
-		{'domaine': 'idesys.org', 'level': 5, 'completed': 0}
+		{'domain': 'idesys.org', 'level': 5, 'completed': 0}
 	]
 	"""
 	save = False  # if we need to save the json file at the end
-	max_ptr = len(domaines)
+	max_ptr = len(domains)
 	level_filename_ptr = -1;  # returned result
 	next_level_filename_ptr = -1;
-	domaine_ptr = -1;  # related to the given domaine
-	no_domaine_ptr = -1;  # the max no domaine file
+	domain_ptr = -1;  # related to the given domain
+	no_domain_ptr = -1;  # the max no domain file
 
-	for key, d in enumerate(domaines):
-		if (d['domaine'] == crawl_option['domaine']
+	for key, d in enumerate(domains):
+		if (d['domain'] == crawl_option['domain']
 			and d['level'] == crawl_option['level']
 			and not d['completed']):
-			domaine_ptr = key
-		if (d['domaine'] == crawl_option['domaine']
+			domain_ptr = key
+		if (d['domain'] == crawl_option['domain']
 			and d['level'] == (crawl_option['level'] + 1)
 			and not d['completed']):
 			next_level_filename_ptr = key
-		if d['domaine'] == '' or d['level'] == -1:
-			no_domaine_ptr = key
+		if d['domain'] == '' or d['level'] == -1:
+			no_domain_ptr = key
 
-	if crawl_option['domaine'] == '' or crawl_option['level'] == -1:
-		# this is a no domaine crawl
-		filename = DIR_LINKS + str(domaine_ptr)
-		level_filename_ptr = no_domaine_ptr
-		no_domaine_ptr = -1
+	if crawl_option['domain'] == '' or crawl_option['level'] == -1:
+		# this is a no domain crawl
+		filename = DIR_LINKS + str(domain_ptr)
+		level_filename_ptr = no_domain_ptr
+		no_domain_ptr = -1
 		if path.exists(filename):
 			if path.getsize(filename) > LINK_FILE_MAX_SIZE:
-				domaines.append({'domaine': '', 'level': -1, 'completed': 0})
+				domains.append({'domain': '', 'level': -1, 'completed': 0})
 				level_filename_ptr = max_ptr
-				no_domaine_ptr = -1
+				no_domain_ptr = -1
 				save = True
-		if domaine_ptr == -1:
+		if domain_ptr == -1:
 			# not found
-			domaines.append({'domaine': '', 'level': -1, 'completed': 0})
+			domains.append({'domain': '', 'level': -1, 'completed': 0})
 			level_filename_ptr = 0
 			save = True
-		next_level_filename_ptr = no_domaine_ptr
+		next_level_filename_ptr = no_domain_ptr
 	else:
-		# this is a domaine crawl
-		if domaine_ptr == -1:
-			# domaine not found
-			domaine_info = {
-				'domaine': crawl_option['domaine'],
+		# this is a domain crawl
+		if domain_ptr == -1:
+			# domain not found
+			domain_info = {
+				'domain': crawl_option['domain'],
 				'level': crawl_option['level'],
 				'completed': 0
 			}
-			domaines.append(domaine_info)
+			domains.append(domain_info)
 			level_filename_ptr = max_ptr
 			max_ptr += 1
 			save = True
 		else:
-			level_filename_ptr = domaine_ptr
+			level_filename_ptr = domain_ptr
 
-		if no_domaine_ptr == -1 and False:  # TODO: if target almost reach,
-			domaines.append({'domaine': '', 'level': -1, 'completed': 0})
+		if no_domain_ptr == -1 and False:  # TODO: if target almost reach,
+			domains.append({'domain': '', 'level': -1, 'completed': 0})
 			next_level_filename_ptr = max_ptr
 			save = True
 		elif next_level_filename_ptr == -1:
-			domaines.append({
-				'domaine': crawl_option['domaine'],
+			domains.append({
+				'domain': crawl_option['domain'],
 				'level': crawl_option['level'] + 1,
 				'completed': 0
 			})
 			next_level_filename_ptr = max_ptr
 			save = True
 
-	return level_filename_ptr, save, domaines, next_level_filename_ptr
+	return level_filename_ptr, save, domains, next_level_filename_ptr
 
-def get_filename_read(domaines, crawl_option):
+def get_filename_read(domains, crawl_option):
 	save = False  # if we need to save the json file at the end
-	max_ptr = len(domaines)
+	max_ptr = len(domains)
 	level_filename_ptr = -1;  # returned result
 	next_level_filename_ptr = -1;
-	domaine_ptr = -1;  # related to the given domaine
-	no_domaine_ptr = -1;  # the max no domaine file
+	domain_ptr = -1;  # related to the given domain
+	no_domain_ptr = -1;  # the max no domain file
 
-	for key, d in enumerate(domaines):
-		if (d['domaine'] == crawl_option['domaine']
+	for key, d in enumerate(domains):
+		if (d['domain'] == crawl_option['domain']
 			and d['level'] == crawl_option['level']):
-			domaine_ptr = key
-		if (d['domaine'] == crawl_option['domaine']
+			domain_ptr = key
+		if (d['domain'] == crawl_option['domain']
 			and d['level'] == (crawl_option['level'] + 1)):
 			next_level_filename_ptr = key
-		if d['domaine'] == '' or d['level'] == -1:
-			no_domaine_ptr = key
+		if d['domain'] == '' or d['level'] == -1:
+			no_domain_ptr = key
 
-	if crawl_option['domaine'] == '' or crawl_option['level'] == -1:
-		return no_domaine_ptr
+	if crawl_option['domain'] == '' or crawl_option['level'] == -1:
+		return no_domain_ptr
 	else:
-		return domaine_ptr
+		return domain_ptr
 
 def store_link(links, level_filename_ptr):
 	filename = DIR_LINKS + str(level_filename_ptr)
@@ -153,29 +153,29 @@ def store_link(links, level_filename_ptr):
 	with open(filename, 'w', errors='replace', encoding='utf8') as myfile:
 		myfile.write('\n'.join(list_links) + '\n')
 
-def get_domaines():
+def get_domains():
 	if path.exists(FILE_LINKS):
 		with open(FILE_LINKS) as json_file:
-			domaines = json.load(json_file)
+			domains = json.load(json_file)
 	else:
-		domaines = []
-	return domaines
+		domains = []
+	return domains
 
-def save_domaines(domaines):
+def save_domains(domains):
 	with open(FILE_LINKS, 'w') as json_file:
-		json.dump(domaines, json_file, indent=2)
+		json.dump(domains, json_file, indent=2)
 
-def add_domaine(domaine):
-	domaines = get_domaines()
+def add_domain(domain):
+	domains = get_domains()
 	exists = False
-	for key, d in enumerate(domaines):
-		if d['domaine'] == domaine:
+	for key, d in enumerate(domains):
+		if d['domain'] == domain:
 			exists = True
 
 	if not exists:
 		with open(FILE_LINKS, 'w') as link_file:
 			json.dump([{
-				'domaine': domaine,
+				'domain': domain,
 				'level': 0,
 				'completed': 0
 			}], link_file)
@@ -183,17 +183,17 @@ def add_domaine(domaine):
 
 def save_links(links, crawl_option, LINK_FILE_MAX_SIZE=2):
 	# read link files index
-	domaines = get_domaines()
+	domains = get_domains()
 
-	level_filename_ptr, save, domaines, next_level_filename_ptr = get_filename(
-		domaines, crawl_option, LINK_FILE_MAX_SIZE)
+	level_filename_ptr, save, domains, next_level_filename_ptr = get_filename(
+		domains, crawl_option, LINK_FILE_MAX_SIZE)
 
-	domaine_links, next_level_links = filter_links(links, crawl_option)
-	store_link(domaine_links, level_filename_ptr)
-	if crawl_option['domaine'] != '':
+	domain_links, next_level_links = filter_links(links, crawl_option)
+	store_link(domain_links, level_filename_ptr)
+	if crawl_option['domain'] != '':
 		store_link(next_level_links, next_level_filename_ptr)
 
 	if save:
-		save_domaines(domaines)
+		save_domains(domains)
 
-	return domaines
+	return domains

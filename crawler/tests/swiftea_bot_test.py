@@ -37,7 +37,7 @@ def test_stats_webpages():
 
 class SwifteaBotBaseTest:
 	def setup_method(self, _):
-		self.crawl_option = {'domaine': 'idesys.org', 'level': 3, 'sub-domaine': True}
+		self.crawl_option = {'domain': 'idesys.org', 'level': 3, 'sub-domain': True}
 		self.url = URL
 		self.inverted_index = INVERTED_INDEX
 		self.links = ['http://aetfiws.ovh/page.php', 'http://aetfiws.ovh',
@@ -49,31 +49,31 @@ class SwifteaBotBaseTest:
 		self.max_size_file = 2
 
 		self.c1 = [
-	        {'domaine': '', 'level': -1, 'completed': 0},
-	        {'domaine': '', 'level': -1, 'completed': 0},
-	        {'domaine': 'idesys.org', 'level': 0, 'completed': 0},
-	        {'domaine': 'idesys.org', 'level': 1, 'completed': 0},
-	        {'domaine': 'polytech.fr', 'level': 0, 'completed': 0},
-	        {'domaine': 'idesys.org', 'level': 2, 'completed': 0}
+	        {'domain': '', 'level': -1, 'completed': 0},
+	        {'domain': '', 'level': -1, 'completed': 0},
+	        {'domain': 'idesys.org', 'level': 0, 'completed': 0},
+	        {'domain': 'idesys.org', 'level': 1, 'completed': 0},
+	        {'domain': 'polytech.fr', 'level': 0, 'completed': 0},
+	        {'domain': 'idesys.org', 'level': 2, 'completed': 0}
 	    ]
 		self.c2 = [
-	        {'domaine': '', 'level': -1, 'completed': 0},
-	        {'domaine': '', 'level': -1, 'completed': 0},
-	        {'domaine': 'idesys.org', 'level': 0, 'completed': 0},
-	        {'domaine': 'idesys.org', 'level': 1, 'completed': 0},
-	        {'domaine': 'polytech.fr', 'level': 0, 'completed': 0},
-	        {'domaine': 'idesys.org', 'level': 2, 'completed': 0},
-	        {'domaine': 'polytech.fr', 'level': 1, 'completed': 0}
+	        {'domain': '', 'level': -1, 'completed': 0},
+	        {'domain': '', 'level': -1, 'completed': 0},
+	        {'domain': 'idesys.org', 'level': 0, 'completed': 0},
+	        {'domain': 'idesys.org', 'level': 1, 'completed': 0},
+	        {'domain': 'polytech.fr', 'level': 0, 'completed': 0},
+	        {'domain': 'idesys.org', 'level': 2, 'completed': 0},
+	        {'domain': 'polytech.fr', 'level': 1, 'completed': 0}
 	    ]
 		self.c3 = [
-	        {'domaine': '', 'level': -1, 'completed': 0},
-	        {'domaine': '', 'level': -1, 'completed': 0},
-	        {'domaine': 'idesys.org', 'level': 0, 'completed': 0},
-	        {'domaine': 'idesys.org', 'level': 1, 'completed': 0},
-	        {'domaine': 'polytech.fr', 'level': 0, 'completed': 0},
-	        {'domaine': 'idesys.org', 'level': 2, 'completed': 0},
-	        {'domaine': 'polytech.fr', 'level': 1, 'completed': 0},
-	        {'domaine': '', 'level': -1, 'completed': 0},
+	        {'domain': '', 'level': -1, 'completed': 0},
+	        {'domain': '', 'level': -1, 'completed': 0},
+	        {'domain': 'idesys.org', 'level': 0, 'completed': 0},
+	        {'domain': 'idesys.org', 'level': 1, 'completed': 0},
+	        {'domain': 'polytech.fr', 'level': 0, 'completed': 0},
+	        {'domain': 'idesys.org', 'level': 2, 'completed': 0},
+	        {'domain': 'polytech.fr', 'level': 1, 'completed': 0},
+	        {'domain': '', 'level': -1, 'completed': 0},
 	    ]
 
 
@@ -149,28 +149,28 @@ class TestFileManager(SwifteaBotBaseTest):
 
 	def test_link_get_filename(self):
 		r00, s00, d00, r00_ = swiftea_bot.links.get_filename(
-			[], {'domaine': '', 'level': -1}
+			[], {'domain': '', 'level': -1}
 		)
 		assert r00 == 0
 		assert s00 == True
 		assert d00 == [
-			{'domaine': '', 'level': -1, 'completed': 0},
+			{'domain': '', 'level': -1, 'completed': 0},
 		]
 		assert r00_ == -1
 
 		r0, s0, d0, r0_ = swiftea_bot.links.get_filename(
-			[], {'domaine': 'idesys.org', 'level': 2}
+			[], {'domain': 'idesys.org', 'level': 2}
 		)
 		assert r0 == 0
 		assert s0 == True
 		assert d0 == [
-			{'completed': 0, 'domaine': 'idesys.org', 'level': 2},
-			{'completed': 0, 'domaine': 'idesys.org', 'level': 3}
+			{'completed': 0, 'domain': 'idesys.org', 'level': 2},
+			{'completed': 0, 'domain': 'idesys.org', 'level': 3}
 		]
 		assert r0_ == 1
 
 		r1, s1, d1, r1_ = swiftea_bot.links.get_filename(
-			self.c1, {'domaine': 'idesys.org', 'level':	2}
+			self.c1, {'domain': 'idesys.org', 'level':	2}
 		)
 		assert r1 == 5
 		# assert s1 == False
@@ -181,7 +181,7 @@ class TestFileManager(SwifteaBotBaseTest):
 			link_file.write('http://swiftea.fr\n')
 
 		r2, s2, d2, r2_ = swiftea_bot.links.get_filename(
-			self.c1, {'domaine': '', 'level': -1}
+			self.c1, {'domain': '', 'level': -1}
 		)
 		assert r2 == 1
 		assert s2 == False
@@ -189,7 +189,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		assert r2_ == -1
 
 		r3, s3, d3, r3_ = swiftea_bot.links.get_filename(
-			self.c1, {'domaine': 'polytech.fr', 'level': 1}
+			self.c1, {'domain': 'polytech.fr', 'level': 1}
 		)
 		# assert r3 == 6
 		assert s3 == True
@@ -197,7 +197,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		# assert r3_ == 1
 
 		r4, s4, d4, r4_ = swiftea_bot.links.get_filename(
-			self.c1, {'domaine': '', 'level': -1}
+			self.c1, {'domain': '', 'level': -1}
 		)
 		assert r4 == 1
 		assert s4 == False
@@ -205,7 +205,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		assert r4_ == -1
 
 		r5, s5, d5, r5_ = swiftea_bot.links.get_filename(
-			self.c1, {'domaine': '', 'level': -1}, 2
+			self.c1, {'domain': '', 'level': -1}, 2
 		)
 		# assert r5 == 7
 		assert s5 == True
@@ -217,7 +217,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		with open(data.FILE_LINKS, 'w') as json_file:
 			json.dump(self.c1, json_file)
 		swiftea_bot.links.save_links(
-			links, {'domaine': 'polytech.fr', 'level': 1, 'sub-domaine': True}
+			links, {'domain': 'polytech.fr', 'level': 1, 'sub-domain': True}
 		)
 
 	def test_links_get_level(self):
@@ -230,18 +230,18 @@ class TestFileManager(SwifteaBotBaseTest):
 			'http://polytech.fr', 'http://beta.idesys.org']
 
 		l1, l1_ = swiftea_bot.links.filter_links(
-			links, {'domaine': 'idesys.org', 'level': 1, 'sub-domaine': True})
+			links, {'domain': 'idesys.org', 'level': 1, 'sub-domain': True})
 		assert l1 == ['http://idesys.org', 'http://idesys.org/jehmaker',
 			'http://beta.idesys.org']
 		assert l1_ == ['http://polytech.fr']
 
 		l2, l2_ = swiftea_bot.links.filter_links(
-			links, {'domaine': 'idesys.org', 'level': 1, 'sub-domaine': False}
+			links, {'domain': 'idesys.org', 'level': 1, 'sub-domain': False}
 		)
 		assert l2 == ['http://idesys.org', 'http://idesys.org/jehmaker']
 		assert l2_ == ['http://polytech.fr', 'http://beta.idesys.org']
 
 		l2 = swiftea_bot.links.filter_links(
-			links, {'domaine': '', 'level': -1, 'sub-domaine': False}
+			links, {'domain': '', 'level': -1, 'sub-domain': False}
 		)
 		assert l2 == links

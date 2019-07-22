@@ -47,7 +47,7 @@ class Crawler:
 		self.index_manager = InvertedIndex()
 		self.database = DatabaseSwiftea(
 			pvdata.DB_HOST, pvdata.DB_USER, pvdata.DB_PASSWORD, pvdata.DB_NAME,
-			pvdata.TABLE_NAMES, self.crawl_option['domaine'])
+			pvdata.TABLE_NAMES, self.crawl_option['domain'])
 		self.web_connection = WebConnection()
 
 		self.get_inverted_index()
@@ -113,7 +113,7 @@ class Crawler:
 						# the level in incremented in file_manager, self.crawl_option is a reference
 						self.file_manager.set_level(self.crawl_option['level'])
 						module.tell('Level complete, new level: ' + str(self.crawl_option['level']))
-						self.file_manager.save_domaines()
+						self.file_manager.save_domains()
 						if self.crawl_option['level'] == self.crawl_option['target-level'] + 1:
 							module.tell('Level target reached')
 							break
@@ -284,17 +284,17 @@ def save(crawler):
 
 @click.command()
 @click.option('-u', '--url')  # initial url
-@click.option('-sd', '--sub-domaine', default=True)  # True or False
+@click.option('-sd', '--sub-domain', default=True)  # True or False
 @click.option('-l', '--level', default=1)
-def main(url, sub_domaine, level):
+def main(url, sub_domain, level):
 	# python main.py -u http://idesys.org -sd False -l 2
 	# python main.py -u http://idesys.org -l 1
-	crawl_option = {'domaine': '', 'level': -1}
+	crawl_option = {'domain': '', 'level': -1}
 	if url:
-		crawl_option['domaine'] = urlparse(url).netloc
-		crawl_option['sub-domaine'] = sub_domaine
+		crawl_option['domain'] = urlparse(url).netloc
+		crawl_option['sub-domain'] = sub_domain
 		crawl_option['target-level'] = level
-		crawl_option['level'] = swiftea_bot.links.get_level(crawl_option['domaine'])
+		crawl_option['level'] = swiftea_bot.links.get_level(crawl_option['domain'])
 		print('Starting with', crawl_option)
 		input('Go?')
 	else:
@@ -302,7 +302,7 @@ def main(url, sub_domaine, level):
 	module.create_dirs()
 	crawler = Crawler(crawl_option)
 	atexit.register(save, crawler)
-	module.def_links(url, crawl_option['domaine'])
+	module.def_links(url, crawl_option['domain'])
 	crawler.start()
 
 

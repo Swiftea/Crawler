@@ -25,10 +25,10 @@ class DatabaseSwiftea(DatabaseManager):
 	:type name: str
 
 	"""
-	def __init__(self, host, user, password, name, tables, domaine):
+	def __init__(self, host, user, password, name, tables, domain):
 		DatabaseManager.__init__(self, host, user, password, name)
 		self.t = tables
-		self.domaine = domaine
+		self.domain = domain
 
 	def send_doc(self, webpage_infos):
 		"""Send document informations to database.
@@ -41,7 +41,7 @@ class DatabaseSwiftea(DatabaseManager):
 		error = False  # no error
 		response = self.connection()
 		result, response = self.send_command(
-			"SELECT popularity, last_crawl, domaine FROM {} WHERE url = %s".format(self.t[0]),
+			"SELECT popularity, last_crawl, domain FROM {} WHERE url = %s".format(self.t[0]),
 			(webpage_infos['url']), True)
 		if 'error' in response:
 			tell('Popularity and last_crawl query failed: ' + response)
@@ -75,9 +75,9 @@ class DatabaseSwiftea(DatabaseManager):
 		"""
 		tell('Updating ' + infos['url'])
 		if result[0][2] is not None:
-			domaine = result[0][2]
-			if self.domaine not in result[0][2]:
-				domaine[self.domaine] = 0
+			domain = result[0][2]
+			if self.domain not in result[0][2]:
+				domain[self.domain] = 0
 			else:
 				pass # TODO:
 
@@ -104,14 +104,14 @@ WHERE url = %s""".format(self.t[0])
 
 		"""
 		tell('Adding ' + infos['url'])
-		domaine = dumps({self.domaine: 1})
+		domain = dumps({self.domain: 1})
 		response = self.send_command(
 """INSERT INTO {} (title, description, url, first_crawl, last_crawl, language,
-popularity, score, homepage, sanesearch, favicon, domaine)
+popularity, score, homepage, sanesearch, favicon, domain)
 VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s, %s)""".format(self.t[0]),
 			(infos['title'], infos['description'], infos['url'],
 			infos['language'], infos['score'], infos['homepage'],
-			infos['sanesearch'], infos['favicon'], domaine)
+			infos['sanesearch'], infos['favicon'], domain)
 		)
 		if 'error' in response[1][1]:
 			tell('Failed to add: ' + str(response))
