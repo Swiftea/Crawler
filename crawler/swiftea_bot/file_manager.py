@@ -36,6 +36,7 @@ class FileManager(object):
 		self.max_links = data.MAX_LINKS  # Number of maximum links in a file
 		self.run = 'true'  # Run program bool
 		self.config = ConfigParser()
+		self.domaines = []  # in FILE_LINKS
 
 		if not path.exists(data.FILE_CONFIG):
 			# Create the config file:
@@ -53,13 +54,6 @@ class FileManager(object):
 			self.run = self.config['DEFAULT']['run']
 			self.reading_line_number = int(self.config['DEFAULT']['reading_line_number'])
 			self.max_links = int(self.config['DEFAULT']['max_links'])
-
-	def main(self, links, crawl_option):
-		"""Save links and get next url"""
-		if links:
-			self.save_links(links)
-		url, level_complete = self.get_url()
-		return url, level_complete
 
 	def set_level(self, level):
 		self.crawl_option['level'] = level
@@ -90,7 +84,7 @@ class FileManager(object):
 		:return: True is the level is completed
 
 		"""
-		return swiftea_bot.links.save_links(
+		self.domaines = swiftea_bot.links.save_links(
 			links,
 			self.crawl_option,
 			self.max_links
@@ -99,6 +93,8 @@ class FileManager(object):
 	def check_size_files(self):
 		for filelog in [data.FILE_EVENTS, data.FILE_ERRORS]:
 			filearchive = filelog[:-3] + 'zip'
+			if not path.exists(filelog):
+				continue
 			with open(filelog, 'r') as myfile:
 				content = myfile.readlines()
 			if len(content) > data.MAX_SIZE:
@@ -115,6 +111,15 @@ class FileManager(object):
 				tell('Archiving ' + filelog + ': ' + filename, severity=-1)
 
 	def get_url(self):
+		url = self.read_links()
+		if url == '#level_complete#':
+			tell('Level completed in file_manager')
+			self.crawl_option['level'] += 1
+			self.save_domaines()
+			return self.read_links(), True
+		return url, False
+
+	def read_links(self):
 		"""Get url of next webpage.
 
 		Check the size of curent reading links and increment it if over.
@@ -122,52 +127,41 @@ class FileManager(object):
 		:return: url of webpage to crawl
 
 		"""
-		domaines = swiftea_bot.links.get_domaines()
-		level_complete = False
+		self.domaines = swiftea_bot.links.get_domaines()
 		print(self.crawl_option)
 
-		(filename_ptr,
-		save,
-		domaines,
-		no_domaine_ptr) = swiftea_bot.links.get_filename(
-			domaines,
-			self.crawl_option,
-			self.max_links
+		filename_ptr = swiftea_bot.links.get_filename_read(
+			self.domaines,
+			self.crawl_option
 		)
-		print(filename_ptr,
-		save,
-		domaines,
-		no_domaine_ptr)
 
 		filename = data.DIR_LINKS + str(filename_ptr)
-		tell('File {0}, line {1}'.format(
-			str(filename_ptr),
-			str(self.reading_line_number + 1)), severity=0)
+
 		if path.exists(filename):
 			with open(filename, 'r', errors='replace', encoding='utf8') as myfile:
 				list_links = myfile.read().splitlines()  # List of urls
 		else:
 			tell('Reading file not found in get_url: ' + filename, 4)
-			# tell('Level completed')  # no
-			return 'error', False
+			return 'error'
 
-		# if not len(list_links):
-			# return 'error'
-
-		url = list_links[self.reading_line_number]
-		self.reading_line_number += 1
 		# If it's the last links of the file:
 		if len(list_links) == (self.reading_line_number):
-			level_complete = True
 			self.reading_line_number = 0
-			#  remove(filename)
-			#  tell('File ' + filename + ' removed', severity=-1)
-			domaines[filename_ptr]['completed'] = 1
-			print('dump domaines', domaines)
-			with open(data.FILE_LINKS, 'w') as json_file:
-				json.dump(domaines, json_file, indent=2)
+			self.domaines[filename_ptr]['completed'] = 1
+			return '#level_complete#'
 
-		return url, level_complete
+		tell('File {0}, line {1}'.format(
+			str(filename_ptr),
+			str(self.reading_line_number + 1)), severity=0)
+		url = list_links[self.reading_line_number]
+		self.reading_line_number += 1
+
+		return url
+
+	def save_domaines(self):
+		print('dump domaines file_manager', self.domaines)
+		with open(data.FILE_LINKS, 'w') as json_file:
+			json.dump(self.domaines, json_file, indent=2)
 
 	def save_inverted_index(self, inverted_index):
 		"""Save inverted-index in local.

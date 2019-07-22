@@ -9,6 +9,7 @@ import json
 
 
 import swiftea_bot.data as data
+from swiftea_bot import links
 
 
 def tell(message, error_code='', severity=1):
@@ -99,8 +100,7 @@ def def_links(url=None, domaine=None):
 	if url is not None and domaine is not None:
 		with open(data.FILE_BASELINKS, 'w') as link_file:
 			link_file.write(url + '\n')
-		# with open(data.FILE_LINKS, 'w') as link_file:
-		# 	json.dump([{'domaine': domaine, 'level': 0, 'completed': 0}], link_file)
+		domaines = links.add_domaine(domaine)
 	else:
 		print("""No links file to start crawling:
 1: let the crawler uses it default list
@@ -152,7 +152,7 @@ def can_add_doc(docs, new_doc):
 
 
 def remove_duplicates(old_list):
-	"""Remove duplicates from a list.
+	"""Remove duplicates from a list, keeps order.
 
 	:param old_list: list to clean
 	:type old_list: list

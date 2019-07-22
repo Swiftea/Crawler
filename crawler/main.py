@@ -87,10 +87,6 @@ class Crawler:
 
 		"""
 		run = True
-		url, level_complete = self.file_manager.main([], self.crawl_option)
-		print(level_complete)
-		if url == 'error':
-			module.safe_quit()
 		while run:
 			stats_send_index = time()
 			self.suggestions()
@@ -98,30 +94,29 @@ class Crawler:
 				module.tell('Crawl', severity=2)
 				begining = time()
 				while len(self.infos) < 10:
-					input('continue?')
-
 					begining = time()
 					# Start of crawling loop
+					url, level_complete = self.file_manager.get_url()
+					if url == 'error':
+						module.safe_quit()
 					result = self.crawl_webpage(url)
 					# result[0]: webpage_infos, result[1]: links
 
 					if result:
 						self.infos.append(result[0])
 						# save links and get next url:
-						url, level_complete = self.file_manager.main(
-							result[1],
-							self.crawl_option
-						)
+						self.file_manager.save_links(result[1])
 						if url == 'error':
 							module.safe_quit()
-						if level_complete:
-							self.crawl_option['level'] += 1
-							self.file_manager.set_level(self.crawl_option['level'])
-							module.tell('Level complete, new level: ', self.crawl_option['level'])
-							if self.crawl_option['level'] == self.crawl_option['target-level']:
-								module.tell('Level complete, new level: ', self.crawl_option['level'])
-								break
-
+					if level_complete:
+						# self.crawl_option['level'] += 1
+						# the level in incremented in file_manager, self.crawl_option is a reference
+						self.file_manager.set_level(self.crawl_option['level'])
+						module.tell('Level complete, new level: ' + str(self.crawl_option['level']))
+						self.file_manager.save_domaines()
+						if self.crawl_option['level'] == self.crawl_option['target-level'] + 1:
+							module.tell('Level target reached')
+							break
 
 					with open(data.DIR_STATS + 'stat_crawl_one_webpage', 'a') as myfile:
 						myfile.write(str(time() - begining) + '\n')
@@ -144,18 +139,16 @@ class Crawler:
 				if self.file_manager.run == 'false':
 					module.tell('User wants stop program')
 					module.safe_quit()
-					# run = False  # TODO: remove this line
-					# break  # TODO: remove this line
 
-				if self.crawl_option['level'] == self.crawl_option['target-level']:
+				if self.crawl_option['level'] == self.crawl_option['target-level'] + 1:
+					run = False
 					break
 
 			# End of loop range(n)
-			if run:
-				self.suggestions()
-				self.send_inverted_index()
-				self.file_manager.check_size_files()
-				module.stats_send_index(stats_send_index, time())
+			self.suggestions()
+			self.send_inverted_index()
+			self.file_manager.check_size_files()
+			module.stats_send_index(stats_send_index, time())
 
 	def crawl_webpage(self, url):
 		"""Crawl the given url.
@@ -301,8 +294,8 @@ def main(url, sub_domaine, level):
 		crawl_option['domaine'] = urlparse(url).netloc
 		crawl_option['sub-domaine'] = sub_domaine
 		crawl_option['target-level'] = level
-		crawl_option['level'] = swiftea_bot.links.get_level(crawl_option)
-		print('Starting with', crawl_option['domaine'])
+		crawl_option['level'] = swiftea_bot.links.get_level(crawl_option['domaine'])
+		print('Starting with', crawl_option)
 		input('Go?')
 	else:
 		print('Starting with base urls')
