@@ -3,6 +3,8 @@
 """Define a class that deal with the high level database manager."""
 
 from datetime import datetime
+from json import dumps, loads
+
 
 from swiftea_bot.module import tell
 from swiftea_bot.data import CRAWL_DELAY
@@ -23,9 +25,10 @@ class DatabaseSwiftea(DatabaseManager):
 	:type name: str
 
 	"""
-	def __init__(self, host, user, password, name, table, domaine):
+	def __init__(self, host, user, password, name, tables, domaine):
 		DatabaseManager.__init__(self, host, user, password, name)
-		self.t = table
+		self.t = tables
+		self.domaine = domaine
 
 	def send_doc(self, webpage_infos):
 		"""Send document informations to database.
@@ -38,19 +41,17 @@ class DatabaseSwiftea(DatabaseManager):
 		error = False  # no error
 		response = self.connection()
 		result, response = self.send_command(
-			"SELECT popularity, last_crawl FROM {} WHERE url = %s".format(self.t),
+			"SELECT popularity, last_crawl, domaine FROM {} WHERE url = %s".format(self.t[0]),
 			(webpage_infos['url']), True)
 		if 'error' in response:
-			tell('Popularity and last_crawl query failed: ' + response, 16)
+			tell('Popularity and last_crawl query failed: ' + response)
 			error = True
 		if result != ():
 			# Url found in database, there is an answer:
 			last_crawl = result[0][1]  # datetime.datetime object
 			if (datetime.now() - last_crawl) > CRAWL_DELAY:
 				# The program have already crawled this website
-				response = self.update(webpage_infos, result[0][0]+1)
-				if error:
-					error = True
+				error = self.update(webpage_infos, result)
 			else:
 				tell('Recently crawled: ' + webpage_infos['url'])
 		else:
@@ -62,27 +63,34 @@ class DatabaseSwiftea(DatabaseManager):
 		self.close_connection()
 		return error  # All is correct
 
-	def update(self, infos, popularity):
+	def update(self, infos, result):
 		"""Update a document in database.
 
 		:param infos: doc infos
 		:type infos: dict()
 		:param popularity: new doc popularity
 		:type popularity: int
-		:return: True is an arror occured
+		:return: True if an arror occured
 
 		"""
 		tell('Updating ' + infos['url'])
+		if result[0][2] is not None:
+			domaine = result[0][2]
+			if self.domaine not in result[0][2]:
+				domaine[self.domaine] = 0
+			else:
+				pass # TODO:
+
 		cmd = """
 UPDATE {} SET title=%s, description=%s, last_crawl=NOW(), language=%s,
 popularity=%s, score=%s, homepage=%s, sanesearch=%s, favicon=%s
-WHERE url = %s""".format(self.t)
+WHERE url = %s""".format(self.t[0])
 		response = self.send_command(cmd, (infos['title'], infos['description'],
-			infos['language'], popularity, infos['score'], infos['homepage'],
+			infos['language'], result[0][0]+1, infos['score'], infos['homepage'],
 			infos['sanesearch'], infos['favicon'], infos['url'])
 		 )
 		if 'error' in  response[1]:
-			tell('Failed to update: ' + response[1], 9)
+			tell('Failed to [update: ' + response[1], -2)
 			return True
 		else:
 			return False
@@ -96,16 +104,17 @@ WHERE url = %s""".format(self.t)
 
 		"""
 		tell('Adding ' + infos['url'])
+		domaine = dumps({self.domaine: 1})
 		response = self.send_command(
 """INSERT INTO {} (title, description, url, first_crawl, last_crawl, language,
-popularity, score, homepage, sanesearch, favicon)
-VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
+popularity, score, homepage, sanesearch, favicon, domaine)
+VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s, %s)""".format(self.t[0]),
 			(infos['title'], infos['description'], infos['url'],
 			infos['language'], infos['score'], infos['homepage'],
-			infos['sanesearch'], infos['favicon'])
+			infos['sanesearch'], infos['favicon'], domaine)
 		)
 		if 'error' in response[1][1]:
-			tell('Failed to add: ' + str(response), 10)
+			tell('Failed to add: ' + str(response))
 			return True
 		else:
 			return False
@@ -118,9 +127,9 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 		:return: id of webpage or None if not found
 
 		"""
-		result, response = self.send_command("SELECT id FROM {} WHERE url = %s".format(self.t), (url))
+		result, response = self.send_command("SELECT id FROM {} WHERE url = %s".format(self.t[0]), (url))
 		if 'error' in  response[1]:
-			tell('Failed to get id: ' + response, 11)
+			tell('Failed to get id: ' + response)
 			return None
 		else:
 			return str(result[0])
@@ -134,11 +143,11 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 
 		"""
 		if table is None:
-			table = self.t
+			table = self.t[0]
 		tell('Delete from {} doc: {}'.format(table,  url))
 		response = self.send_command("DELETE FROM {} WHERE url = %s".format(table), (url))
 		if 'error' in  response[1] or response[1][1] != 'Send command: ok':
-			tell('Doc not removed: {0}, {1}'.format(url, response[1]), 12)
+			tell('Doc not removed: {0}, {1}'.format(url, response[1]))
 		return response[1]
 
 	def suggestions(self):
@@ -149,17 +158,17 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 		"""
 		result, response = self.send_command("SELECT url FROM suggestion LIMIT 5", fetchall=True)
 		if 'error' in  response[1] or result is None:
-			tell('Failed to get url: ' + response, 13)
+			tell('Failed to get url: ' + response)
 			return None
 		else:
 			suggested_links = list()
 			for element in result:
 				if len(suggested_links) < 5:
 					suggested_links.append(element[0])
-					self.del_one_doc(element[0], 'suggestion')
+					self.del_one_doc(element[0], self.t[1])
 			return suggested_links
 
-	def doc_exists(self, url):
+	def doc_exists(self, url, table=None):
 		"""Check if `url` is in database.
 
 		:param url: url corresponding to doc
@@ -167,14 +176,13 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 		:return: True if doc exists
 
 		"""
-		result, response = self.send_command("SELECT EXISTS(SELECT * FROM {} WHERE url=%s)".format(self.t), (url))
+		if table is None:
+			table = self.t[0]
+		result, response = self.send_command("SELECT EXISTS(SELECT * FROM {} WHERE url=%s)".format(table), (url))
 		if 'error' in  response:
-			tell('Failed to check row: ' + response, 14)
+			tell('Failed to check row: ' + response)
 			return None
-		if result[0] == 1:
-			return True
-		else:
-			return False
+		return result[0] == 1
 
 	def https_duplicate(self, old_url):
 		"""Avoid https and http duplicate.
@@ -189,7 +197,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s)""".format(self.t),
 		:return: url to add and url to delete
 
 		"""
-		tell('url to send: ' + old_url, severity=-1)
+		tell('url to send: ' + old_url, -1)
 		new_url = database.convert_secure(old_url)
 		new_exists = self.doc_exists(new_url)
 
