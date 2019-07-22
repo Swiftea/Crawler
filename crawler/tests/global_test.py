@@ -39,7 +39,7 @@ def test_insert(self):
         'favicon': 'http://une.url.bidon.truc/favicon.ico',
     }
 	database_swiftea = DatabaseSwiftea(pvdata.DB_HOST, pvdata.DB_USER,
-        pvdata.DB_PASSWORD, pvdata.DB_NAME, pvdata.TABLE_NAME)
+        pvdata.DB_PASSWORD, pvdata.DB_NAME, pvdata.TABLE_NAMES)
 	response = database_swiftea.send_command(
 	"""INSERT INTO website (title, description, url, first_crawl, last_crawl, language,
 	popularity, score, homepage, sanesearch, favicon)
