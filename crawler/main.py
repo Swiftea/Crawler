@@ -99,6 +99,10 @@ class Crawler:
 					url, level_complete = self.file_manager.get_url()
 					if url == 'error':
 						module.safe_quit()
+					elif url == '#target-reached#':
+						module.tell('Target level reached')
+						break
+
 					result = self.crawl_webpage(url)
 					# result[0]: webpage_infos, result[1]: links
 
@@ -108,15 +112,6 @@ class Crawler:
 						self.file_manager.save_links(result[1])
 						if url == 'error':
 							module.safe_quit()
-					if level_complete:
-						# self.crawl_option['level'] += 1
-						# the level in incremented in file_manager, self.crawl_option is a reference
-						self.file_manager.set_level(self.crawl_option['level'])
-						module.tell('Level complete, new level: ' + str(self.crawl_option['level']))
-						self.file_manager.save_domains()
-						if self.crawl_option['level'] == self.crawl_option['target-level'] + 1:
-							module.tell('Level target reached')
-							break
 
 					with open(data.DIR_STATS + 'stat_crawl_one_webpage', 'a') as myfile:
 						myfile.write(str(time() - begining) + '\n')
@@ -296,7 +291,10 @@ def main(url, sub_domain, level):
 		crawl_option['target-level'] = level
 		crawl_option['level'] = swiftea_bot.links.get_level(crawl_option['domain'])
 		print('Starting with', crawl_option)
-		input('Go?')
+		# input('Go?')
+		if (crawl_option['target-level'] <= crawl_option['level']):
+			print('Already done')
+			return
 	else:
 		print('Starting with base urls')
 	module.create_dirs()

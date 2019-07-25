@@ -55,9 +55,6 @@ class FileManager(object):
 			self.reading_line_number = int(self.config['DEFAULT']['reading_line_number'])
 			self.max_links = int(self.config['DEFAULT']['max_links'])
 
-	def set_level(self, level):
-		self.crawl_option['level'] = level
-
 	def check_stop_crawling(self):
 		"""Check if the user wants to stop program."""
 		self.config.read_file(open(data.FILE_CONFIG))
@@ -113,10 +110,13 @@ class FileManager(object):
 	def get_url(self):
 		url = self.read_links()
 		if url == '#level_complete#':
-			tell('Level completed in file_manager')
+			tell('Level complete, new level: ' + str(self.crawl_option['level']))
 			self.crawl_option['level'] += 1
 			self.save_domains()
-			return self.read_links(), True
+			if (self.crawl_option['level'] < self.crawl_option['target-level']):
+				return self.read_links(), True
+			else:
+				return '#target-reached#', True
 		return url, False
 
 	def read_links(self):

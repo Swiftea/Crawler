@@ -29,7 +29,7 @@ def filter_links(links, crawl_option):
 	next_level_links = []
 
 	for link in links:
-		if crawl_option['sub-domain']:
+		if crawl_option['sub-domain'] == True:
 			if crawl_option['domain'] in urlparse(link).netloc:
 				domain_links.append(link)
 			else:
