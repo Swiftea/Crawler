@@ -23,7 +23,7 @@ def get_level(domain=''):
 
 def filter_links(links, crawl_option):
 	if crawl_option['domain'] == '':
-		return links
+		return links, []
 
 	domain_links = []
 	next_level_links = []
@@ -132,11 +132,12 @@ def get_filename_read(domains, crawl_option):
 		if (d['domain'] == crawl_option['domain']
 			and d['level'] == (crawl_option['level'] + 1)):
 			next_level_filename_ptr = key
-		if d['domain'] == '' or d['level'] == -1:
+		if (d['domain'] == '' or d['level'] == -1) and no_domain_ptr == -1:
+			# modify no_domain_ptr once
 			no_domain_ptr = key
 
 	if crawl_option['domain'] == '' or crawl_option['level'] == -1:
-		return no_domain_ptr
+		return no_domain_ptr if no_domain_ptr != -1 else 0
 	else:
 		return domain_ptr
 

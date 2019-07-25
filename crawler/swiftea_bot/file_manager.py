@@ -24,14 +24,18 @@ class FileManager(object):
 	Create configuration file if it doesn't exists or read it.
 
 	"""
-	def __init__(self, crawl_option):
+	def __init__(self, crawl_option=None):
 		"""With `url`, filter links to save, and read filtered links.
 
 		:param url: the crawler was called with this starting url
 		:type url: str
 
 		"""
-		self.crawl_option = crawl_option
+		self.crawl_option = crawl_option if crawl_option else {
+			'domain': '',
+			'level': -1,
+			'target-level': -1
+		}
 		self.reading_line_number = 0  # Meter of links in the reading file
 		self.max_links = data.MAX_LINKS  # Number of maximum links in a file
 		self.run = 'true'  # Run program bool
@@ -128,7 +132,6 @@ class FileManager(object):
 
 		"""
 		self.domains = swiftea_bot.links.get_domains()
-		print(self.crawl_option)
 
 		filename_ptr = swiftea_bot.links.get_filename_read(
 			self.domains,

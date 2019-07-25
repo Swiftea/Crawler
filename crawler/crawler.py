@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
 from time import time
-import atexit
-from os import listdir
-from shutil import rmtree
-from urllib.parse import urlparse
+# from os import listdir
+# from shutil import rmtree
 
 
 import click
@@ -30,14 +28,13 @@ from index import index
 
 class Crawler:
 	"""Crawler main class."""
-	def __init__(self, crawl_option):
-		self.crawl_option = crawl_option
+	def __init__(self):
 		self.infos = list()
 		self.ftp_manager = FTPSwiftea(
 			pvdata.FTP_HOST, pvdata.FTP_USER, pvdata.FTP_PASSWORD,
 			pvdata.FTP_PORT, pvdata.FTP_INDEX, pvdata.FTP_DATA)
 		self.site_informations = SiteInformations()
-		self.file_manager = FileManager(self.crawl_option)
+		self.file_manager = FileManager()
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
 		if stopwords == dict() or badwords == dict():
 			self.ftp_manager.download_lists_words()  # Download all lists of words (bad and stop)
@@ -47,7 +44,7 @@ class Crawler:
 		self.index_manager = InvertedIndex()
 		self.database = DatabaseSwiftea(
 			pvdata.DB_HOST, pvdata.DB_USER, pvdata.DB_PASSWORD, pvdata.DB_NAME,
-			pvdata.TABLE_NAMES, self.crawl_option['domain'])
+			pvdata.TABLE_NAMES)
 		self.web_connection = WebConnection()
 
 		self.get_inverted_index()
@@ -93,15 +90,12 @@ class Crawler:
 			for _ in range(50):
 				module.tell('Crawl', severity=2)
 				begining = time()
-				while len(self.infos) < 10:
+				while len(self.infos) < 3:
 					begining = time()
 					# Start of crawling loop
 					url, level_complete = self.file_manager.get_url()
 					if url == 'error':
 						module.safe_quit()
-					elif url == '#target-reached#':
-						module.tell('Target level reached')
-						break
 
 					result = self.crawl_webpage(url)
 					# result[0]: webpage_infos, result[1]: links
@@ -110,8 +104,6 @@ class Crawler:
 						self.infos.append(result[0])
 						# save links and get next url:
 						self.file_manager.save_links(result[1])
-						if url == 'error':
-							module.safe_quit()
 
 					with open(data.DIR_STATS + 'stat_crawl_one_webpage', 'a') as myfile:
 						myfile.write(str(time() - begining) + '\n')
@@ -134,10 +126,6 @@ class Crawler:
 				if self.file_manager.run == 'false':
 					module.tell('User wants stop program')
 					module.safe_quit()
-
-				if self.crawl_option['level'] == self.crawl_option['target-level'] + 1:
-					run = False
-					break
 
 			# End of loop range(n)
 			self.suggestions()
@@ -270,39 +258,3 @@ class Crawler:
 				self.infos.clear()  # Reset the list of dict of informations of websites.
 			else:
 				module.tell('No suggestions')
-
-
-def save(crawler):
-	crawler.file_manager.save_inverted_index(
-		crawler.index_manager.get_inverted_index()
-	)
-
-@click.command()
-@click.option('-u', '--url')  # initial url
-@click.option('-sd', '--sub-domain', default=True)  # True or False
-@click.option('-l', '--level', default=1)
-def main(url, sub_domain, level):
-	# python main.py -u http://idesys.org -sd False -l 2
-	# python main.py -u http://idesys.org -l 1
-	crawl_option = {'domain': '', 'level': -1}
-	if url:
-		crawl_option['domain'] = urlparse(url).netloc
-		crawl_option['sub-domain'] = sub_domain
-		crawl_option['target-level'] = level
-		crawl_option['level'] = swiftea_bot.links.get_level(crawl_option['domain'])
-		print('Starting with', crawl_option)
-		# input('Go?')
-		if (crawl_option['target-level'] <= crawl_option['level']):
-			print('Already done')
-			return
-	else:
-		print('Starting with base urls')
-	module.create_dirs()
-	crawler = Crawler(crawl_option)
-	atexit.register(save, crawler)
-	module.def_links(url, crawl_option['domain'])
-	crawler.start()
-
-
-if __name__ == '__main__':
-	main()

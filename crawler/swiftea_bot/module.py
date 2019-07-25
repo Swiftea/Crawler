@@ -3,7 +3,7 @@
 """Define several functions for all crawler's class."""
 
 from time import strftime
-from os import path, mkdir
+from os import path, mkdir, listdir
 import sys
 import json
 
@@ -87,21 +87,12 @@ def create_dirs():
 		mkdir(data.DIR_LINKS)
 
 
-def def_links(url=None, domain=None):
+def def_links():
 	"""Create directory of links if it doesn't exist
-
 	Ask to user what doing if there isn't basic links.
 	Create a basic links file if user what it.
-
-	:param url: url for domain crawl
-	:type url: str
-
 	"""
-	if url is not None and domain is not None:
-		with open(data.FILE_BASELINKS, 'w') as link_file:
-			link_file.write(url + '\n')
-		domains = links.add_domain(domain)
-	else:
+	if len(listdir(data.DIR_LINKS)) == 0:
 		print("""No links file to start crawling:
 1: let the crawler uses it default list
 2: fill a file yourself""")

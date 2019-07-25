@@ -25,7 +25,7 @@ class DatabaseSwiftea(DatabaseManager):
 	:type name: str
 
 	"""
-	def __init__(self, host, user, password, name, tables, domain):
+	def __init__(self, host, user, password, name, tables, domain=''):
 		DatabaseManager.__init__(self, host, user, password, name)
 		self.t = tables
 		self.domain = domain
@@ -74,12 +74,12 @@ class DatabaseSwiftea(DatabaseManager):
 
 		"""
 		tell('Updating ' + infos['url'])
-		if result[0][2] is not None:
-			domain = result[0][2]
-			if self.domain not in result[0][2]:
-				domain[self.domain] = 0
-			else:
-				pass # TODO:
+		# if result[0][2] is not None:
+		# 	domain = result[0][2]
+		# 	if self.domain not in result[0][2]:
+		# 		domain[self.domain] = 0
+		# 	else:
+		# 		pass # TODO:
 
 		cmd = """
 UPDATE {} SET title=%s, description=%s, last_crawl=NOW(), language=%s,
