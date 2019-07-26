@@ -7,19 +7,19 @@ from swiftea_bot.data import DIR_LINKS, FILE_LINKS
 
 LINK_FILE_MAX_SIZE = 50000
 
-def get_level(domain=''):
-	if domain == '':
-		return -1
-	domains = get_domains()
-
-	domain_info = {}
-	for key, d in enumerate(domains):
-		if d['domain'] == domain:
-			domain_info = d
-
-	if domain_info == {}:
-		return 0
-	return domain_info['level']
+# def get_level(domain=''):
+# 	if domain == '':
+# 		return -1
+# 	domains = get_domains()
+#
+# 	domain_info = {}
+# 	for key, d in enumerate(domains):
+# 		if d['domain'] == domain:
+# 			domain_info = d
+#
+# 	if domain_info == {}:
+# 		return 0
+# 	return domain_info['level']
 
 def filter_links(links, crawl_option):
 	if crawl_option['domain'] == '':

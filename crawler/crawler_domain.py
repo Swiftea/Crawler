@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from time import time
+from os import path
 
 
 try:
@@ -8,16 +9,27 @@ try:
 except ImportError:
 	pass
 
-from swiftea_bot import data, module
+from swiftea_bot import data, module, links
 from crawler import Crawler
+from swiftea_bot.file_manager import FileManager
 
 
 class CrawlerDomain(Crawler):
 	"""Crawler main class."""
-	def __init__(self, crawl_option):
-		Crawler.__init__();
+	def __init__(self, crawl_option, url):
+		Crawler.__init__(self);
+		print(crawl_option)
+		self.file_manager = FileManager(crawl_option)
 		self.crawl_option = crawl_option
-		self.file_manager.save_links(crawl_option['domain'])
+		# self.crawl_option['level'] = links.get_level(crawl_option['domain'])
+		if not path.exists(data.FILE_LINKS):
+			links.save_domains([{
+				'domain': crawl_option['domain'],
+				'level': self.crawl_option['level'],
+				'completed': False,
+				'line': 0
+			}])
+		self.file_manager.save_links([url])
 
 	def start(self):
 		"""Start main loop of crawling.
@@ -29,6 +41,11 @@ class CrawlerDomain(Crawler):
 		Do it until the user want stop crawling or occured an error.
 
 		"""
+		print('Starting with', self.crawl_option)
+		# input('Go?')
+		if (self.crawl_option['target-level'] <= self.crawl_option['level']):
+			print('Already done')
+			return
 		run = True
 		while run:
 			stats_send_index = time()

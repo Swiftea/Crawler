@@ -116,7 +116,7 @@ class FileManager(object):
 		if url == '#level_complete#':
 			tell('Level complete, new level: ' + str(self.crawl_option['level']))
 			self.crawl_option['level'] += 1
-			self.save_domains()
+			swiftea_bot.links.save_domains(self.domains)
 			if (self.crawl_option['level'] < self.crawl_option['target-level']):
 				return self.read_links(), True
 			else:
@@ -160,11 +160,6 @@ class FileManager(object):
 		self.reading_line_number += 1
 
 		return url
-
-	def save_domains(self):
-		print('dump domains file_manager', self.domains)
-		with open(data.FILE_LINKS, 'w') as json_file:
-			json.dump(self.domains, json_file, indent=2)
 
 	def save_inverted_index(self, inverted_index):
 		"""Save inverted-index in local.
