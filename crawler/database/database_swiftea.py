@@ -58,8 +58,6 @@ class DatabaseSwiftea(DatabaseManager):
 			# Url not found in database, the url doesn't exist in the database,
 			# we add it:
 			error = self.insert(webpage_infos)
-			if error:
-				error = True
 		self.close_connection()
 		return error  # All is correct
 
@@ -168,7 +166,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s, %s)""".format(self.t[0]
 					self.del_one_doc(element[0], self.t[1])
 			return suggested_links
 
-	def doc_exists(self, url, table=None):
+	def doc_exists(self, url, table=None): # TODO: refacto: une get_doc_id
 		"""Check if `url` is in database.
 
 		:param url: url corresponding to doc
