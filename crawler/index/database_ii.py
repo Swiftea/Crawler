@@ -17,6 +17,7 @@ Embedded dict:
  - hard to delete a document
 
 """
+from swiftea_bot.private_data import MONGODB_PASSWORD
 
 
 class Document(EmbeddedMongoModel):
@@ -39,7 +40,7 @@ class Word(MongoModel):
 		final = True
 
 def connect():
-	password = urllib.parse.quote('C1mn0FaqQysjEo53')
+	password = urllib.parse.quote(MONGODB_PASSWORD)
 	username = 'swiftea_admin'
 	database_name = 'inverted_index'
 	db_url = 'mongodb+srv://{}:{}@clusterswiftea-oz7b3.mongodb.net/{}?retryWrites=true&w=majority'.format(username, password, database_name)
