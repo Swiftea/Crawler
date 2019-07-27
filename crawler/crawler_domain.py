@@ -21,7 +21,6 @@ class CrawlerDomain(Crawler):
 		print(crawl_option)
 		self.file_manager = FileManager(crawl_option)
 		self.crawl_option = crawl_option
-		# self.crawl_option['level'] = links.get_level(crawl_option['domain'])
 		if not path.exists(data.FILE_LINKS):
 			links.save_domains([{
 				'domain': crawl_option['domain'],

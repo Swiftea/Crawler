@@ -220,11 +220,6 @@ class TestFileManager(SwifteaBotBaseTest):
 			links, {'domain': 'polytech.fr', 'level': 1, 'sub-domain': True}
 		)
 
-	# def test_links_get_level(self):
-	# 	assert swiftea_bot.links.get_level('idesys.org') == 2
-	# 	assert swiftea_bot.links.get_level('') == -1
-	# 	assert swiftea_bot.links.get_level('swiftea.fr') == 0
-
 	def test_links_filter_links(self):
 		links = ['http://idesys.org', 'http://idesys.org/jehmaker',
 			'http://polytech.fr', 'http://beta.idesys.org']

@@ -5,21 +5,8 @@ from urllib.parse import urlparse
 
 from swiftea_bot.data import DIR_LINKS, FILE_LINKS
 
-LINK_FILE_MAX_SIZE = 50000
 
-# def get_level(domain=''):
-# 	if domain == '':
-# 		return -1
-# 	domains = get_domains()
-#
-# 	domain_info = {}
-# 	for key, d in enumerate(domains):
-# 		if d['domain'] == domain:
-# 			domain_info = d
-#
-# 	if domain_info == {}:
-# 		return 0
-# 	return domain_info['level']
+LINK_FILE_MAX_SIZE = 50000
 
 def filter_links(links, crawl_option):
 	if crawl_option['domain'] == '':
@@ -29,7 +16,7 @@ def filter_links(links, crawl_option):
 	next_level_links = []
 
 	for link in links:
-		if crawl_option['sub-domain'] == True:
+		if crawl_option['sub-domain']:
 			if crawl_option['domain'] in urlparse(link).netloc:
 				domain_links.append(link)
 			else:
@@ -76,13 +63,25 @@ def get_filename(domains, crawl_option, LINK_FILE_MAX_SIZE=50000):
 		no_domain_ptr = -1
 		if path.exists(filename):
 			if path.getsize(filename) > LINK_FILE_MAX_SIZE:
-				domains.append({'domain': '', 'level': -1, 'completed': 0})
+				domains.append({
+					'domain': '',
+					'level': -1,
+					'completed': 0,
+					'file': max_ptr,
+					'line': 1  # TODO: save the line (FileManager.reading_line_number)
+				})
 				level_filename_ptr = max_ptr
 				no_domain_ptr = -1
 				save = True
 		if domain_ptr == -1:
 			# not found
-			domains.append({'domain': '', 'level': -1, 'completed': 0})
+			domains.append({
+				'domain': '',
+				'level': -1,
+				'completed': 0,
+				'file': max_ptr,
+				'line': 1
+			})
 			level_filename_ptr = 0
 			save = True
 		next_level_filename_ptr = no_domain_ptr
@@ -93,7 +92,9 @@ def get_filename(domains, crawl_option, LINK_FILE_MAX_SIZE=50000):
 			domain_info = {
 				'domain': crawl_option['domain'],
 				'level': crawl_option['level'],
-				'completed': 0
+				'completed': 0,
+				'file': max_ptr,
+				'line': 1
 			}
 			domains.append(domain_info)
 			level_filename_ptr = max_ptr
@@ -103,14 +104,22 @@ def get_filename(domains, crawl_option, LINK_FILE_MAX_SIZE=50000):
 			level_filename_ptr = domain_ptr
 
 		if no_domain_ptr == -1 and False:  # TODO: if target almost reach,
-			domains.append({'domain': '', 'level': -1, 'completed': 0})
+			domains.append({
+				'domain': '',
+				'level': -1,
+				'completed': 0,
+				'file': max_ptr,
+				'line': 1
+			})
 			next_level_filename_ptr = max_ptr
 			save = True
 		elif next_level_filename_ptr == -1:
 			domains.append({
 				'domain': crawl_option['domain'],
 				'level': crawl_option['level'] + 1,
-				'completed': 0
+				'completed': 0,
+				'file': max_ptr,
+				'line': 1
 			})
 			next_level_filename_ptr = max_ptr
 			save = True
@@ -163,6 +172,7 @@ def get_domains():
 	return domains
 
 def save_domains(domains):
+	print('links.save_domains', domains)
 	with open(FILE_LINKS, 'w') as json_file:
 		json.dump(domains, json_file, indent=2)
 
