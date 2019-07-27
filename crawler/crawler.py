@@ -156,8 +156,8 @@ class Crawler:
 			return None
 		else:
 			module.tell('New url: ' + new_url, severity=0)
-			self.delete_bad_url(all_urls)  # Except new url
 			webpage_infos, links = self.site_informations.get_infos(new_url, html_code, nofollow, score)
+			self.delete_bad_url(all_urls, webpage_infos['language'])  # Except new url
 			webpage_infos['url'] = new_url
 
 			if webpage_infos['title'] != '':
@@ -167,10 +167,10 @@ class Crawler:
 				else:
 					return None
 			else:
-				self.delete_bad_url(new_url)
+				self.delete_bad_url(new_url, webpage_infos['language'])
 				return None
 
-	def delete_bad_url(self, urls):
+	def delete_bad_url(self, urls, language='*'):
 		"""Delete bad doc if exists.
 
 		Check if doc exists in database and delete it from database and inverted-index.
@@ -187,7 +187,7 @@ class Crawler:
 				doc_id = self.database.get_doc_id(url)
 				if doc_id:
 					self.database.del_one_doc(url)
-					self.index_manager.delete_doc_id(doc_id)
+					self.index_manager.delete_doc_id(doc_id, language)
 				else:
 					module.safe_quit()
 			elif doc_exists is None:

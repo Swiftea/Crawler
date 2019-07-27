@@ -63,9 +63,13 @@ def add_doc(keywords, doc_id, language):
 def delete_word(id):
 	Word.objects.get({'_id': id}).delete()
 
-def delete_doc(doc_id, language):
+def delete_doc(doc_id, language='*'):
 	"""Use language to limit the raws to read."""
-	for word in Word.objects.raw({'language': language}):
+	if language == '*':
+		words = Word.objects.all()
+	else:
+		words = Word.objects.raw({'language': language})
+	for word in words:
 		if doc_id in word.documents:
 			if len(word.documents) == 1:
 				delete_word(word._id)

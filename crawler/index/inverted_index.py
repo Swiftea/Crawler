@@ -154,7 +154,7 @@ class InvertedIndex:
 	# 	if self.inverted_index[language][first_letter][filename][word].get(doc_id) is not None:
 	# 		del self.inverted_index[language][first_letter][filename][word][doc_id]
 
-	def delete_doc_id(self, doc_id, language):
+	def delete_doc_id(self, doc_id, language='*'):
 		"""Delete a id in inverted-index.
 
 		:param doc_id: id to delete
