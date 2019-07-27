@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import atexit
+# import atexit
 from urllib.parse import urlparse
 
 
@@ -12,10 +12,6 @@ from crawler import Crawler
 from crawler_domain import CrawlerDomain
 
 
-def save(crawler):
-	crawler.file_manager.save_inverted_index(
-		crawler.index_manager.get_inverted_index()
-	)
 
 @click.command()
 @click.option('-u', '--url')  # initial url
@@ -37,7 +33,7 @@ def main(url, sub_domain, level, target_level):
 		crawler = Crawler()
 		print('Starting with base urls')
 		module.def_links()
-	atexit.register(save, crawler)
+	# atexit.register(save, crawler)
 	crawler.start()
 
 

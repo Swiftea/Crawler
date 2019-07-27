@@ -160,54 +160,54 @@ class FileManager(object):
 		self.reading_line_number += 1
 
 		return url
-
-	def save_inverted_index(self, inverted_index):
-		"""Save inverted-index in local.
-
-		Save it in a json file when we can't send it.
-
-		:param inverted_index: inverted-index
-		:type inverted_index: dict
-
-		"""
-		tell('Save inverted-index in save file')
-		with open(data.FILE_INDEX, 'w') as myfile:
-			json.dump(inverted_index, myfile, ensure_ascii=False)
-
-	def get_inverted_index(self):
-		"""Get inverted-index in local.
-
-		Called after a connection error. Read a json file that contains the inverted-index.
-		Delete this file after reading it.
-
-		:return: inverted-index
-
-		"""
-		tell('Get inverted-index from save file')
-		with open(data.FILE_INDEX, 'r') as myfile:
-			inverted_index = json.load(myfile)
-		remove(data.FILE_INDEX)
-		return convert_keys(inverted_index)
-
-	def read_inverted_index(self):
-		"""Get inverted-index in local.
-
-		Called after sending inverted-index without error.
-		Read all files created to send inverted-index.
-
-		:return: inverted-index
-
-		"""
-		tell('Get inverted-index in local')
-		inverted_index = dict()
-		for language in listdir(data.DIR_INDEX):
-			inverted_index[language] = dict()
-			for first_letter in listdir(data.DIR_INDEX + language):
-				inverted_index[language][first_letter] = dict()
-				for filename in listdir(data.DIR_INDEX + language + '/' + first_letter):
-					with open(data.DIR_INDEX + language + '/' + first_letter + '/' + filename, 'r', encoding='utf-8') as myfile:
-						inverted_index[language][first_letter][filename[:-4]] = json.load(myfile)
-		return convert_keys(inverted_index)
+	#
+	# def save_inverted_index(self, inverted_index):
+	# 	"""Save inverted-index in local.
+	#
+	# 	Save it in a json file when we can't send it.
+	#
+	# 	:param inverted_index: inverted-index
+	# 	:type inverted_index: dict
+	#
+	# 	"""
+	# 	tell('Save inverted-index in save file')
+	# 	with open(data.FILE_INDEX, 'w') as myfile:
+	# 		json.dump(inverted_index, myfile, ensure_ascii=False)
+	#
+	# def get_inverted_index(self):
+	# 	"""Get inverted-index in local.
+	#
+	# 	Called after a connection error. Read a json file that contains the inverted-index.
+	# 	Delete this file after reading it.
+	#
+	# 	:return: inverted-index
+	#
+	# 	"""
+	# 	tell('Get inverted-index from save file')
+	# 	with open(data.FILE_INDEX, 'r') as myfile:
+	# 		inverted_index = json.load(myfile)
+	# 	remove(data.FILE_INDEX)
+	# 	return convert_keys(inverted_index)
+	#
+	# def read_inverted_index(self):
+	# 	"""Get inverted-index in local.
+	#
+	# 	Called after sending inverted-index without error.
+	# 	Read all files created to send inverted-index.
+	#
+	# 	:return: inverted-index
+	#
+	# 	"""
+	# 	tell('Get inverted-index in local')
+	# 	inverted_index = dict()
+	# 	for language in listdir(data.DIR_INDEX):
+	# 		inverted_index[language] = dict()
+	# 		for first_letter in listdir(data.DIR_INDEX + language):
+	# 			inverted_index[language][first_letter] = dict()
+	# 			for filename in listdir(data.DIR_INDEX + language + '/' + first_letter):
+	# 				with open(data.DIR_INDEX + language + '/' + first_letter + '/' + filename, 'r', encoding='utf-8') as myfile:
+	# 					inverted_index[language][first_letter][filename[:-4]] = json.load(myfile)
+	# 	return convert_keys(inverted_index)
 
 	def get_lists_words(self):
 		"""Get lists words from data

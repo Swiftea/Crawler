@@ -47,7 +47,6 @@ class CrawlerDomain(Crawler):
 			return
 		run = True
 		while run:
-			stats_send_index = time()
 			begining = time()
 
 			url, level_complete = self.file_manager.get_url()
@@ -89,6 +88,4 @@ class CrawlerDomain(Crawler):
 				run = False
 				break
 
-			self.send_inverted_index()
 			self.file_manager.check_size_files()
-			module.stats_send_index(stats_send_index, time())

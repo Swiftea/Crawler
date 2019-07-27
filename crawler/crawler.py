@@ -23,7 +23,7 @@ from index.inverted_index import InvertedIndex
 from swiftea_bot.data import DIR_INDEX
 from swiftea_bot import data, module
 import swiftea_bot.links
-from index import index
+# from index import index
 
 
 class Crawler:
@@ -47,31 +47,31 @@ class Crawler:
 			pvdata.TABLE_NAMES)
 		self.web_connection = WebConnection()
 
-		self.get_inverted_index()
+		# self.get_inverted_index()
 		self.crawled_websites = 0
 
-	def get_inverted_index(self):
-		"""Manage all operations to get inverted-index.
-
-		Check for a save inverted-index file, compare inverted-index in local and
-		on server to know if it's necessary to download it.
-
-		"""
-		inverted_index = self.file_manager.read_inverted_index()
-		self.index_manager.set_inverted_index(inverted_index)
-		# if module.is_index():  # json index
-		# 	inverted_index = self.file_manager.get_inverted_index()
-		# else:
-		# 	response = self.ftp_manager.compare_indexs()
-		# 	if response == 'server':
-		# 		begining = time()
-		# 		inverted_index = self.ftp_manager.get_inverted_index()
-		# 		index.stats_dl_index(begining, time())
-		# 	elif response == 'local':
-		# 		inverted_index = self.file_manager.read_inverted_index()
-		# 	elif response == 'new':
-		# 		inverted_index = {}
-		# self.index_manager.set_inverted_index(inverted_index)
+	# def get_inverted_index(self):
+	# 	"""Manage all operations to get inverted-index.
+	#
+	# 	Check for a save inverted-index file, compare inverted-index in local and
+	# 	on server to know if it's necessary to download it.
+	#
+	# 	"""
+	# 	inverted_index = self.file_manager.read_inverted_index()
+	# 	self.index_manager.set_inverted_index(inverted_index)
+	# 	# if module.is_index():  # json index
+	# 	# 	inverted_index = self.file_manager.get_inverted_index()
+	# 	# else:
+	# 	# 	response = self.ftp_manager.compare_indexs()
+	# 	# 	if response == 'server':
+	# 	# 		begining = time()
+	# 	# 		inverted_index = self.ftp_manager.get_inverted_index()
+	# 	# 		index.stats_dl_index(begining, time())
+	# 	# 	elif response == 'local':
+	# 	# 		inverted_index = self.file_manager.read_inverted_index()
+	# 	# 	elif response == 'new':
+	# 	# 		inverted_index = {}
+	# 	# self.index_manager.set_inverted_index(inverted_index)
 
 	def start(self):
 		"""Start main loop of crawling.
@@ -129,7 +129,7 @@ class Crawler:
 
 			# End of loop range(n)
 			self.suggestions()
-			self.send_inverted_index()
+			# self.send_inverted_index()
 			self.file_manager.check_size_files()
 			module.stats_send_index(stats_send_index, time())
 
@@ -225,13 +225,13 @@ class Crawler:
 			module.tell('Indexing {0} {1}'.format(doc_id, webpage_infos['url']))
 			self.index_manager.add_doc(webpage_infos['keywords'], doc_id, webpage_infos['language'])
 
-	def send_inverted_index(self):
-		"""Send inverted-index generate by indexing to server."""
-		begining = time()
-		self.ftp_manager.send_inverted_index(self.index_manager.get_inverted_index())
-		index.stats_ul_index(begining, time())
-		# for path in listdir(DIR_INDEX):
-		# 	rmtree(DIR_INDEX + path)
+	# def send_inverted_index(self):
+	# 	"""Send inverted-index generate by indexing to server."""
+	# 	begining = time()
+	# 	self.ftp_manager.send_inverted_index(self.index_manager.get_inverted_index())
+	# 	index.stats_ul_index(begining, time())
+	# 	# for path in listdir(DIR_INDEX):
+	# 	# 	rmtree(DIR_INDEX + path)
 
 	def suggestions(self):
 		"""Suggestions:
