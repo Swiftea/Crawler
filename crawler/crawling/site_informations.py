@@ -160,7 +160,13 @@ class SiteInformations:
 		for keyword in new_keywords:
 			if keyword not in stopwords and len(keyword) > 1:
 				cleaned_keywords.append(keyword)
-		return cleaned_keywords
+		# calculate occurrence
+		keywords_done = list()
+		keywords = list()
+		for keyword in cleaned_keywords:
+			if keyword not in keywords_done:
+				keywords.append((keyword, cleaned_keywords.count(keyword)))
+		return keywords
 
 	def sane_search(self, keywords, language, max_ratio=.2):
 		"""Filter pages not suitable for a young audience.

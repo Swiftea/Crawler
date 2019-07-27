@@ -58,7 +58,7 @@ def add_word(word, doc_id, nb_words, language, occurrence):
 def add_doc(keywords, doc_id, language):
 	nb_words = len(keywords)
 	for word in keywords:
-		add_word(word, doc_id, nb_words, language, keywords.count(word))
+		add_word(word[0], doc_id, nb_words, language, word[1])
 
 def delete_word(id):
 	Word.objects.get({'_id': id}).delete()
