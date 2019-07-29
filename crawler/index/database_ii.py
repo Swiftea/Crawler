@@ -1,33 +1,14 @@
 import urllib.parse
+from time import time
 
-import pymongo
+
+from pymongo import IndexModel, TEXT
 from pymongo.write_concern import WriteConcern
 from pymodm import connection, MongoModel, EmbeddedMongoModel, fields, errors
 
-"""
-Reference and MongoModel Document:
- - no possible because a document has multiple word
 
-Embedded document model:
- - must iterate over document to add a new one
- - hard to delete a document
-
-Embedded dict:
- - easy to add and update document
- - hard to delete a document
-
-"""
 from swiftea_bot.private_data import MONGODB_PASSWORD
-
-
-class Document(EmbeddedMongoModel):
-	id = fields.BigIntegerField(primary_key=True)
-	tf = fields.FloatField()
-
-	class Meta:
-		write_concern = WriteConcern(j=True)
-		connection_alias = 'my-app'
-		final = True
+from index import index
 
 class Word(MongoModel):
 	word = fields.CharField()
@@ -35,31 +16,45 @@ class Word(MongoModel):
 	language = fields.CharField()
 
 	class Meta:
-		write_concern = WriteConcern(j=True)
+		write_concern = WriteConcern(w=1)
 		connection_alias = 'my-app'
 		final = True
+		indexes = [IndexModel([('word', TEXT)])]
 
-def connect():
+def connect(database_name='inverted_index'):
 	password = urllib.parse.quote(MONGODB_PASSWORD)
 	username = 'swiftea_admin'
-	database_name = 'inverted_index'
-	db_url = 'mongodb+srv://{}:{}@clusterswiftea-oz7b3.mongodb.net/{}?retryWrites=true&w=majority'.format(username, password, database_name)
+	db_url = 'mongodb+srv://{}:{}@clusterswiftea-oz7b3.mongodb.net/{}?retryWrites=true'.format(username, password, database_name)
 	connection.connect(db_url, alias="my-app")
 
 def add_word(word, doc_id, nb_words, language, occurrence):
 	tf = round(occurrence / nb_words, 7)
 	try:
-		w = Word.objects.get({'word': word, 'language': language})
+		w = Word.objects.raw({
+			'$text': {'$search': "\"{}\"".format(word), '$language': language},
+			'language': language
+		}).first()
+		if w.word != word:
+			print('invalid match')
+			raise errors.DoesNotExist
 	except errors.DoesNotExist:
 		w = Word(word, {doc_id: tf}, language).save()
 	else:
+		if doc_id in w.documents:
+			if w.documents[doc_id] != tf:
+				return
 		w.documents[doc_id] = tf
 		w.save()
 
 def add_doc(keywords, doc_id, language):
 	nb_words = len(keywords)
+	begining = time()
+	language = {'fr': 'french', 'en':'english'}[language]
 	for word in keywords:
 		add_word(word[0], doc_id, nb_words, language, word[1])
+	t = time() - begining
+	with open('data/stats/stat_up_index', 'a') as myfile:
+		myfile.write(str(t) + '\n')
 
 def delete_word(id):
 	Word.objects.get({'_id': id}).delete()
@@ -137,6 +132,6 @@ def experimentations():
 	# # TODO: index: language.word
 
 if __name__ == '__main__':
-	connect()
+	connect('test')
 	# experimentations()
 	test()

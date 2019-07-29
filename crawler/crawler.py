@@ -161,7 +161,7 @@ class Crawler:
 			webpage_infos['url'] = new_url
 
 			if webpage_infos['title'] != '':
-				if module.can_add_doc(self.infos, webpage_infos):  # Duplicate only with url
+				if module.can_add_doc(self.infos, webpage_infos):  # check for duplicate only with url
 					self.crawled_websites += 1
 					return webpage_infos, links
 				else:

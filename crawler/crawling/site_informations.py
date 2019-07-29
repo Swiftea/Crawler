@@ -166,6 +166,7 @@ class SiteInformations:
 		for keyword in cleaned_keywords:
 			if keyword not in keywords_done:
 				keywords.append((keyword, cleaned_keywords.count(keyword)))
+				keywords_done.append(keyword)
 		return keywords
 
 	def sane_search(self, keywords, language, max_ratio=.2):
