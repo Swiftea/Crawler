@@ -1,4 +1,3 @@
-import urllib.parse
 from time import time
 
 
@@ -7,7 +6,7 @@ from pymongo.write_concern import WriteConcern
 from pymodm import connection, MongoModel, EmbeddedMongoModel, fields, errors
 
 
-from swiftea_bot.private_data import MONGODB_PASSWORD
+from swiftea_bot.private_data import MONGODB_CON_STRING
 from index import index
 
 class Word(MongoModel):
@@ -22,9 +21,7 @@ class Word(MongoModel):
 		indexes = [IndexModel([('word', TEXT)])]
 
 def connect(database_name='inverted_index'):
-	password = urllib.parse.quote(MONGODB_PASSWORD)
-	username = 'swiftea_admin'
-	db_url = 'mongodb+srv://{}:{}@clusterswiftea-oz7b3.mongodb.net/{}?retryWrites=true'.format(username, password, database_name)
+	db_url = MONGODB_CON_STRING.format(database_name)
 	connection.connect(db_url, alias="my-app")
 
 def add_word(word, doc_id, nb_words, language, occurrence):
