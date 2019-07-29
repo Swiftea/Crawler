@@ -13,12 +13,18 @@ from swiftea_bot import data, module, links
 from crawler import Crawler
 from swiftea_bot.file_manager import FileManager
 
+use_mongodb = False
+if use_mongodb:
+	from index.inverted_index_nosql import InvertedIndex
+
 
 class CrawlerDomain(Crawler):
 	"""Crawler main class."""
 	def __init__(self, crawl_option, url):
 		Crawler.__init__(self);
 		print(crawl_option)
+		if use_mongodb:
+			self.index_manager = InvertedIndex()
 		self.file_manager = FileManager(crawl_option)
 		self.crawl_option = crawl_option
 		if not path.exists(data.FILE_LINKS):
@@ -89,3 +95,6 @@ class CrawlerDomain(Crawler):
 				break
 
 			self.file_manager.check_size_files()
+
+		if not use_mongodb:
+			self.send_inverted_index()
