@@ -154,7 +154,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		assert r00 == 0
 		assert s00 == True
 		assert d00 == [
-			{'domain': '', 'level': -1, 'completed': 0},
+			{'completed': 0, 'domain': '', 'file': 0, 'level': -1, 'line': 1}
 		]
 		assert r00_ == -1
 
@@ -164,8 +164,8 @@ class TestFileManager(SwifteaBotBaseTest):
 		assert r0 == 0
 		assert s0 == True
 		assert d0 == [
-			{'completed': 0, 'domain': 'idesys.org', 'level': 2},
-			{'completed': 0, 'domain': 'idesys.org', 'level': 3}
+			{'completed': 0, 'domain': 'idesys.org', 'file': 0, 'level': 2, 'line': 1},
+			{'completed': 0, 'domain': 'idesys.org', 'file': 1, 'level': 3, 'line': 1}
 		]
 		assert r0_ == 1
 
@@ -239,4 +239,4 @@ class TestFileManager(SwifteaBotBaseTest):
 		l2 = swiftea_bot.links.filter_links(
 			links, {'domain': '', 'level': -1, 'sub-domain': False}
 		)
-		assert l2 == links
+		assert l2 == (links, [])

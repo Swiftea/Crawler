@@ -13,5 +13,4 @@ class InvertedIndex:
 		add_doc(keywords, doc_id, language)
 
 	def delete_doc_id(self, doc_id, language='*'):
-
 		delete_doc(doc_id, language)

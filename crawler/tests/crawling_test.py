@@ -136,7 +136,7 @@ class TestSiteInformations(CrawlingBaseTest):
 		base_keywords = ['le', 'mot', '2015', 'bureau', 'word\'s', 'l\'example', 'l’oiseau',
 		'quoi...', '*****', 'epee,...', '2.0', 'o\'clock', '[çochon$¤', '#{[|µ£%]}', '12h|(']
 		keywords = SiteInformations.clean_keywords(self, base_keywords, 'fr')
-		assert keywords == ['le', '2015', 'bureau', 'word', 'example', 'oiseau', 'quoi', 'epee', 'clock', 'çochon', '12h']
+		assert keywords == test_data.CLEANED_KEYWORDS
 
 	def test_sane_search(self):
 		assert SiteInformations.sane_search(self, ['car'], 'fr') == False

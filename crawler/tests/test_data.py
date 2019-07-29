@@ -67,6 +67,20 @@ INVERTED_INDEX = {'EN': {
 'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
 'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
 
+CLEANED_KEYWORDS = [
+	('le', 1),
+	('2015', 1),
+	('bureau', 1),
+	('word', 1),
+	('example', 1),
+	('oiseau', 1),
+	('quoi', 1),
+	('epee', 1),
+	('clock', 1),
+	('çochon', 1),
+	('12h', 1)
+]
+
 def reset():
     if path.exists(DIR_DATA):
         rmtree(DIR_DATA)

@@ -1,4 +1,6 @@
 data
+badwords/*
+stopwords/*
 
 crawler-env
 .pytest_cache

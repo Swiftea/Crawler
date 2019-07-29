@@ -2,7 +2,7 @@
 
 from index.index import stats_dl_index, stats_ul_index, count_files_index
 from index.inverted_index import InvertedIndex
-from tests.test_data import INVERTED_INDEX
+from tests.test_data import INVERTED_INDEX, CLEANED_KEYWORDS
 
 
 inverted_index = {'EN': {
@@ -44,9 +44,54 @@ class TestInvertedIndex(IndexBaseTest):
 	def test_add_doc(self):
 		index = InvertedIndex()
 		index.set_inverted_index(self.inverted_index)
-		keywords = ['le', '2015', 'bureau', 'word', 'example', 'oiseau', 'quoi', 'epee', 'clock', 'çochon', '12h', 'a3']
-		index.add_doc(keywords, 13, 'fr')
-		assert index.inverted_index == {'EN': {'A': {'ab': {'above': {1: 0.3, 2: 0.1}, 'abort': {1: 0.3, 2: 0.1}}}, 'W': {'wo': {'word': {1: 0.3, 30: 0.4}}}}, 'FR': {'B': {'ba': {'bateau': {1: 0.5}}, 'bo': {'boule': {1: 0.25, 2: 0.8}}, 'bu': {'bureau': {13: 0.0833333}}}, 'L': {'le': {'le': {13: 0.0833333}}}, 'SP': {'sp-sp': {'2015': {13: 0.0833333}, '12h': {13: 0.0833333}}, 'sp-o': {'çochon': {13: 0.0833333}}}, 'W': {'wo': {'word': {13: 0.0833333}}}, 'E': {'ex': {'example': {13: 0.0833333}}, 'ep': {'epee': {13: 0.0833333}}}, 'O': {'oi': {'oiseau': {13: 0.0833333}}}, 'Q': {'qu': {'quoi': {13: 0.0833333}}}, 'C': {'cl': {'clock': {13: 0.0833333}}}, 'A': {'a-sp': {'a3': {13: 0.0833333}}}}}
+		index.add_doc(CLEANED_KEYWORDS + [('a3', 1)], 13, 'fr')
+		assert index.inverted_index == {
+			'EN': {
+				'A': {
+					'ab': {
+						'above': {1: 0.3, 2: 0.1},
+						'abort': {1: 0.3, 2: 0.1}}},
+				'W': {
+					'wo': {
+						'word': {1: 0.3, 30: 0.4}}}},
+			'FR': {
+				'B': {
+					'ba': {
+						'bateau': {1: 0.5}},
+					'bo': {
+						'boule': {1: 0.25, 2: 0.8}},
+					'bu': {
+						'bureau': {13: 0.0833333}}},
+				'L': {
+					'le': {
+						'le': {13: 0.0833333}}},
+				'SP': {
+					'sp-sp': {
+						'2015': {13: 0.0833333},
+						'12h': {13: 0.0833333}},
+					'sp-o': {
+						'çochon': {13: 0.0833333}}},
+				'W': {
+					'wo': {
+						'word': {13: 0.0833333}}},
+				'E': {
+					'ex': {
+						'example': {13: 0.0833333}},
+					'ep': {
+						'epee': {13: 0.0833333}}},
+				'O': {
+					'oi': {
+						'oiseau': {13: 0.0833333}}},
+				'Q': {
+					'qu': {
+						'quoi': {13: 0.0833333}}},
+				'C': {
+					'cl': {
+						'clock': {13: 0.0833333}}},
+				'A': {
+					'a-sp': {
+						'a3': {13: 0.0833333}}}}
+		}
 
 
 	def test_add_word(self):

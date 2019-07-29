@@ -183,4 +183,3 @@ class InvertedIndex:
 			if new_inverted_index[language] == dict():
 				del new_inverted_index[language]
 		self.inverted_index = new_inverted_index
-		delete_doc(doc_id, language)

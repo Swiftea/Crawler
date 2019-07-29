@@ -1,7 +1,7 @@
 reppy==0.4.13
 PyMySQL==0.9.3
 pytest==5.0.1
-requests==2019.4.13
+requests
 coverage==4.5.3
 sphinx_rtd_theme==0.4.3
 paramiko==2.5.0

@@ -21,7 +21,7 @@ except ImportError:
     from tests.test_data import reset
 
 # Test coverage:
-import main
+# import main
 import index.sftp_manager
 
 def run_tests(local=False):
