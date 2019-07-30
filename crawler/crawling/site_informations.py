@@ -90,6 +90,7 @@ class SiteInformations:
 			tell('No language or title', severity=-1)
 			results = {'title': ''}
 			links = list()
+			results['language'] = '*'
 
 		results['score'] = score
 		return results, links

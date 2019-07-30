@@ -36,7 +36,6 @@ class FileManager(object):
 			'level': -1,
 			'target-level': -1
 		}
-		self.reading_line_number = 0  # Meter of links in the reading file
 		self.max_links = data.MAX_LINKS  # Number of maximum links in a file
 		self.run = 'true'  # Run program bool
 		self.config = ConfigParser()
@@ -46,7 +45,6 @@ class FileManager(object):
 			# Create the config file:
 			self.config['DEFAULT'] = {
 				'run': 'true',
-				'reading_line_number': '0',
 				'max_links': data.MAX_LINKS
 			}
 
@@ -56,7 +54,6 @@ class FileManager(object):
 			# Read the config file:
 			self.config.read_file(open(data.FILE_CONFIG))
 			self.run = self.config['DEFAULT']['run']
-			self.reading_line_number = int(self.config['DEFAULT']['reading_line_number'])
 			self.max_links = int(self.config['DEFAULT']['max_links'])
 
 	def check_stop_crawling(self):
@@ -68,7 +65,6 @@ class FileManager(object):
 		"""Save all configurations in config file."""
 		self.config['DEFAULT'] = {
 			'run': self.run,
-			'reading_line_number': str(self.reading_line_number),
 			'max_links': str(self.max_links)
 		}
 		with open(data.FILE_CONFIG, 'w') as configfile:
@@ -133,7 +129,7 @@ class FileManager(object):
 		"""
 		self.domains = swiftea_bot.links.get_domains()
 
-		filename_ptr = swiftea_bot.links.get_filename_read(
+		filename_ptr, reading_line_number = swiftea_bot.links.get_filename_read(
 			self.domains,
 			self.crawl_option
 		)
@@ -148,16 +144,14 @@ class FileManager(object):
 			return 'error'
 
 		# If it's the last links of the file:
-		if len(list_links) == (self.reading_line_number):
-			self.reading_line_number = 0
+		if len(list_links) == reading_line_number-1:
 			self.domains[filename_ptr]['completed'] = 1
 			return '#level_complete#'
 
 		tell('File {0}, line {1}'.format(
 			str(filename_ptr),
-			str(self.reading_line_number + 1)), severity=0)
-		url = list_links[self.reading_line_number]
-		self.reading_line_number += 1
+			str(reading_line_number)), severity=0)
+		url = list_links[reading_line_number-1]
 
 		return url
 

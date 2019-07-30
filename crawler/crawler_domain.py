@@ -22,6 +22,7 @@ class CrawlerDomain(Crawler):
 	"""Crawler main class."""
 	def __init__(self, crawl_option, url):
 		Crawler.__init__(self);
+		self.url = url
 		print(crawl_option)
 		if use_mongodb:
 			self.index_manager = InvertedIndex()
@@ -31,10 +32,11 @@ class CrawlerDomain(Crawler):
 			links.save_domains([{
 				'domain': crawl_option['domain'],
 				'level': self.crawl_option['level'],
-				'completed': False,
-				'line': 0
+				'completed': 0,
+				'line': 1
 			}])
-		self.file_manager.save_links([url])
+		else:
+			links.add_domain(crawl_option['domain'])
 
 	def start(self):
 		"""Start main loop of crawling.
@@ -48,9 +50,11 @@ class CrawlerDomain(Crawler):
 		"""
 		print('Starting with', self.crawl_option)
 		# input('Go?')
-		if (self.crawl_option['target-level'] <= self.crawl_option['level']):
+		if (self.crawl_option['target-level'] <= self.crawl_option['level'] or
+			links.get_already_done(self.crawl_option['domain'], self.crawl_option['level'])):
 			print('Already done')
 			return
+		self.file_manager.save_links([self.url])
 		run = True
 		while run:
 			begining = time()

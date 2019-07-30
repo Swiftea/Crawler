@@ -8,6 +8,16 @@ from swiftea_bot.data import DIR_LINKS, FILE_LINKS
 
 LINK_FILE_MAX_SIZE = 50000
 
+def get_already_done(domain, level):
+	domains = get_domains()
+	done = False
+	for key, d in enumerate(domains):
+		if (d['domain'] == domain
+			and d['level'] == level
+			and d['completed']):
+			done = True
+	return done
+
 def filter_links(links, crawl_option):
 	if crawl_option['domain'] == '':
 		return links, []
@@ -68,7 +78,7 @@ def get_filename(domains, crawl_option, LINK_FILE_MAX_SIZE=50000):
 					'level': -1,
 					'completed': 0,
 					'file': max_ptr,
-					'line': 1  # TODO: save the line (FileManager.reading_line_number)
+					'line': 1
 				})
 				level_filename_ptr = max_ptr
 				no_domain_ptr = -1
@@ -103,17 +113,7 @@ def get_filename(domains, crawl_option, LINK_FILE_MAX_SIZE=50000):
 		else:
 			level_filename_ptr = domain_ptr
 
-		if no_domain_ptr == -1 and False:  # TODO: if target almost reach,
-			domains.append({
-				'domain': '',
-				'level': -1,
-				'completed': 0,
-				'file': max_ptr,
-				'line': 1
-			})
-			next_level_filename_ptr = max_ptr
-			save = True
-		elif next_level_filename_ptr == -1:
+		if next_level_filename_ptr == -1:
 			domains.append({
 				'domain': crawl_option['domain'],
 				'level': crawl_option['level'] + 1,
@@ -127,10 +127,6 @@ def get_filename(domains, crawl_option, LINK_FILE_MAX_SIZE=50000):
 	return level_filename_ptr, save, domains, next_level_filename_ptr
 
 def get_filename_read(domains, crawl_option):
-	save = False  # if we need to save the json file at the end
-	max_ptr = len(domains)
-	level_filename_ptr = -1;  # returned result
-	next_level_filename_ptr = -1;
 	domain_ptr = -1;  # related to the given domain
 	no_domain_ptr = -1;  # the max no domain file
 
@@ -138,17 +134,22 @@ def get_filename_read(domains, crawl_option):
 		if (d['domain'] == crawl_option['domain']
 			and d['level'] == crawl_option['level']):
 			domain_ptr = key
-		if (d['domain'] == crawl_option['domain']
-			and d['level'] == (crawl_option['level'] + 1)):
-			next_level_filename_ptr = key
 		if (d['domain'] == '' or d['level'] == -1) and no_domain_ptr == -1:
 			# modify no_domain_ptr once
 			no_domain_ptr = key
 
-	if crawl_option['domain'] == '' or crawl_option['level'] == -1:
-		return no_domain_ptr if no_domain_ptr != -1 else 0
+	if len(domains):
+		reading_line_number = domains[domain_ptr]['line']
 	else:
-		return domain_ptr
+		reading_line_number = 0
+
+	if crawl_option['domain'] == '' or crawl_option['level'] == -1:
+		domain_ptr = no_domain_ptr if no_domain_ptr != -1 else 0
+
+	domains[domain_ptr]['line'] += 1
+	save_domains(domains)
+
+	return domain_ptr, reading_line_number
 
 def store_link(links, level_filename_ptr):
 	filename = DIR_LINKS + str(level_filename_ptr)
@@ -172,7 +173,6 @@ def get_domains():
 	return domains
 
 def save_domains(domains):
-	print('links.save_domains', domains)
 	with open(FILE_LINKS, 'w') as json_file:
 		json.dump(domains, json_file, indent=2)
 
@@ -184,17 +184,18 @@ def add_domain(domain):
 			exists = True
 
 	if not exists:
-		with open(FILE_LINKS, 'w') as link_file:
-			json.dump([{
-				'domain': domain,
-				'level': 0,
-				'completed': 0
-			}], link_file)
+		domains.append({
+			'domain': domain,
+			'level': 0,
+			'completed': 0,
+			'line': 1
+		})
+		save_domains(domains)
 
 
 def save_links(links, crawl_option, LINK_FILE_MAX_SIZE=2):
-	# read link files index
 	domains = get_domains()
+	# read link files index
 
 	level_filename_ptr, save, domains, next_level_filename_ptr = get_filename(
 		domains, crawl_option, LINK_FILE_MAX_SIZE)
