@@ -103,6 +103,12 @@ The DatabaseSwiftea object can:
  - check if a doc exists
  - check for http and https duplicate
 
+## Limits
+
+When stoping the crawler (ctrl+V), it will not restart with the interupted url.
+
+There are some little bugs with in the file `data/links/links.json`: some items are missing the `file` value.
+
 ## Version
 
 Current version is 1.0.2

@@ -138,14 +138,11 @@ def get_filename_read(domains, crawl_option):
 			# modify no_domain_ptr once
 			no_domain_ptr = key
 
-	if len(domains):
-		reading_line_number = domains[domain_ptr]['line']
-	else:
-		reading_line_number = 0
-
 	if crawl_option['domain'] == '' or crawl_option['level'] == -1:
 		domain_ptr = no_domain_ptr if no_domain_ptr != -1 else 0
 
+	print(domain_ptr)
+	reading_line_number = domains[domain_ptr]['line']
 	domains[domain_ptr]['line'] += 1
 	save_domains(domains)
 

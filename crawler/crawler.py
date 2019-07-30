@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from time import time
+from os import path
 # from os import listdir
 # from shutil import rmtree
 
@@ -21,7 +22,7 @@ from database.database_swiftea import DatabaseSwiftea
 from swiftea_bot.file_manager import FileManager
 from index.inverted_index import InvertedIndex
 from swiftea_bot.data import DIR_INDEX
-from swiftea_bot import data, module
+from swiftea_bot import data, module, links
 import swiftea_bot.links
 from index import index
 
@@ -83,6 +84,13 @@ class Crawler:
 		Do it until the user want stop crawling or occured an error.
 
 		"""
+		if not path.exists(data.FILE_LINKS):
+			links.save_domains([{
+				'domain': '',
+				'level': -1,
+				'completed': 0,
+				'line': 1
+			}])
 		run = True
 		while run:
 			stats_send_index = time()
