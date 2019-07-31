@@ -141,7 +141,6 @@ def get_filename_read(domains, crawl_option):
 	if crawl_option['domain'] == '' or crawl_option['level'] == -1:
 		domain_ptr = no_domain_ptr if no_domain_ptr != -1 else 0
 
-	print(domain_ptr)
 	reading_line_number = domains[domain_ptr]['line']
 	domains[domain_ptr]['line'] += 1
 	save_domains(domains)

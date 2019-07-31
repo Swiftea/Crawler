@@ -50,7 +50,6 @@ class Crawler:
 			pvdata.TABLE_NAMES)
 		self.web_connection = WebConnection()
 
-		# self.get_inverted_index()
 		self.crawled_websites = 0
 
 	def get_inverted_index(self):
@@ -86,6 +85,7 @@ class Crawler:
 		Do it until the user want stop crawling or occured an error.
 
 		"""
+		self.get_inverted_index()
 		if not path.exists(data.FILE_LINKS):
 			links.save_domains([{
 				'domain': '',
