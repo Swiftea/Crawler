@@ -2,6 +2,10 @@ data
 badwords/*
 stopwords/*
 
+build/*
+dist/*
+swiftea_crawler.egg-info/*
+
 crawler-env
 .pytest_cache
 
