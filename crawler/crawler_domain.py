@@ -10,7 +10,7 @@ except ImportError:
 	pass
 
 from swiftea_bot import data, module, links
-from crawler import Crawler
+from crawler_base import Crawler
 from swiftea_bot.file_manager import FileManager
 
 use_mongodb = False

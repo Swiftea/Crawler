@@ -8,7 +8,7 @@ import click
 
 
 from swiftea_bot import module
-from crawler import Crawler
+from crawler_base import Crawler
 from crawler_domain import CrawlerDomain
 
 def save(crawler):
