@@ -19,12 +19,19 @@ Currently, it can:
       - title
       - description
       - ...
-    - extract important words
+    - extract words
       - filter stopwords
   - Index them
     - in database
     - in inverted-index
   - Archive log files in a zip file
+	- avoid duplicates (http and https)
+
+The domain crawler focus on the links that belong to the given domain name.
+The level option of the domain crawler defines how deep the crawl goes.
+For example, the level 2 means the crawler will crawl all the links of the domain plus the links that all pages in this domain lead to.
+
+The domain crawler can use a MongoDB database to store the inverted index.
 
 ## Install and usage
 
