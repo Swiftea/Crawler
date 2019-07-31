@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 class PyTest(TestCommand):
@@ -17,20 +17,23 @@ class PyTest(TestCommand):
 
 def read(filename):
     with open(filename, 'r') as myfile:
-        return myfile.read().split()
+        return myfile.read()
 
 setup(
-    name = "Crawler",
-    version = "1.0.2",
+    name = "swiftea-crawler",
+    version = "1.1.0",
     author = "Thykof",
+    author_email="thykof@protonmail.ch",
     tests_require=['pytest'],
-    install_requires=read('requirements.txt'),
+    install_requires=read('requirements.txt').split(),
     cmdclass={'test': PyTest},
     description = ("Swiftea's Open Source Web Crawler"),
+    long_description=read('README.md'),
+    long_description_content_type="text/markdown",
     license = "GNU GPL v3",
     keywords = "crawler swiftea",
     url = "https://github.com/Swiftea/Crawler",
-    packages=['crawler'],
+    packages=find_packages(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Topic :: Internet :: WWW/HTTP :: Indexing/Search",

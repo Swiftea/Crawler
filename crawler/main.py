@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# import atexit
+import atexit
 from urllib.parse import urlparse
 
 
@@ -11,19 +11,17 @@ from swiftea_bot import module
 from crawler import Crawler
 from crawler_domain import CrawlerDomain
 
-
+def save(crawler):
+	crawler.file_manager.save_inverted_index(
+		crawler.index_manager.get_inverted_index()
+	)
 
 @click.command()
 @click.option('-u', '--url')  # initial url
 @click.option('-sd', '--sub-domain', default=True)  # True or False
 @click.option('-l', '--level', default=0)
 @click.option('-tl', '--target-level', default=1)
-# def save(crawler):
-# 	crawler.file_manager.save_inverted_index(
-# 		crawler.index_manager.get_inverted_index()
-# 	)
-
-def main(url='http://idesys.org', sub_domain=False, level=0, target_level=1):
+def main(url, sub_domain, level, target_level):
 	# python main.py -u http://idesys.org -sd False -l 2
 	# python main.py -u http://idesys.org -l 1
 	module.create_dirs()
@@ -38,7 +36,7 @@ def main(url='http://idesys.org', sub_domain=False, level=0, target_level=1):
 		crawler = Crawler()
 		print('Starting with base urls')
 		module.def_links()
-	# atexit.register(save, crawler)
+	atexit.register(save, crawler)
 	crawler.start()
 
 
