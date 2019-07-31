@@ -36,7 +36,7 @@ def main(url, sub_domain, level, target_level):
 		crawler = Crawler()
 		print('Starting with base urls')
 		module.def_links()
-	atexit.register(save, crawler)
+		atexit.register(save, crawler)
 	crawler.start()
 
 
