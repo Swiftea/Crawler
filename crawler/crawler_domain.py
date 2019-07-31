@@ -12,19 +12,16 @@ except ImportError:
 from swiftea_bot import data, module, links
 from crawler_base import Crawler
 from swiftea_bot.file_manager import FileManager
-
-use_mongodb = False
-if use_mongodb:
-	from index.inverted_index_nosql import InvertedIndex
+from index.inverted_index_nosql import InvertedIndex
 
 
 class CrawlerDomain(Crawler):
 	"""Crawler main class."""
 	def __init__(self, crawl_option, url):
-		Crawler.__init__(self);
+		Crawler.__init__(self, 0, 0);
 		self.url = url
-		print(crawl_option)
-		if use_mongodb:
+		self.use_mongodb = crawl_option['use-mongodb']
+		if self.use_mongodb:
 			self.index_manager = InvertedIndex()
 		self.file_manager = FileManager(crawl_option)
 		self.crawl_option = crawl_option
@@ -48,6 +45,8 @@ class CrawlerDomain(Crawler):
 		Do it until the user want stop crawling or occured an error.
 
 		"""
+		if not self.use_mongodb:
+			self.get_inverted_index()
 		print('Starting with', self.crawl_option)
 		# input('Go?')
 		if (self.crawl_option['target-level'] <= self.crawl_option['level'] or
@@ -100,5 +99,5 @@ class CrawlerDomain(Crawler):
 
 			self.file_manager.check_size_files()
 
-		if not use_mongodb:
+		if not self.use_mongodb:
 			self.send_inverted_index()

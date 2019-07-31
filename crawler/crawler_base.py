@@ -29,7 +29,9 @@ from index import index
 
 class Crawler:
 	"""Crawler main class."""
-	def __init__(self):
+	def __init__(self, l1, l2):
+		self.l1 = l1
+		self.l2 = l2
 		self.infos = list()
 		self.ftp_manager = FTPSwiftea(
 			pvdata.FTP_HOST, pvdata.FTP_USER, pvdata.FTP_PASSWORD,
@@ -95,10 +97,10 @@ class Crawler:
 		while run:
 			stats_send_index = time()
 			self.suggestions()
-			for _ in range(50):
+			for _ in range(self.l1):
 				module.tell('Crawl', severity=2)
 				begining = time()
-				while len(self.infos) < 3:
+				while len(self.infos) < self.l2:
 					begining = time()
 					# Start of crawling loop
 					url, level_complete = self.file_manager.get_url()

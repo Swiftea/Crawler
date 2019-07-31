@@ -21,7 +21,10 @@ def save(crawler):
 @click.option('-sd', '--sub-domain', default=True)  # True or False
 @click.option('-l', '--level', default=0)
 @click.option('-tl', '--target-level', default=1)
-def main(url, sub_domain, level, target_level):
+@click.option('-um', '--use-mongodb', default=False)
+@click.option('-l1', '--loop-1', default=50)
+@click.option('-l2', '--loop-2', default=10)
+def main(url, sub_domain, level, target_level, use_mongodb, loop_1, loop_2):
 	# python main.py -u http://idesys.org -sd False -l 2
 	# python main.py -u http://idesys.org -l 1
 	module.create_dirs()
@@ -31,9 +34,10 @@ def main(url, sub_domain, level, target_level):
 		crawl_option['sub-domain'] = sub_domain
 		crawl_option['level'] = level
 		crawl_option['target-level'] = target_level
+		crawl_option['use-mongodb'] = use_mongodb
 		crawler = CrawlerDomain(crawl_option, url)
 	else:
-		crawler = Crawler()
+		crawler = Crawler(loop_1, loop_2)
 		print('Starting with base urls')
 		module.def_links()
 		atexit.register(save, crawler)
