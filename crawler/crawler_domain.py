@@ -12,13 +12,13 @@ from crawler.index.inverted_index_nosql import InvertedIndex
 
 class CrawlerDomain(Crawler):
 	"""Crawler main class."""
-	def __init__(self, crawl_option, url):
-		Crawler.__init__(self, 0, 0);
+	def __init__(self, config, crawl_option, url):
+		Crawler.__init__(self, config, 0, 0);
 		self.url = url
 		self.use_mongodb = crawl_option['use-mongodb']
 		if self.use_mongodb:
 			self.index_manager = InvertedIndex(self.config['MONGODB_CON_STRING'])
-		self.file_manager = FileManager(crawl_option)
+		self.file_manager = FileManager(self.config, crawl_option)
 		self.database = DatabaseSwiftea(self.config, crawl_option['domain'])
 		self.crawl_option = crawl_option
 		if not path.exists(data.FILE_LINKS):
