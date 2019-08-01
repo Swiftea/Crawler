@@ -8,7 +8,6 @@ from os import mkdir, remove, path
 from crawler.main import Crawler
 from crawler.swiftea_bot.data import DIR_LINKS, FILE_CONFIG, MAX_LINKS, FILE_BASELINKS
 from crawler.swiftea_bot.module import create_dirs
-import crawler.swiftea_bot.private_data as pvdata
 from crawler.tests.test_data import reset, BASE_LINKS
 from crawler.database.database_swiftea import DatabaseSwiftea
 
@@ -38,8 +37,9 @@ def test_insert(self):
         'sanesearch': '1',
         'favicon': 'http://une.url.bidon.truc/favicon.ico',
     }
-	database_swiftea = DatabaseSwiftea(pvdata.DB_HOST, pvdata.DB_USER,
-        pvdata.DB_PASSWORD, pvdata.DB_NAME, pvdata.TABLE_NAMES)
+	with open('crawler-config.json') as json_file:
+		self.config = json.load(json_file)
+	database_swiftea = DatabaseSwiftea(self.config)
 	response = database_swiftea.send_command(
 	"""INSERT INTO website (title, description, url, first_crawl, last_crawl, language,
 	popularity, score, homepage, sanesearch, favicon)

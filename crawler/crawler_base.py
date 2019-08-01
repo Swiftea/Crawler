@@ -2,17 +2,13 @@
 
 from time import time
 from os import path
+import json
 # from os import listdir
 # from shutil import rmtree
 
 
 import click
 
-
-try:
-	import crawler.swiftea_bot.private_data as pvdata
-except ImportError:
-	pass
 
 from crawler.index.ftp_swiftea import FTPSwiftea
 from crawler.crawling.web_connection import WebConnection
@@ -30,12 +26,14 @@ from crawler.index import index
 class Crawler:
 	"""Crawler main class."""
 	def __init__(self, l1, l2):
+		# read private data
+		with open('crawler-config.json') as json_file:
+			self.config = json.load(json_file)
+
 		self.l1 = l1
 		self.l2 = l2
 		self.infos = list()
-		self.ftp_manager = FTPSwiftea(
-			pvdata.FTP_HOST, pvdata.FTP_USER, pvdata.FTP_PASSWORD,
-			pvdata.FTP_PORT, pvdata.FTP_INDEX, pvdata.FTP_DATA)
+		self.ftp_manager = FTPSwiftea(self.config)
 		self.site_informations = SiteInformations()
 		self.file_manager = FileManager()
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
@@ -45,9 +43,7 @@ class Crawler:
 		self.site_informations.set_listswords(stopwords, badwords)
 
 		self.index_manager = InvertedIndex()
-		self.database = DatabaseSwiftea(
-			pvdata.DB_HOST, pvdata.DB_USER, pvdata.DB_PASSWORD, pvdata.DB_NAME,
-			pvdata.TABLE_NAMES)
+		self.database = DatabaseSwiftea(self.config)
 		self.web_connection = WebConnection()
 
 		self.crawled_websites = 0

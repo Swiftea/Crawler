@@ -6,8 +6,8 @@ from crawler.index.database_ii import connect, add_doc, delete_doc
 
 
 class InvertedIndex:
-	def __init__(self):
-		connect()
+	def __init__(self, MONGODB_CON_STRING):
+		connect(MONGODB_CON_STRING)
 
 	def add_doc(self, keywords, doc_id, language):
 		add_doc(keywords, doc_id, language)

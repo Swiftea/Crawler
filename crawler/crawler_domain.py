@@ -4,11 +4,6 @@ from time import time
 from os import path
 
 
-try:
-	import crawler.swiftea_bot.private_data as pvdata
-except ImportError:
-	pass
-
 from crawler.swiftea_bot import data, module, links
 from crawler.crawler_base import Crawler
 from crawler.swiftea_bot.file_manager import FileManager
@@ -22,8 +17,9 @@ class CrawlerDomain(Crawler):
 		self.url = url
 		self.use_mongodb = crawl_option['use-mongodb']
 		if self.use_mongodb:
-			self.index_manager = InvertedIndex()
+			self.index_manager = InvertedIndex(self.config['MONGODB_CON_STRING'])
 		self.file_manager = FileManager(crawl_option)
+		self.database = DatabaseSwiftea(self.config, crawl_option['domain'])
 		self.crawl_option = crawl_option
 		if not path.exists(data.FILE_LINKS):
 			links.save_domains([{

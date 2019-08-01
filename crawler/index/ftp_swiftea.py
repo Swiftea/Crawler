@@ -16,7 +16,14 @@ from crawler.swiftea_bot.module import tell
 
 class FTPSwiftea(FTPManager):
 	"""Class to manage the ftp connection for crawler."""
-	def __init__(self, host, user, password, port, path_index, path_data):
+	def __init__(self, config):
+		host = config['FTP_HOST']
+		user = config['FTP_USER']
+		password = config['FTP_PASSWORD']
+		port = config['FTP_PORT']
+		path_index = config['FTP_INDEX']
+		path_data = config['FTP_DATA']
+
 		FTPManager.__init__(self, host, user, password, port)
 		self.path_index = path_index
 		self.path_data = path_data

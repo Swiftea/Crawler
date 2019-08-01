@@ -25,7 +25,13 @@ class DatabaseSwiftea(DatabaseManager):
 	:type name: str
 
 	"""
-	def __init__(self, host, user, password, name, tables, domain=''):
+	def __init__(self, config, domain=''):
+		host = config['DB_HOST']
+		user = config['DB_USER']
+		password = config['DB_PASSWORD']
+		name = config['DB_NAME']
+		tables = config['TABLE_NAMES']
+
 		DatabaseManager.__init__(self, host, user, password, name)
 		self.t = tables
 		self.domain = domain
@@ -72,12 +78,6 @@ class DatabaseSwiftea(DatabaseManager):
 
 		"""
 		tell('Updating ' + infos['url'])
-		# if result[0][2] is not None:
-		# 	domain = result[0][2]
-		# 	if self.domain not in result[0][2]:
-		# 		domain[self.domain] = 0
-		# 	else:
-		# 		pass # TODO:
 
 		cmd = """
 UPDATE {} SET title=%s, description=%s, last_crawl=NOW(), language=%s,
@@ -102,14 +102,13 @@ WHERE url = %s""".format(self.t[0])
 
 		"""
 		tell('Adding ' + infos['url'])
-		domain = dumps({self.domain: 1})
 		response = self.send_command(
 """INSERT INTO {} (title, description, url, first_crawl, last_crawl, language,
 popularity, score, homepage, sanesearch, favicon, domain)
 VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s, %s)""".format(self.t[0]),
 			(infos['title'], infos['description'], infos['url'],
 			infos['language'], infos['score'], infos['homepage'],
-			infos['sanesearch'], infos['favicon'], domain)
+			infos['sanesearch'], infos['favicon'], self.domain)
 		)
 		if 'error' in response[1][1]:
 			tell('Failed to add: ' + str(response))

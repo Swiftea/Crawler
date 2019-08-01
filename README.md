@@ -90,20 +90,6 @@ Upload the list of words: `/www/[type]/[lang].[type].txt`.
 
 Create database with `sql/swiftea_mysql_db.sql`.
 
-Create `crawler/swiftea_bot/private_data.py` with the folowing env variables:
-
-		DB_HOST
-		DB_USER
-		DB_PASSWORD
-		DB_NAME
-		TABLE_NAMES = ['website', 'suggestion']
-		FTP_HOST
-		FTP_USER
-		FTP_PASSWORD
-		FTP_PORT
-		FTP_DATA
-		FTP_INDEX
-		HOST
 
 ## How it works?
 

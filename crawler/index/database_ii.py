@@ -6,7 +6,6 @@ from pymongo.write_concern import WriteConcern
 from pymodm import connection, MongoModel, EmbeddedMongoModel, fields, errors
 
 
-from crawler.swiftea_bot.private_data import MONGODB_CON_STRING
 from crawler.index import index
 
 
@@ -21,7 +20,7 @@ class Word(MongoModel):
 		final = True
 		indexes = [IndexModel([('word', TEXT)])]
 
-def connect(database_name='inverted_index'):
+def connect(MONGODB_CON_STRING, database_name='inverted_index'):
 	db_url = MONGODB_CON_STRING.format(database_name)
 	connection.connect(db_url, alias="my-app")
 
