@@ -63,7 +63,21 @@ With coverage:
 
 ### Run crawler
 
+Infinite crawling:
+
     python crawler/main.py
+
+Domain crawling:
+
+    python crawler/main.py -u https://idesys.org -sd True -l 0 -tl 1
+
+Use MongoDB for inverted index:
+
+    python crawler/main.py -u https://idesys.org -sd True -l 0 -tl 1 -um True
+
+Set loop range:
+
+    python crawler/main.py -l1 50 -l2 10
 
 ### Build documentation
 
