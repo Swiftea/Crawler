@@ -194,7 +194,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s, %s)""".format(self.t[0]
 		:return: url to add and url to delete
 
 		"""
-		tell('url to send: ' + old_url, -1)
+		tell('url to send: ' + old_url, severity=-1)
 		new_url = database.convert_secure(old_url)
 		new_exists = self.doc_exists(new_url)
 
