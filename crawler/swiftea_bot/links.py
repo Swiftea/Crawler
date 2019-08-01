@@ -3,7 +3,7 @@ from os import path
 from urllib.parse import urlparse
 
 
-from swiftea_bot.data import DIR_LINKS, FILE_LINKS
+from crawler.swiftea_bot.data import DIR_LINKS, FILE_LINKS
 
 
 LINK_FILE_MAX_SIZE = 50000

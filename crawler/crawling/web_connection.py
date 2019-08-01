@@ -9,10 +9,11 @@ from urllib.parse import urlparse
 from reppy.cache import RobotsCache
 from reppy.exceptions import ServerError
 
-from swiftea_bot.data import USER_AGENT, HEADERS, TIMEOUT
-from swiftea_bot.module import tell, remove_duplicates
-from crawling import parsers, data_processing
-from crawling.searches import clean_link
+
+from crawler.swiftea_bot.data import USER_AGENT, HEADERS, TIMEOUT
+from crawler.swiftea_bot.module import tell, remove_duplicates
+from crawler.crawling import parsers, data_processing
+from crawler.crawling.searches import clean_link
 
 
 class WebConnection(object):

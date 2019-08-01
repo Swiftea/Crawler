@@ -2,14 +2,16 @@
 
 """Define required data by crawler."""
 
-# Needed by Travis
-try:
-    from swiftea_bot.private_data import HOST
-except ImportError:
-    HOST = ''
 
 from socket import setdefaulttimeout
 from datetime import timedelta
+
+
+# Needed by Travis
+try:
+    from crawler.swiftea_bot.private_data import HOST
+except ImportError:
+    HOST = ''
 
 
 setdefaulttimeout(30)

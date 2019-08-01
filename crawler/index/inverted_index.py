@@ -2,7 +2,7 @@
 
 """Define the class the handle the inverted index."""
 
-from swiftea_bot.data import ALPHABET
+from crawler.swiftea_bot.data import ALPHABET
 
 
 class InvertedIndex:

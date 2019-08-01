@@ -4,7 +4,8 @@
 
 from os.path import exists
 
-from swiftea_bot.data import DIR_STATS
+
+from crawler.swiftea_bot.data import DIR_STATS
 
 
 def stats(dir_stats=DIR_STATS):

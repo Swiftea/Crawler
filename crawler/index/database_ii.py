@@ -6,8 +6,9 @@ from pymongo.write_concern import WriteConcern
 from pymodm import connection, MongoModel, EmbeddedMongoModel, fields, errors
 
 
-from swiftea_bot.private_data import MONGODB_CON_STRING
-from index import index
+from crawler.swiftea_bot.private_data import MONGODB_CON_STRING
+from crawler.index import index
+
 
 class Word(MongoModel):
 	word = fields.CharField()

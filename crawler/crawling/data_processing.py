@@ -4,8 +4,9 @@
 
 import requests
 
-from swiftea_bot.module import remove_duplicates, tell
-from crawling.searches import clean_link
+
+from crawler.swiftea_bot.module import remove_duplicates, tell
+from crawler.crawling.searches import clean_link
 
 
 def check_connection(url='https://github.com'):

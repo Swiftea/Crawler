@@ -10,21 +10,21 @@ import click
 
 
 try:
-	import swiftea_bot.private_data as pvdata
+	import crawler.swiftea_bot.private_data as pvdata
 except ImportError:
 	pass
 
-from index.ftp_swiftea import FTPSwiftea
-from crawling.web_connection import WebConnection
-from crawling.site_informations import SiteInformations
-from crawling import data_processing
-from database.database_swiftea import DatabaseSwiftea
-from swiftea_bot.file_manager import FileManager
-from index.inverted_index import InvertedIndex
-from swiftea_bot.data import DIR_INDEX
-from swiftea_bot import data, module, links
-import swiftea_bot.links
-from index import index
+from crawler.index.ftp_swiftea import FTPSwiftea
+from crawler.crawling.web_connection import WebConnection
+from crawler.crawling.site_informations import SiteInformations
+from crawler.crawling import data_processing
+from crawler.database.database_swiftea import DatabaseSwiftea
+from crawler.swiftea_bot.file_manager import FileManager
+from crawler.index.inverted_index import InvertedIndex
+from crawler.swiftea_bot.data import DIR_INDEX
+from crawler.swiftea_bot import data, module, links
+import crawler.swiftea_bot.links
+from crawler.index import index
 
 
 class Crawler:

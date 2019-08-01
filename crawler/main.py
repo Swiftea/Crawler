@@ -7,9 +7,9 @@ from urllib.parse import urlparse
 import click
 
 
-from swiftea_bot import module
-from crawler_base import Crawler
-from crawler_domain import CrawlerDomain
+from crawler.swiftea_bot import module
+from crawler.crawler_base import Crawler
+from crawler.crawler_domain import CrawlerDomain
 
 def save(crawler):
 	crawler.file_manager.save_inverted_index(

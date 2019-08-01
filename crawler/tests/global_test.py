@@ -5,12 +5,12 @@ from configparser import ConfigParser
 from os import mkdir, remove, path
 
 
-from main import Crawler
-from swiftea_bot.data import DIR_LINKS, FILE_CONFIG, MAX_LINKS, FILE_BASELINKS
-from swiftea_bot.module import create_dirs
-import swiftea_bot.private_data as pvdata
-from tests.test_data import reset, BASE_LINKS
-from database.database_swiftea import DatabaseSwiftea
+from crawler.main import Crawler
+from crawler.swiftea_bot.data import DIR_LINKS, FILE_CONFIG, MAX_LINKS, FILE_BASELINKS
+from crawler.swiftea_bot.module import create_dirs
+import crawler.swiftea_bot.private_data as pvdata
+from crawler.tests.test_data import reset, BASE_LINKS
+from crawler.database.database_swiftea import DatabaseSwiftea
 
 
 def test_redirect_output(self):

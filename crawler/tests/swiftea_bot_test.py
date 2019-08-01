@@ -5,11 +5,11 @@ from os import mkdir, path
 import json
 
 
-from swiftea_bot import data
-from swiftea_bot.module import *
-from swiftea_bot.file_manager import *
-from tests.test_data import URL, INVERTED_INDEX, BASE_LINKS
-import swiftea_bot.links
+from crawler.swiftea_bot import data
+from crawler.swiftea_bot.module import *
+from crawler.swiftea_bot.file_manager import *
+from crawler.tests.test_data import URL, INVERTED_INDEX, BASE_LINKS
+from crawler.swiftea_bot import links as swiftea_bot_links
 
 
 def test_create_dirs():
@@ -148,7 +148,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		assert badwords == {'en': ['verybadword']}
 
 	def test_link_get_filename(self):
-		r00, s00, d00, r00_ = swiftea_bot.links.get_filename(
+		r00, s00, d00, r00_ = swiftea_bot_links.get_filename(
 			[], {'domain': '', 'level': -1}
 		)
 		assert r00 == 0
@@ -158,7 +158,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		]
 		assert r00_ == -1
 
-		r0, s0, d0, r0_ = swiftea_bot.links.get_filename(
+		r0, s0, d0, r0_ = swiftea_bot_links.get_filename(
 			[], {'domain': 'idesys.org', 'level': 2}
 		)
 		assert r0 == 0
@@ -169,7 +169,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		]
 		assert r0_ == 1
 
-		r1, s1, d1, r1_ = swiftea_bot.links.get_filename(
+		r1, s1, d1, r1_ = swiftea_bot_links.get_filename(
 			self.c1, {'domain': 'idesys.org', 'level':	2}
 		)
 		assert r1 == 5
@@ -180,7 +180,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		with open(data.DIR_LINKS + '1', 'w') as link_file:
 			link_file.write('http://swiftea.fr\n')
 
-		r2, s2, d2, r2_ = swiftea_bot.links.get_filename(
+		r2, s2, d2, r2_ = swiftea_bot_links.get_filename(
 			self.c1, {'domain': '', 'level': -1}
 		)
 		assert r2 == 1
@@ -188,7 +188,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		assert d2 == self.c1
 		assert r2_ == -1
 
-		r3, s3, d3, r3_ = swiftea_bot.links.get_filename(
+		r3, s3, d3, r3_ = swiftea_bot_links.get_filename(
 			self.c1, {'domain': 'polytech.fr', 'level': 1}
 		)
 		# assert r3 == 6
@@ -196,7 +196,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		# assert d3 == self.c2
 		# assert r3_ == 1
 
-		r4, s4, d4, r4_ = swiftea_bot.links.get_filename(
+		r4, s4, d4, r4_ = swiftea_bot_links.get_filename(
 			self.c1, {'domain': '', 'level': -1}
 		)
 		assert r4 == 1
@@ -204,7 +204,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		# assert d4 == self.c2
 		assert r4_ == -1
 
-		r5, s5, d5, r5_ = swiftea_bot.links.get_filename(
+		r5, s5, d5, r5_ = swiftea_bot_links.get_filename(
 			self.c1, {'domain': '', 'level': -1}, 2
 		)
 		# assert r5 == 7
@@ -216,7 +216,7 @@ class TestFileManager(SwifteaBotBaseTest):
 		links = ['http://idesys.org/index.html']
 		with open(data.FILE_LINKS, 'w') as json_file:
 			json.dump(self.c1, json_file)
-		swiftea_bot.links.save_links(
+		swiftea_bot_links.save_links(
 			links, {'domain': 'polytech.fr', 'level': 1, 'sub-domain': True}
 		)
 
@@ -224,19 +224,19 @@ class TestFileManager(SwifteaBotBaseTest):
 		links = ['http://idesys.org', 'http://idesys.org/jehmaker',
 			'http://polytech.fr', 'http://beta.idesys.org']
 
-		l1, l1_ = swiftea_bot.links.filter_links(
+		l1, l1_ = swiftea_bot_links.filter_links(
 			links, {'domain': 'idesys.org', 'level': 1, 'sub-domain': True})
 		assert l1 == ['http://idesys.org', 'http://idesys.org/jehmaker',
 			'http://beta.idesys.org']
 		assert l1_ == ['http://polytech.fr']
 
-		l2, l2_ = swiftea_bot.links.filter_links(
+		l2, l2_ = swiftea_bot_links.filter_links(
 			links, {'domain': 'idesys.org', 'level': 1, 'sub-domain': False}
 		)
 		assert l2 == ['http://idesys.org', 'http://idesys.org/jehmaker']
 		assert l2_ == ['http://polytech.fr', 'http://beta.idesys.org']
 
-		l2 = swiftea_bot.links.filter_links(
+		l2 = swiftea_bot_links.filter_links(
 			links, {'domain': '', 'level': -1, 'sub-domain': False}
 		)
 		assert l2 == (links, [])

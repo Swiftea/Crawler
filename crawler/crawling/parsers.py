@@ -9,7 +9,8 @@ the second one only for encoding.
 from html.parser import HTMLParser
 from html.entities import name2codepoint, html5
 
-from swiftea_bot.data import LIST_TAG_WORDS, LIST_ALONE_TAG_WORDS
+
+from crawler.swiftea_bot.data import LIST_TAG_WORDS, LIST_ALONE_TAG_WORDS
 
 
 class ExtractData(HTMLParser):

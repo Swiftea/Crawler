@@ -2,7 +2,7 @@
 
 """Define several functions for inverted-index."""
 
-from swiftea_bot.data import DIR_STATS
+from crawler.swiftea_bot.data import DIR_STATS
 
 
 def count_files_index(index):

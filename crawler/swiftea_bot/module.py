@@ -8,8 +8,8 @@ import sys
 import json
 
 
-import swiftea_bot.data as data
-from swiftea_bot import links
+import crawler.swiftea_bot.data as data
+from crawler.swiftea_bot import links
 
 
 def tell(message, error_code='', severity=1):

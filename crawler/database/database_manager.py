@@ -4,7 +4,7 @@
 
 import pymysql
 
-from swiftea_bot.data import TIMEOUT
+from crawler.swiftea_bot.data import TIMEOUT
 
 
 class DatabaseManager(object):

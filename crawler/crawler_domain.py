@@ -5,14 +5,14 @@ from os import path
 
 
 try:
-	import swiftea_bot.private_data as pvdata
+	import crawler.swiftea_bot.private_data as pvdata
 except ImportError:
 	pass
 
-from swiftea_bot import data, module, links
-from crawler_base import Crawler
-from swiftea_bot.file_manager import FileManager
-from index.inverted_index_nosql import InvertedIndex
+from crawler.swiftea_bot import data, module, links
+from crawler.crawler_base import Crawler
+from crawler.swiftea_bot.file_manager import FileManager
+from crawler.index.inverted_index_nosql import InvertedIndex
 
 
 class CrawlerDomain(Crawler):

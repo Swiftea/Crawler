@@ -2,10 +2,12 @@
 
 """Define a class that deal with the low level ftp manager."""
 
+
 from socket import timeout
 from ftplib import FTP, all_errors
 
-from swiftea_bot.data import TIMEOUT
+
+from crawler.swiftea_bot.data import TIMEOUT
 
 
 class MyFtpError(Exception):

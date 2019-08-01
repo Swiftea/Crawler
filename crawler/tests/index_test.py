@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from index.index import stats_dl_index, stats_ul_index, count_files_index
-from index.inverted_index import InvertedIndex
-from tests.test_data import INVERTED_INDEX, CLEANED_KEYWORDS
+from crawler.index.index import stats_dl_index, stats_ul_index, count_files_index
+from crawler.index.inverted_index import InvertedIndex
+from crawler.tests.test_data import INVERTED_INDEX, CLEANED_KEYWORDS
 
 
 inverted_index = {'EN': {

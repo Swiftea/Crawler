@@ -2,7 +2,7 @@
 
 """Define the class the handle the inverted index in nosql mongodb format."""
 
-from index.database_ii import connect, add_doc, delete_doc
+from crawler.index.database_ii import connect, add_doc, delete_doc
 
 
 class InvertedIndex:

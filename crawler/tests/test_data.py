@@ -3,7 +3,7 @@
 from shutil import rmtree
 from os import remove, path
 
-from swiftea_bot.data import DIR_DATA, BASE_LINKS
+from crawler.swiftea_bot.data import DIR_DATA, BASE_LINKS
 
 
 URL = "http://aetfiws.ovh"

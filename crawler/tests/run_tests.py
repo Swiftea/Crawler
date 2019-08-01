@@ -13,8 +13,7 @@ With coverage report (same way than travis):
 import pytest
 
 
-from tests.test_data import reset
-import index.sftp_manager
+from crawler.tests.test_data import reset
 
 def run_tests(local=False):
     args = ['--strict', '--verbose', '-vv']

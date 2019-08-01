@@ -2,14 +2,17 @@
 
 """Define a class that deal with the high level ftp manager."""
 
+
 from os import mkdir, path, walk
 import json
 
-from index.index import count_files_index
-#from index.ftp_manager import SFTPManager as FTPManager
-from index.ftp_manager import FTPManager
-from swiftea_bot.data import DIR_INDEX, DIR_DATA
-from swiftea_bot.module import tell
+
+from crawler.index.index import count_files_index
+#from crawler.index.ftp_manager import SFTPManager as FTPManager
+from crawler.index.ftp_manager import FTPManager
+from crawler.swiftea_bot.data import DIR_INDEX, DIR_DATA
+from crawler.swiftea_bot.module import tell
+
 
 class FTPSwiftea(FTPManager):
 	"""Class to manage the ftp connection for crawler."""

@@ -5,8 +5,8 @@ Here is a class that use the html parser and manage all results."""
 
 from urllib.parse import urlparse
 
-from swiftea_bot.module import tell, remove_duplicates
-from crawling import parsers, searches, data_processing
+from crawler.swiftea_bot.module import tell, remove_duplicates
+from crawler.crawling import parsers, searches, data_processing
 
 
 class SiteInformations:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from database import database
-from tests.test_data import URL
+from crawler.database import database
+from crawler.tests.test_data import URL
 
 
 class DatabaseBaseTest:

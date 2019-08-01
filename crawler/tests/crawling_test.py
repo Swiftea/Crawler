@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
+
 import requests as req
 from reppy.cache import RobotsCache
 
-from swiftea_bot.data import HEADERS
-from crawling import data_processing
-from crawling import searches
-from crawling.web_connection import WebConnection
-from crawling.site_informations import SiteInformations
-from crawling import parsers
-import tests.test_data as test_data
+
+from crawler.swiftea_bot.data import HEADERS
+from crawler.crawling import data_processing
+from crawler.crawling import searches
+from crawler.crawling.web_connection import WebConnection
+from crawler.crawling.site_informations import SiteInformations
+from crawler.crawling import parsers
+import crawler.tests.test_data as test_data
 
 
 class CrawlingBaseTest(object):

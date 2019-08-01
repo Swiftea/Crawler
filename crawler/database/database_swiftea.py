@@ -6,10 +6,10 @@ from datetime import datetime
 from json import dumps, loads
 
 
-from swiftea_bot.module import tell
-from swiftea_bot.data import CRAWL_DELAY
-from database.database_manager import DatabaseManager
-import database.database as database
+from crawler.swiftea_bot.module import tell
+from crawler.swiftea_bot.data import CRAWL_DELAY
+from crawler.database.database_manager import DatabaseManager
+import crawler.database.database as database
 
 
 class DatabaseSwiftea(DatabaseManager):

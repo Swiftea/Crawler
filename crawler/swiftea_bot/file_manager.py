@@ -10,9 +10,9 @@ import json
 from zipfile import ZipFile
 
 
-from swiftea_bot import data
-from swiftea_bot.module import tell, remove_duplicates, convert_keys, safe_quit
-import swiftea_bot.links
+from crawler.swiftea_bot import data
+from crawler.swiftea_bot.module import tell, remove_duplicates, convert_keys, safe_quit
+import crawler.swiftea_bot.links as swiftea_bot_links
 
 
 class FileManager(object):
@@ -81,7 +81,7 @@ class FileManager(object):
 		:return: True is the level is completed
 
 		"""
-		self.domains = swiftea_bot.links.save_links(
+		self.domains = swiftea_bot_links.save_links(
 			links,
 			self.crawl_option,
 			self.max_links
@@ -112,7 +112,7 @@ class FileManager(object):
 		if url == '#level_complete#':
 			tell('Level complete, new level: ' + str(self.crawl_option['level']))
 			self.crawl_option['level'] += 1
-			swiftea_bot.links.save_domains(self.domains)
+			swiftea_bot_links.save_domains(self.domains)
 			if (self.crawl_option['level'] < self.crawl_option['target-level']):
 				return self.read_links(), True
 			else:
@@ -127,9 +127,9 @@ class FileManager(object):
 		:return: url of webpage to crawl
 
 		"""
-		self.domains = swiftea_bot.links.get_domains()
+		self.domains = swiftea_bot_links.get_domains()
 
-		filename_ptr, reading_line_number = swiftea_bot.links.get_filename_read(
+		filename_ptr, reading_line_number = swiftea_bot_links.get_filename_read(
 			self.domains,
 			self.crawl_option
 		)
