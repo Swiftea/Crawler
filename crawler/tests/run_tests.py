@@ -10,31 +10,23 @@ With coverage report (same way than travis):
 
 """
 
-from sys import argv
-import os
-
 import pytest
 
-try:
-    from crawler.tests.test_data import reset
-except ImportError:
-    from tests.test_data import reset
 
-# Test coverage:
-# import main
+from tests.test_data import reset
 import index.sftp_manager
 
 def run_tests(local=False):
-    os.chdir('crawler/tests')
     args = ['--strict', '--verbose', '-vv']
-    args.append('swiftea_bot_test.py')
-    args.append('crawling_test.py')
-    args.append('database_test.py')
-    args.append('index_test.py')
-    args.append('crawler_test.py')
+    args.append('crawler/tests/swiftea_bot_test.py')
+    args.append('crawler/tests/crawling_test.py')
+    args.append('crawler/tests/database_test.py')
+    args.append('crawler/tests/index_test.py')
+    args.append('crawler/tests/crawler_test.py')
     if local:
-        args.append('crawler_test.py')
-        args.append('global_test.py')
+        args.append('crawler/tests/crawler_test.py')
+        args.append(crawler/tests/'global_test.py')
+    print('Warning: data folder will be overwrite')
     errno = pytest.main(args)
     reset()
     return errno
