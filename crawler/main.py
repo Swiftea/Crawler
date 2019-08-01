@@ -26,9 +26,12 @@ def save(crawler):
 @click.option('-um', '--use-mongodb', default=False)
 @click.option('-l1', '--loop-1', default=50)
 @click.option('-l2', '--loop-2', default=10)
-def main(url, sub_domain, level, target_level, use_mongodb, loop_1, loop_2):
+@click.option('-dd', '--dir-data', default='')
+def main(url, sub_domain, level, target_level, use_mongodb, loop_1, loop_2, dir_data):
 	with open('crawler-config.json') as json_file:
 		config = json.load(json_file)
+	if dir_data != '':
+		config['DIR_DATA'] = dir_data
 	if not os.path.isdir(config['DIR_DATA']):
 		os.mkdir(config['DIR_DATA'])
 	os.chdir(config['DIR_DATA'])
