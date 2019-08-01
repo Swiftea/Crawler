@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [1.1.0] - DEV
+## [1.1.1] - DEV
 - Cleaning of the code and many docstrings.
 - Improve PEP-8 compliance.
 - Fix building of the documentation.
