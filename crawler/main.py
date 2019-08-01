@@ -3,6 +3,7 @@
 import atexit
 from urllib.parse import urlparse
 import json
+import os
 
 
 import click
@@ -28,7 +29,10 @@ def save(crawler):
 def main(url, sub_domain, level, target_level, use_mongodb, loop_1, loop_2):
 	with open('crawler-config.json') as json_file:
 		config = json.load(json_file)
-	module.create_dirs(config['DIR_DATA'])
+	if not os.path.isdir(config['DIR_DATA']):
+		os.mkdir(config['DIR_DATA'])
+	os.chdir(config['DIR_DATA'])
+	module.create_dirs()
 	if url:
 		crawl_option = dict()
 		crawl_option['domain'] = urlparse(url).netloc

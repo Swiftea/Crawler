@@ -17,18 +17,17 @@ except ImportError:
 setdefaulttimeout(30)
 
 # Strings for directories and files:
-DIR_DATA = 'data/'
-DIR_LINKS = DIR_DATA + 'links/'
+DIR_LINKS = 'links/'
 FILE_LINKS = DIR_LINKS + 'links.json'
-DIR_CONFIG = DIR_DATA + 'config/'
-DIR_INDEX = DIR_DATA + 'inverted_index/'
-DIR_STATS = DIR_DATA + 'stats/'
+DIR_CONFIG = 'config/'
+DIR_INDEX = 'inverted_index/'
+DIR_STATS = 'stats/'
 FILE_EVENTS = DIR_CONFIG + 'events.log'
 FILE_ERRORS = DIR_CONFIG + 'errors.log'
 FILE_CONFIG = DIR_CONFIG + 'config.ini'
 FILE_DOC = DIR_CONFIG + 'Readme'
 FILE_BASELINKS = DIR_LINKS + '0'
-FILE_INDEX = DIR_DATA + 'inverted_index.json'
+FILE_INDEX = 'inverted_index.json'
 
 # Lists used to clean up links and keywords:
 BAD_EXTENTIONS = ('.pdf', '.doc', '.xls', '.zip', '.png', '.jpg', '.jpeg', '.bmp', '.gif',
