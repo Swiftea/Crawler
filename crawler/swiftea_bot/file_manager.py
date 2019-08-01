@@ -213,16 +213,16 @@ class FileManager(object):
 		"""
 		stopwords = dict()
 		badwords = dict()
-		if path.isdir(data.DIR_DATA + 'stopwords/'):
-			for filename in listdir(data.DIR_DATA + 'stopwords/'):
-				with open(data.DIR_DATA + 'stopwords/' + filename, 'r') as myfile:
+		if path.isdir('stopwords/'):
+			for filename in listdir('stopwords/'):
+				with open('stopwords/' + filename, 'r') as myfile:
 					stopwords[filename[:2]] = myfile.read().split()
 		else:
-			mkdir(data.DIR_DATA + 'stopwords/')
-		if path.isdir(data.DIR_DATA + 'badwords/'):
-			for filename in listdir(data.DIR_DATA + 'badwords/'):
-				with open(data.DIR_DATA + 'badwords/' + filename, 'r') as myfile:
+			mkdir('stopwords/')
+		if path.isdir('badwords/'):
+			for filename in listdir('badwords/'):
+				with open('badwords/' + filename, 'r') as myfile:
 					badwords[filename[:2]] = myfile.read().split()
 		else:
-			mkdir(data.DIR_DATA + 'badwords/')
+			mkdir('badwords/')
 		return stopwords, badwords

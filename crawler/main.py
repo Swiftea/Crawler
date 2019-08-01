@@ -27,7 +27,7 @@ def save(crawler):
 @click.option('-l1', '--loop-1', default=50)
 @click.option('-l2', '--loop-2', default=10)
 @click.option('-dd', '--dir-data', default='')
-def main(url, sub_domain, level, target_level, use_mongodb, loop_1, loop_2, dir_data):
+def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, loop_1=50, loop_2=10, dir_data=''):
 	with open('crawler-config.json') as json_file:
 		config = json.load(json_file)
 	if dir_data != '':
@@ -43,9 +43,9 @@ def main(url, sub_domain, level, target_level, use_mongodb, loop_1, loop_2, dir_
 		crawl_option['level'] = level
 		crawl_option['target-level'] = target_level
 		crawl_option['use-mongodb'] = use_mongodb
-		crawler = CrawlerDomain(crawl_option, url)
+		crawler = CrawlerDomain(config, crawl_option, url)
 	else:
-		crawler = Crawler(loop_1, loop_2)
+		crawler = Crawler(config, loop_1, loop_2)
 		print('Starting with base urls')
 		module.def_links()
 		atexit.register(save, crawler)

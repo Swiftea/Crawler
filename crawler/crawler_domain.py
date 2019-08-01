@@ -18,7 +18,7 @@ class CrawlerDomain(Crawler):
 		self.use_mongodb = crawl_option['use-mongodb']
 		if self.use_mongodb:
 			self.index_manager = InvertedIndex(self.config['MONGODB_CON_STRING'])
-		self.file_manager = FileManager(self.config, crawl_option)
+		self.file_manager = FileManager(crawl_option)
 		self.database = DatabaseSwiftea(self.config, crawl_option['domain'])
 		self.crawl_option = crawl_option
 		if not path.exists(data.FILE_LINKS):

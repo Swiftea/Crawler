@@ -31,7 +31,7 @@ class Crawler:
 		self.infos = list()
 		self.ftp_manager = FTPSwiftea(self.config)
 		self.site_informations = SiteInformations()
-		self.file_manager = FileManager(self.config)
+		self.file_manager = FileManager()
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
 		if stopwords == dict() or badwords == dict():
 			self.ftp_manager.download_lists_words()  # Download all lists of words (bad and stop)
@@ -78,7 +78,7 @@ class Crawler:
 
 		"""
 		self.get_inverted_index()
-		if not path.exists(data.get_vars(self.config['DIR_DATA'])['FILE_LINKS']):
+		if not path.exists(data.FILE_LINKS):
 			links.save_domains([{
 				'domain': '',
 				'level': -1,
