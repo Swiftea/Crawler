@@ -72,6 +72,12 @@ You must install `python3-sphinx` package.
     cd docs
     make html
 
+### Run linter
+
+Install `prospector`, then:
+
+    prospector > prospector_output.json
+
 ## Deploy
 
 Create directories in ftp server:

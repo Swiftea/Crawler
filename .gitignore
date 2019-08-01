@@ -1,7 +1,7 @@
 data
 badwords/*
 stopwords/*
-
+prospector_output.json
 build/*
 dist/*
 swiftea_crawler.egg-info/*

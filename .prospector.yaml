@@ -10,14 +10,14 @@ member-warnings: true
 
 ignore-paths:
   - docs
+  - build
 
 pylint:
   disable:
     - line-too-long
 
 dodgy:
-  disable:
-    - password
+  run: false
 
 pep257:
   disable:
@@ -27,6 +27,7 @@ pep257:
     - D203
 
 pep8:
+  run: false
   full: true
   disable:
     # indentation contains tabs:
@@ -35,3 +36,10 @@ pep8:
 # pip install prospector[with_pyroma]
 pyroma:
   run: true
+
+# pip install prospector[with_vulture]
+vulture:
+  run: true
+
+pyflakes:
+  run: false
