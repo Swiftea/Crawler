@@ -35,31 +35,6 @@ The domain crawler can use a MongoDB database to store the inverted index.
 
 ## Install and usage
 
-### Setup
-
-    virtualenv -p /usr/bin/python3 crawler-env
-    source crawler-env/bin/activate
-    pip install -r requirements.txt
-    export PYTHONPATH=crawler
-
-If the files below don't exist, the crawler will download them from our server:
-
-- data/stopwords/fr.stopwords.txt
-- data/stopwords/en.stopwords.txt
-- data/badwords/fr.badwords.txt
-- data/badwords/en.badwords.txt
-
-### Run tests
-
-Using only pytest:
-
-    python setup.py test
-
-With coverage:
-
-    coverage run setup.py test
-    coverage report
-    coverage html
 
 ### Run crawler
 
@@ -99,21 +74,39 @@ Then:
     main(url='http://example.example', level=0, target_level=1, dir_data='data1')
     main(url='http://some.thing', level=1, target_level=3, use_mongodb=True)
 
+### Contribute
 
-### Build documentation
+    virtualenv -p /usr/bin/python3 crawler-env
+    source crawler-env/bin/activate
+    pip install -r requirements.txt
+
+#### Run tests
+
+Using only pytest:
+
+    python setup.py test
+
+With coverage:
+
+    coverage run setup.py test
+    coverage report
+    coverage html
+
+
+#### Build documentation
 
 You must install `python3-sphinx` package.
 
     cd docs
     make html
 
-### Run linter
+#### Run linter
 
 Install `prospector`, then:
 
     prospector > prospector_output.json
 
-## Deploy
+### Deploy
 
 Create directories in ftp server:
 
@@ -128,6 +121,13 @@ Create database with `sql/swiftea_mysql_db.sql`.
 
 ## How it works?
 
+If the files below don't exist, the crawler will download them from our server:
+
+- data/stopwords/fr.stopwords.txt
+- data/stopwords/en.stopwords.txt
+- data/badwords/fr.badwords.txt
+- data/badwords/en.badwords.txt
+
 ### Database:
 The DatabaseSwiftea object can:
  - send documents
@@ -140,8 +140,6 @@ The DatabaseSwiftea object can:
 ## Limits
 
 When stoping the crawler (ctrl+V), it will not restart with the interupted url.
-
-There are some little bugs with in the file `data/links/links.json`: some items are missing the `file` value.
 
 ## Version
 
