@@ -5,7 +5,6 @@ requests
 coverage==4.5.3
 sphinx_rtd_theme==0.4.3
 paramiko==2.5.0
-click==7.0
 pymongo==3.8.0
 pymodm==0.4.1
 dnspython==1.16.0

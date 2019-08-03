@@ -83,7 +83,8 @@ class Crawler:
 				'domain': '',
 				'level': -1,
 				'completed': 0,
-				'line': 1
+				'line': 1,
+				'file': 0
 			}])
 		run = True
 		while run:

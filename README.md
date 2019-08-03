@@ -63,21 +63,15 @@ With coverage:
 
 ### Run crawler
 
-Infinite crawling:
+    from crawler.main import main
 
-    python crawler/main.py
+    # infinite crawling:
+    main(loop_1=50, loop_2=10, dir_data='data1')
 
-Domain crawling:
+    # domain crawling:
+    main(url='http://example.example', level=0, target_level=1, dir_data='data1')
+    main(url='http://some.thing', level=1, target_level=3, use_mongodb=True)
 
-    python crawler/main.py -u https://idesys.org -sd True -l 0 -tl 1
-
-Use MongoDB for inverted index:
-
-    python crawler/main.py -u https://idesys.org -sd True -l 0 -tl 1 -um True
-
-Set loop range:
-
-    python crawler/main.py -l1 50 -l2 10
 
 ### Build documentation
 

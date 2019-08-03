@@ -8,6 +8,7 @@ from crawler.swiftea_bot import data, module, links
 from crawler.crawler_base import Crawler
 from crawler.swiftea_bot.file_manager import FileManager
 from crawler.index.inverted_index_nosql import InvertedIndex
+from crawler.database.database_swiftea import DatabaseSwiftea
 
 
 class CrawlerDomain(Crawler):
@@ -26,7 +27,8 @@ class CrawlerDomain(Crawler):
 				'domain': crawl_option['domain'],
 				'level': self.crawl_option['level'],
 				'completed': 0,
-				'line': 1
+				'line': 1,
+				'file': 0
 			}])
 		else:
 			links.add_domain(crawl_option['domain'])

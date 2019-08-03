@@ -32,7 +32,6 @@ def add_word(word, doc_id, nb_words, language, occurrence):
 			'language': language
 		}).first()
 		if w.word != word:
-			print('invalid match')
 			raise errors.DoesNotExist
 	except errors.DoesNotExist:
 		w = Word(word, {doc_id: tf}, language).save()
@@ -50,7 +49,7 @@ def add_doc(keywords, doc_id, language):
 	for word in keywords:
 		add_word(word[0], doc_id, nb_words, language, word[1])
 	t = time() - begining
-	with open('data/stats/stat_up_index', 'a') as myfile:
+	with open('stats/stat_up_index', 'a') as myfile:
 		myfile.write(str(t) + '\n')
 
 def delete_word(id):
