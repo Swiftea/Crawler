@@ -118,7 +118,7 @@ There are some little bugs with in the file `data/links/links.json`: some items 
 
 ## Version
 
-Current version is 1.1.1
+Current version is 1.1.2
 
 ## Tech
 

@@ -37,7 +37,7 @@ def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, lo
 		crawler = CrawlerDomain(config, crawl_option, url)
 	else:
 		print('Starting with base urls')
-		crawler = Crawler(config, loop_1)
+		crawler = Crawler(config, loop_1, loop_2)
 		module.def_links()
 		atexit.register(save, crawler)
 	crawler.start()
