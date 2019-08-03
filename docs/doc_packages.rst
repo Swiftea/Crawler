@@ -23,6 +23,13 @@ swiftea_bot.file_manager module
     :undoc-members:
 
 
+swiftea_bot.links module
+------------------------
+.. automodule:: swiftea_bot.links
+    :members:
+    :undoc-members:
+
+
 crawling.web_connection module
 ------------------------------
 .. automodule:: crawling.web_connection
@@ -95,6 +102,13 @@ index.inverted_index module
     :undoc-members:
 
 
+index.inverted_index_nosql module
+---------------------------------
+.. automodule:: index.inverted_index_nosql
+    :members:
+    :undoc-members:
+
+
 index.ftp_manager module
 -------------------------
 .. automodule:: index.ftp_manager
@@ -106,6 +120,14 @@ index.ftp_manager module
 index.ftp_swiftea module
 -------------------------
 .. automodule:: index.ftp_swiftea
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+index.database_ii module
+------------------------
+.. automodule:: index.database_ii
     :members:
     :undoc-members:
     :show-inheritance:

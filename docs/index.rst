@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to Crawler's documentation!
-===========================================
+===================================
 
 Crawler is an open source web crawler for Swiftea.
 

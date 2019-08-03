@@ -63,6 +63,33 @@ With coverage:
 
 ### Run crawler
 
+Create `crawler-config.json` file and fill it:
+
+    {
+      "DIR_DATA": "data",
+
+      "DB_HOST": "",
+      "DB_USER": "",
+      "DB_PASSWORD": "",
+      "DB_NAME": "",
+      "TABLE_NAMES": ["website", "suggestion"],
+
+      "FTP_HOST": "",
+      "FTP_USER": "",
+      "FTP_PASSWORD": "",
+      "FTP_PORT": 21,
+      "FTP_DATA": "/www/data/",
+      "FTP_INDEX": "/www/data/inverted_index",
+
+      "HOST": "",
+
+      "MONGODB_PASSWORD": "",
+      "MONGODB_USER": "",
+      "MONGODB_CON_STRING": ""
+    }
+
+Then:
+
     from crawler.main import main
 
     # infinite crawling:
