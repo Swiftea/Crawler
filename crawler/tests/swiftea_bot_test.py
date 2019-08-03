@@ -128,9 +128,14 @@ class TestFileManager(SwifteaBotBaseTest):
 		assert file_manager.FileManager.get_inverted_index(self) == self.inverted_index
 
 	def test_read_inverted_index(self):
-		mkdir('data/inverted_index/FR')
-		mkdir('data/inverted_index/FR/A/')
-		with open('data/inverted_index/FR/A/ab.sif', 'w') as myfile:
+		# mkdir('data/inverted_index/FR')
+		if not path.exists('inverted_index/FR'):
+			mkdir('inverted_index/FR')
+		# mkdir('data/inverted_index/FR/A/')
+		if not path.exists('inverted_index/FR/A'):
+			mkdir('inverted_index/FR/A/')
+		# with open('data/inverted_index/FR/A/ab.sif', 'w') as myfile:
+		with open('inverted_index/FR/A/ab.sif', 'w') as myfile:
 			myfile.write('{"abondamment": {"1610": 0.005618}}')
 		inverted_index = file_manager.FileManager.read_inverted_index(self)
 		assert inverted_index == {'FR': {'A': {'ab': {'abondamment': {1610: 0.005618}}}}}
@@ -139,9 +144,9 @@ class TestFileManager(SwifteaBotBaseTest):
 		# No dirs badwords and stopwords
 		stopwords, badwords = file_manager.FileManager.get_lists_words(self)
 		# Dirs created
-		with open(data.DIR_DATA + 'stopwords/' + 'en.stopwords.txt', 'w') as myfile:
+		with open('stopwords/' + 'en.stopwords.txt', 'w') as myfile:
 			myfile.write('then\nalready')
-		with open(data.DIR_DATA + 'badwords/' + 'en.badwords.txt', 'w') as myfile:
+		with open('badwords/' + 'en.badwords.txt', 'w') as myfile:
 			myfile.write('verybadword')
 		stopwords, badwords = file_manager.FileManager.get_lists_words(self)
 		assert stopwords == {'en': ['then', 'already']}

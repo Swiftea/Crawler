@@ -17,6 +17,7 @@ def save(crawler):
 	crawler.file_manager.save_inverted_index(
 		crawler.index_manager.get_inverted_index()
 	)
+	os.chdir('..')
 
 @click.command()
 @click.option('-u', '--url')  # initial url
@@ -45,8 +46,8 @@ def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, lo
 		crawl_option['use-mongodb'] = use_mongodb
 		crawler = CrawlerDomain(config, crawl_option, url)
 	else:
-		crawler = Crawler(config, loop_1, loop_2)
 		print('Starting with base urls')
+		crawler = Crawler(config, loop_1, loop_2)
 		module.def_links()
 		atexit.register(save, crawler)
 	crawler.start()

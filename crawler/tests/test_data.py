@@ -3,7 +3,7 @@
 from shutil import rmtree
 from os import remove, path
 
-from crawler.swiftea_bot.data import DIR_DATA, BASE_LINKS
+from crawler.swiftea_bot.data import BASE_LINKS
 
 
 URL = "http://aetfiws.ovh"
@@ -81,9 +81,16 @@ CLEANED_KEYWORDS = [
 	('12h', 1)
 ]
 
-def reset():
+def reset(DIR_DATA):
     if path.exists(DIR_DATA):
         rmtree(DIR_DATA)
+    else:
+        rmtree('badwords')
+        rmtree('stopwords')
+        rmtree('inverted_index')
+        rmtree('links')
+        rmtree('config')
+        rmtree('stats')
     # for global tests:
     if path.exists('test_redirect_output.ext'):
         remove('test_redirect_output.ext')
