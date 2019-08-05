@@ -45,11 +45,11 @@ class CrawlerDomain(Crawler):
 		"""
 		if not self.use_mongodb:
 			self.get_inverted_index()
-		print('Starting with', self.crawl_option)
-		# input('Go?')
+		module.tell('Starting with {} | {}'.format(self.url, str(self.crawl_option)))
 		if (self.crawl_option['target-level'] <= self.crawl_option['level'] or
 			links.get_already_done(self.crawl_option['domain'], self.crawl_option['level'])):
-			print('Already done')
+			module.tell('Already done')
+			module.quit(self)
 			return
 		self.file_manager.save_links([self.url])
 		run = True

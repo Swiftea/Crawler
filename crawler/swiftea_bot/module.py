@@ -91,7 +91,7 @@ def def_links():
 	Create a basic links file if user what it.
 	"""
 	if len(listdir(data.DIR_LINKS)) == 0:
-		print("""No links file to start crawling:
+		tell("""No links file to start crawling:
 1: let the crawler uses it default list
 2: fill a file yourself""")
 		rep = ''
@@ -104,7 +104,7 @@ def def_links():
 				myfile.write(data.BASE_LINKS)
 		elif rep == '2':
 			open(data.FILE_BASELINKS, 'w').close()
-			print("""Create a file called "0" in the "data/links" directory that contains a list of 20 links maximum.
+			tell("""Create a file called "0" in the "data/links" directory that contains a list of 20 links maximum.
 They must start with "http://" or "https://" and not end with a "/".
 Press enter when done.""")
 			input()
