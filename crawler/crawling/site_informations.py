@@ -87,7 +87,7 @@ class SiteInformations:
 			else:
 				results['favicon'] = ''
 		else:
-			tell('No language or title', severity=-1)
+			tell('No language or title', severity=0)
 			results = {'title': ''}
 			links = list()
 			results['language'] = '*'

@@ -31,9 +31,7 @@ def tell(message, error_code='', severity=1):
 	if error_code != '':
 		errors(message, error_code)
 
-	if severity == -1:
-		print('    ' + message[:127].lower())
-	elif severity == 0:
+	if severity == 0:
 		print('  ' + message[:129].lower())
 	elif severity == 1:
 		print(msg_to_print.capitalize())
