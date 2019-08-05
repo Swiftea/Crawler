@@ -3,7 +3,7 @@
 """Define several functions for all crawler's class."""
 
 from time import strftime
-from os import path, mkdir, listdir
+from os import path, mkdir, listdir, chdir
 import sys
 import json
 
@@ -45,6 +45,12 @@ def tell(message, error_code='', severity=1):
 def safe_quit():
 	tell('exiting', 0, 2)
 	sys.exit(1)
+
+def quit(crawler):
+	crawler.file_manager.save_inverted_index(
+		crawler.index_manager.get_inverted_index()
+	)
+	chdir('..')
 
 def errors(message, error_code):
 	"""Write the error report with the time in errors file.

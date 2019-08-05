@@ -12,12 +12,6 @@ from crawler.crawler_base import Crawler
 from crawler.crawler_domain import CrawlerDomain
 
 
-def save(crawler):
-	crawler.file_manager.save_inverted_index(
-		crawler.index_manager.get_inverted_index()
-	)
-	os.chdir('..')
-
 def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, loop_1=50, loop_2=10, dir_data=''):
 	with open('crawler-config.json') as json_file:
 		config = json.load(json_file)
@@ -40,4 +34,7 @@ def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, lo
 		crawler = Crawler(config, loop_1, loop_2)
 		module.def_links()
 		atexit.register(module.quit, crawler)
-	crawler.start()
+	try:
+		crawler.start()
+	except KeyboardInterrupt:
+		module.quit(crawler)

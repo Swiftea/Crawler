@@ -99,3 +99,4 @@ class CrawlerDomain(Crawler):
 
 		if not self.use_mongodb:
 			self.send_inverted_index()
+		module.quit(self)
