@@ -34,6 +34,10 @@ def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, lo
 		crawler = Crawler(config, loop_1, loop_2)
 		module.def_links()
 		atexit.register(module.quit, crawler)
+	return crawler
+
+if __name__ == '__main__':
+	crawler = main()
 	try:
 		crawler.start()
 	except KeyboardInterrupt:
