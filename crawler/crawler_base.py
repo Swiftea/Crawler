@@ -16,7 +16,6 @@ from crawler.crawling import data_processing
 from crawler.database.database_swiftea import DatabaseSwiftea
 from crawler.swiftea_bot.file_manager import FileManager
 from crawler.index.inverted_index import InvertedIndex
-from crawler.swiftea_bot.data import DIR_INDEX
 from crawler.swiftea_bot import data, module, links
 import crawler.swiftea_bot.links
 from crawler.index import index
@@ -31,7 +30,7 @@ class Crawler:
 		self.infos = list()
 		self.ftp_manager = FTPSwiftea(self.config)
 		self.site_informations = SiteInformations()
-		self.file_manager = FileManager()
+		self.file_manager = FileManager(self.config['DIR_INDEX'])
 		stopwords, badwords = self.file_manager.get_lists_words()  # Create dirs if need
 		if stopwords == dict() or badwords == dict():
 			self.ftp_manager.download_lists_words()  # Download all lists of words (bad and stop)
@@ -47,25 +46,12 @@ class Crawler:
 	def get_inverted_index(self):
 		"""Manage all operations to get inverted-index.
 
-		Check for a save inverted-index file, compare inverted-index in local and
-		on server to know if it's necessary to download it.
+		# Check for a save inverted-index file, compare inverted-index in local and
+		# on server to know if it's necessary to download it.
 
 		"""
 		inverted_index = self.file_manager.read_inverted_index()
 		self.index_manager.set_inverted_index(inverted_index)
-		# if module.is_index():  # json index
-		# 	inverted_index = self.file_manager.get_inverted_index()
-		# else:
-		# 	response = self.ftp_manager.compare_indexs()
-		# 	if response == 'server':
-		# 		begining = time()
-		# 		inverted_index = self.ftp_manager.get_inverted_index()
-		# 		index.stats_dl_index(begining, time())
-		# 	elif response == 'local':
-		# 		inverted_index = self.file_manager.read_inverted_index()
-		# 	elif response == 'new':
-		# 		inverted_index = {}
-		# self.index_manager.set_inverted_index(inverted_index)
 
 	def start(self):
 		"""Start main loop of crawling.
@@ -77,6 +63,7 @@ class Crawler:
 		Do it until the user want stop crawling or occured an error.
 
 		"""
+		module.tell('Starting with base urls')
 		self.get_inverted_index()
 		if not path.exists(data.FILE_LINKS):
 			links.save_domains([{
@@ -231,10 +218,12 @@ class Crawler:
 	def send_inverted_index(self):
 		"""Send inverted-index generate by indexing to server."""
 		begining = time()
-		self.ftp_manager.send_inverted_index(self.index_manager.get_inverted_index())
+		inverted_index = self.index_manager.get_inverted_index()
+		self.file_manager.save_inverted_index(inverted_index)
+		if self.config['FTP_INDEX']:
+			# If FTP_INDEX is '' then don't send inverted_index via ftp
+			self.ftp_manager.send_inverted_index(inverted_index)
 		index.stats_ul_index(begining, time())
-		# for path in listdir(DIR_INDEX):
-		# 	rmtree(DIR_INDEX + path)
 
 	def suggestions(self):
 		"""Suggestions:

@@ -47,7 +47,7 @@ def safe_quit():
 	sys.exit(1)
 
 def quit(crawler):
-	crawler.file_manager.save_inverted_index(
+	crawler.file_manager.save_inverted_index_json(
 		crawler.index_manager.get_inverted_index()
 	)
 	chdir('..')
@@ -67,7 +67,7 @@ def errors(message, error_code):
 		myfile.write(' ' + str(error_code) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ': ' + message + '\n')
 
 
-def create_dirs():
+def create_dirs(DIR_INDEX):
 	"""Manage crawler's running.
 
 	Test a lot of things:
@@ -81,8 +81,8 @@ def create_dirs():
 	# Create directories if they don't exist:
 	if not path.isdir(data.DIR_CONFIG):
 		mkdir(data.DIR_CONFIG)
-	if not path.isdir(data.DIR_INDEX):
-		mkdir(data.DIR_INDEX)
+	if not path.isdir(DIR_INDEX):
+		mkdir(DIR_INDEX)
 	if not path.isdir(data.DIR_STATS):
 		mkdir(data.DIR_STATS)
 	if not path.isdir(data.DIR_LINKS):

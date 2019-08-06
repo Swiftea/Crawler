@@ -10,7 +10,6 @@ import json
 from crawler.index.index import count_files_index
 #from crawler.index.ftp_manager import SFTPManager as FTPManager
 from crawler.index.ftp_manager import FTPManager
-from crawler.swiftea_bot.data import DIR_INDEX
 from crawler.swiftea_bot.module import tell
 
 
@@ -21,15 +20,13 @@ class FTPSwiftea(FTPManager):
 		user = config['FTP_USER']
 		password = config['FTP_PASSWORD']
 		port = config['FTP_PORT']
-		path_index = config['FTP_INDEX']
-		path_data = config['FTP_DATA']
-
+		self.FTP_INDEX = config['FTP_INDEX']
+		self.FTP_DATA = config['FTP_DATA']
+		self.DIR_INDEX = config['DIR_INDEX']
 		FTPManager.__init__(self, host, user, password, port)
-		self.path_index = path_index
-		self.path_data = path_data
 
-	def set_ftp_index(self, path_index):
-		self.path_index = path_index
+	def set_ftp_index(self, FTP_INDEX):
+		self.FTP_INDEX = FTP_INDEX
 
 	def get_inverted_index(self):
 		"""Get inverted-index.
@@ -41,21 +38,21 @@ class FTPSwiftea(FTPManager):
 		self.downuploaded_files = 0
 		inverted_index = dict()
 		self.connection()
-		self.cd(self.path_index)
+		self.cd(self.FTP_INDEX)
 		self.nb_files = self.countfiles()  # Count files on server (prepare to download)
 		list_language = self.listdir()
 
 		for language in list_language:
 			self.cd(language)
-			if not path.isdir(DIR_INDEX + language):
-				mkdir(DIR_INDEX + language)
+			if not path.isdir(self.DIR_INDEX + language):
+				mkdir(self.DIR_INDEX + language)
 			inverted_index[language] = dict()
 			list_first_letter = self.listdir()
 			for first_letter in list_first_letter:
 				self.tell_progress(False)
 				self.cd(first_letter)
-				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
-					mkdir(DIR_INDEX +  language + '/' + first_letter)
+				if not path.isdir(self.DIR_INDEX + language + '/' + first_letter):
+					mkdir(self.DIR_INDEX +  language + '/' + first_letter)
 				inverted_index[language][first_letter] = dict()
 				list_filename = self.listdir()
 				for filename in list_filename:
@@ -83,22 +80,18 @@ class FTPSwiftea(FTPManager):
 		self.downuploaded_files = 0
 		self.nb_files = count_files_index(inverted_index)  # Count files from index (prepare to upload)
 		self.connection()
-		self.cd(self.path_index)
+		self.cd(self.FTP_INDEX)
 
 		for language in inverted_index:
 			list_language = self.listdir()
 			if language not in list_language:
 				self.mkdir(language)
-			if not path.isdir(DIR_INDEX + language):
-				mkdir(DIR_INDEX + language)
 			self.cd(language)
 			for first_letter in inverted_index[language]:
 				self.tell_progress()
 				list_first_letter = self.listdir()
 				if first_letter not in list_first_letter:
 					self.mkdir(first_letter)
-				if not path.isdir(DIR_INDEX + language + '/' + first_letter):
-					mkdir(DIR_INDEX + language + '/' + first_letter)
 
 				self.cd(first_letter)
 				for two_letters in inverted_index[language][first_letter]:
@@ -114,17 +107,15 @@ class FTPSwiftea(FTPManager):
 
 	def download(self, language, first_letter, filename):
 		self.downuploaded_files += 1
-		path_index = language + '/' + first_letter + '/' + filename
-		self.get(DIR_INDEX + path_index, filename)
-		with open(DIR_INDEX + path_index, 'r', encoding='utf-8') as myfile:
+		FTP_INDEX = language + '/' + first_letter + '/' + filename
+		self.get(self.DIR_INDEX + FTP_INDEX, filename)
+		with open(self.DIR_INDEX + FTP_INDEX, 'r', encoding='utf-8') as myfile:
 			return json.load(myfile)
 
 	def upload(self, language, first_letter, two_letters, index):
+		FTP_INDEX = language + '/' + first_letter + '/' + two_letters + '.sif'
+		self.put(self.DIR_INDEX + FTP_INDEX, two_letters + '.sif')
 		self.downuploaded_files += 1
-		path_index = language + '/' + first_letter + '/' + two_letters + '.sif'
-		with open(DIR_INDEX + path_index, 'w', encoding='utf-8') as myfile:
-			json.dump(index, myfile, ensure_ascii=False)
-		self.put(DIR_INDEX + path_index, two_letters + '.sif')
 
 	def tell_progress(self, upload=True):
 		message = 'Uploading' if upload else 'Downloading'
@@ -135,44 +126,12 @@ class FTPSwiftea(FTPManager):
 		else:
 			tell('No progress data')
 
-	def compare_indexs(self):
-		"""Compare inverted-index in local and in server.
-
-		:return: `server` if must download from server, `new` if there is no inverted index.
-
-		"""
-		self.connection()
-		self.cd(self.path_index)
-		if path.exists(DIR_INDEX):
-
-			def get_size(start_path = '.'):
-			    total_size = 0
-			    for dirpath, dirnames, filenames in walk(start_path):
-			        for f in filenames:
-			            fp = path.join(dirpath, f)
-			            total_size += path.getsize(fp)
-			    return total_size
-
-			local_size = get_size(DIR_INDEX)
-			server_size = self.get_total_size()
-			if local_size < server_size:
-				response = 'server'
-			else:
-				response = 'local'
-		elif 'FR' in self.listdir():
-			response = 'server'
-		else:
-			response = 'new'
-
-		self.disconnect()
-		return response
-
 	def download_lists_words(self):
 		"""Download stopwords and badwords."""
 		tell('download list of words')
 		self.connection()
 		for filename in ['en.stopwords.txt', 'fr.stopwords.txt', 'en.badwords.txt', 'fr.badwords.txt']:
 			type_ = filename[3:-4] + '/'
-			self.cd(self.path_data + type_)
+			self.cd(self.FTP_DATA + type_)
 			self.get(type_ + filename, filename)
 		self.disconnect()

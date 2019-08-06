@@ -20,7 +20,6 @@ setdefaulttimeout(30)
 DIR_LINKS = 'links/'
 FILE_LINKS = DIR_LINKS + 'links.json'
 DIR_CONFIG = 'config/'
-DIR_INDEX = 'inverted_index/'
 DIR_STATS = 'stats/'
 FILE_EVENTS = DIR_CONFIG + 'events.log'
 FILE_ERRORS = DIR_CONFIG + 'errors.log'

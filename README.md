@@ -48,7 +48,7 @@ Create `crawler-config.json` file and fill it:
       "DB_PASSWORD": "",
       "DB_NAME": "",
       "TABLE_NAMES": ["website", "suggestion"],
-
+      "DIR_INDEX": "ii/",
       "FTP_HOST": "",
       "FTP_USER": "",
       "FTP_PASSWORD": "",
@@ -65,22 +65,24 @@ Create `crawler-config.json` file and fill it:
 
 Then:
 
-    from crawler.main import main
+    from crawler import main
 
     # infinite crawling:
-    main(loop_1=50, loop_2=10, dir_data='data1')
+    crawler = main(l1=50, l2=10, dir_data='data1')
 
     # domain crawling:
-    main(url='http://example.example', level=0, target_level=1, dir_data='data1')
-    main(url='http://some.thing', level=1, target_level=3, use_mongodb=True)
+    crawler = main(url='http://example.example', level=0, target_level=1, dir_data='data1')
+    crawler = main(url='http://some.thing', level=1, target_level=3, use_mongodb=True)
 
-### Contribute
+    crawler.start()
+
+### Setup
 
     virtualenv -p /usr/bin/python3 crawler-env
     source crawler-env/bin/activate
     pip install -r requirements.txt
 
-#### Run tests
+### Run tests
 
 Using only pytest:
 
@@ -93,14 +95,14 @@ With coverage:
     coverage html
 
 
-#### Build documentation
+### Build documentation
 
 You must install `python3-sphinx` package.
 
     cd docs
     make html
 
-#### Run linter
+### Run linter
 
 Install `prospector`, then:
 
@@ -127,6 +129,8 @@ If the files below don't exist, the crawler will download them from our server:
 - data/stopwords/en.stopwords.txt
 - data/badwords/fr.badwords.txt
 - data/badwords/en.badwords.txt
+
+In `crawler-config.json`, if FTP_INDEX is `""`, then the inverted index will be save in `DIR_INDEX` but not send on the FTP server.
 
 ### Database:
 The DatabaseSwiftea object can:

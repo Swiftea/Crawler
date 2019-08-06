@@ -122,7 +122,7 @@ class TestFileManager(SwifteaBotBaseTest):
 	# 	assert file_manager.FileManager.get_url(self) == 'error'
 
 	def test_save_inverted_index(self):
-		file_manager.FileManager.save_inverted_index(self, self.inverted_index)
+		file_manager.FileManager.save_inverted_index_json(self, self.inverted_index)
 
 	def test_get_inverted_index(self):
 		assert file_manager.FileManager.get_inverted_index(self) == self.inverted_index

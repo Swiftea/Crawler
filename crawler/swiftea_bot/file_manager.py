@@ -24,7 +24,7 @@ class FileManager(object):
 	Create configuration file if it doesn't exists or read it.
 
 	"""
-	def __init__(self, crawl_option=None):
+	def __init__(self, DIR_INDEX, crawl_option=None):
 		"""With `url`, filter links to save, and read filtered links.
 
 		:param url: the crawler was called with this starting url
@@ -36,6 +36,7 @@ class FileManager(object):
 			'level': -1,
 			'target-level': -1
 		}
+		self.DIR_INDEX = DIR_INDEX
 		self.max_links = data.MAX_LINKS  # Number of maximum links in a file
 		self.run = 'true'  # Run program bool
 		self.config = ConfigParser()
@@ -155,7 +156,7 @@ class FileManager(object):
 
 		return url
 
-	def save_inverted_index(self, inverted_index):
+	def save_inverted_index_json(self, inverted_index):
 		"""Save inverted-index in local.
 
 		Save it in a json file when we can't send it.
@@ -167,6 +168,21 @@ class FileManager(object):
 		tell('Save inverted-index in save file')
 		with open(data.FILE_INDEX, 'w') as myfile:
 			json.dump(inverted_index, myfile, ensure_ascii=False)
+
+	def save_inverted_index(self, inverted_index):
+		"""Save inverted index in `.sif` files."""
+		for language in inverted_index:
+			if not path.isdir(self.DIR_INDEX + language):
+				mkdir(self.DIR_INDEX + language)
+			for first_letter in inverted_index[language]:
+				if not path.isdir(self.DIR_INDEX + language + '/' + first_letter):
+					mkdir(self.DIR_INDEX + language + '/' + first_letter)
+
+				for two_letters in inverted_index[language][first_letter]:
+					index = inverted_index[language][first_letter][two_letters]
+					filename = language + '/' + first_letter + '/' + two_letters + '.sif'
+					with open(self.DIR_INDEX + filename, 'w', encoding='utf-8') as myfile:
+						json.dump(index, myfile, ensure_ascii=False)
 
 	def get_inverted_index(self):
 		"""Get inverted-index in local.
@@ -186,7 +202,6 @@ class FileManager(object):
 	def read_inverted_index(self):
 		"""Get inverted-index in local.
 
-		Called after sending inverted-index without error.
 		Read all files created to send inverted-index.
 
 		:return: inverted-index
@@ -194,12 +209,12 @@ class FileManager(object):
 		"""
 		tell('Get inverted-index in local')
 		inverted_index = dict()
-		for language in listdir(data.DIR_INDEX):
+		for language in listdir(self.DIR_INDEX):
 			inverted_index[language] = dict()
-			for first_letter in listdir(data.DIR_INDEX + language):
+			for first_letter in listdir(self.DIR_INDEX + language):
 				inverted_index[language][first_letter] = dict()
-				for filename in listdir(data.DIR_INDEX + language + '/' + first_letter):
-					with open(data.DIR_INDEX + language + '/' + first_letter + '/' + filename, 'r', encoding='utf-8') as myfile:
+				for filename in listdir(self.DIR_INDEX + language + '/' + first_letter):
+					with open(self.DIR_INDEX + language + '/' + first_letter + '/' + filename, 'r', encoding='utf-8') as myfile:
 						inverted_index[language][first_letter][filename[:-4]] = json.load(myfile)
 		return convert_keys(inverted_index)
 

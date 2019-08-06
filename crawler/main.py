@@ -12,7 +12,7 @@ from crawler.crawler_base import Crawler
 from crawler.crawler_domain import CrawlerDomain
 
 
-def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, loop_1=50, loop_2=10, dir_data=''):
+def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, l1=50, l2=10, dir_data=''):
 	with open('crawler-config.json') as json_file:
 		config = json.load(json_file)
 	if dir_data != '':
@@ -20,7 +20,7 @@ def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, lo
 	if not os.path.isdir(config['DIR_DATA']):
 		os.mkdir(config['DIR_DATA'])
 	os.chdir(config['DIR_DATA'])
-	module.create_dirs()
+	module.create_dirs(config['DIR_INDEX'])
 	if url:
 		crawl_option = dict()
 		crawl_option['domain'] = urlparse(url).netloc
@@ -30,8 +30,7 @@ def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, lo
 		crawl_option['use-mongodb'] = use_mongodb
 		crawler = CrawlerDomain(config, crawl_option, url)
 	else:
-		module.tell('Starting with base urls')
-		crawler = Crawler(config, loop_1, loop_2)
+		crawler = Crawler(config, l1, l2)
 		module.def_links()
 		atexit.register(module.quit, crawler)
 	return crawler
