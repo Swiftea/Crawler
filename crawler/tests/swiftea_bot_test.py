@@ -3,6 +3,7 @@
 from shutil import rmtree
 from os import mkdir, path
 import json
+from time import time
 
 
 from crawler.swiftea_bot import data
@@ -13,7 +14,7 @@ from crawler.swiftea_bot import links as swiftea_bot_links
 
 
 def test_create_dirs():
-	module.create_dirs()
+	module.create_dirs('inverted_index/')
 
 
 def test_tell():
@@ -47,6 +48,7 @@ class SwifteaBotBaseTest:
 		self.config = file_manager.ConfigParser()
 		self.run = 'true'
 		self.max_size_file = 2
+		self.DIR_INDEX = 'inverted_index/'
 
 		self.c1 = [
 	        {'domain': '', 'level': -1, 'completed': 0},
@@ -83,6 +85,9 @@ class TestModule(SwifteaBotBaseTest):
 		assert module.can_add_doc(docs, {'url': self.url}) == False
 		assert module.can_add_doc(docs, {'url': self.url + '/page'}) == True
 
+	def test_stats_crawl(self):
+		module.stats_crawl(time(), time())
+
 
 class TestFileManager(SwifteaBotBaseTest):
 	def test_init(self):
@@ -97,8 +102,6 @@ class TestFileManager(SwifteaBotBaseTest):
 		file_manager.FileManager.save_config(self)
 
 	def test_save_links(self):
-		if not path.exists(data.DIR_LINKS):
-			mkdir(data.DIR_LINKS)
 		file_manager.FileManager.save_links(self, BASE_LINKS.split())
 		links = ['http://www.planet-libre.org', 'http://www.actu-environnement.com', 'http://a.fr']
 		links.extend(BASE_LINKS.split())
@@ -121,7 +124,7 @@ class TestFileManager(SwifteaBotBaseTest):
 	# 	assert file_manager.FileManager.get_url(self) == ('http://example.en/page qui parle de ça', True)
 	# 	assert file_manager.FileManager.get_url(self) == 'error'
 
-	def test_save_inverted_index(self):
+	def test_save_inverted_index_json(self):
 		file_manager.FileManager.save_inverted_index_json(self, self.inverted_index)
 
 	def test_get_inverted_index(self):
@@ -151,6 +154,9 @@ class TestFileManager(SwifteaBotBaseTest):
 		stopwords, badwords = file_manager.FileManager.get_lists_words(self)
 		assert stopwords == {'en': ['then', 'already']}
 		assert badwords == {'en': ['verybadword']}
+
+	def test_save_inverted_index(self):
+		file_manager.FileManager.save_inverted_index(self, self.inverted_index)
 
 	def test_link_get_filename(self):
 		r00, s00, d00, r00_ = swiftea_bot_links.get_filename(

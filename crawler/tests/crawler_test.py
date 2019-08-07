@@ -2,6 +2,9 @@
 
 
 import crawler.stats
+import crawler.main
+import crawler.crawler_base
+import crawler.crawler_domain
 from crawler.swiftea_bot.data import DIR_STATS
 
 def test_stats():

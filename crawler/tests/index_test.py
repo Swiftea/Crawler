@@ -2,6 +2,10 @@
 
 from crawler.index.index import stats_dl_index, stats_ul_index, count_files_index
 from crawler.index.inverted_index import InvertedIndex
+from crawler.index.inverted_index_nosql import InvertedIndex as InvertedIndexNoSQL
+from crawler.index import database_ii
+from crawler.index.ftp_manager import FTPManager
+from crawler.index.ftp_swiftea import FTPSwiftea
 from crawler.tests.test_data import INVERTED_INDEX, CLEANED_KEYWORDS
 
 
@@ -13,10 +17,17 @@ inverted_index = {'EN': {
 
 class IndexBaseTest:
 	def setup_method(self, _):
-		self.inverted_index = {'EN': {
-		'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
-		'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
-		'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}}}
+		self.inverted_index = {
+			'EN': {
+				'A': {
+					'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
+				'W': {
+					'wo': {'word': {1: .3, 30: .4}}}},
+			'FR': {
+				'B': {
+					'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25, 2: .8}}}
+				}
+		}
 
 
 def test_stats_dl_index():
@@ -32,6 +43,18 @@ def test_create_inverted_index():
 	InvertedIndex()
 
 class TestInvertedIndex(IndexBaseTest):
+	def test_ftp(self):
+		FTPManager('host')
+		FTPSwiftea({
+			'FTP_HOST': 'FTP_HOST',
+			'FTP_USER': 'FTP_USER',
+			'FTP_PASSWORD': 'FTP_PASSWORD',
+			'FTP_PORT': 'FTP_PORT',
+			'FTP_INDEX': 'FTP_INDEX',
+			'FTP_DATA': 'FTP_DATA',
+			'DIR_INDEX': 'DIR_INDEX',
+		})
+
 	def test_get_inverted_index(self):
 		assert InvertedIndex.get_inverted_index(self) == INVERTED_INDEX
 
@@ -152,5 +175,5 @@ class TestInvertedIndex(IndexBaseTest):
 		'A': {'ab': {'above': {1: .3}, 'abort': {1: .3}}},
 		'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
 		'B': {'ba': {'bateau': {1: .5}}, 'bo': {'boule': {1: .25}}}}}
-		InvertedIndex.delete_doc_id(self, 1)
+		InvertedIndex.delete_doc_id(self, 1, 'EN')
 		assert self.inverted_index == {'EN': {'W': {'wo': {'word': {30: .4}}}}}

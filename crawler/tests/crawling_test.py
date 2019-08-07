@@ -67,6 +67,10 @@ class TestConnection(CrawlingBaseTest):
 
 
 class TestWebConnection(CrawlingBaseTest):
+	def test_get_code(self):
+		wb = WebConnection()
+		wb.get_code('http://thykof.github.io')
+
 	def test_search_encoding(self):
 		assert WebConnection.search_encoding(self, {}, self.code3) == ('utf-8', 0)
 		assert WebConnection.search_encoding(self, self.headers, self.code3) == ('utf-8', 1)

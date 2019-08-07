@@ -35,9 +35,9 @@ def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, l1
 		atexit.register(module.quit, crawler)
 	return crawler
 
-if __name__ == '__main__':
-	crawler = main()
-	try:
-		crawler.start()
-	except KeyboardInterrupt:
-		module.quit(crawler)
+# if __name__ == '__main__':
+# 	crawler = main()
+# 	try:
+# 		crawler.start()
+# 	except KeyboardInterrupt:
+# 		module.quit(crawler)
