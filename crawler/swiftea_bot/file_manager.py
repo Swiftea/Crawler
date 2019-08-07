@@ -171,6 +171,7 @@ class FileManager(object):
 
 	def save_inverted_index(self, inverted_index):
 		"""Save inverted index in `.sif` files."""
+		tell('Save inverted index in `.sif` files.')
 		for language in inverted_index:
 			if not path.isdir(self.DIR_INDEX + language):
 				mkdir(self.DIR_INDEX + language)
