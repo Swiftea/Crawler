@@ -16,7 +16,7 @@ from crawler.crawling import parsers, data_processing
 from crawler.crawling.searches import clean_link
 
 
-class WebConnection(object):
+class WebConnection:
 	"""Manage the web connection with the page to crawl."""
 	def __init__(self):
 		self.reqrobots = RobotsCache(capacity=100)
@@ -34,26 +34,26 @@ class WebConnection(object):
 		result = self.send_request(url)
 		if not isinstance(result, requests.models.Response):
 			return None, result, None, None, url
-		else:
-			request = result
-			del result
-			allowed = self.check_robots_perm(url)
-			if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
-				# Search encoding of webpage:
-				request.encoding, score = self.search_encoding(request.headers, request.text)
-				new_url, code = self.duplicate_content(request, url)  # new_url is clean and maybe without params
-				all_urls = data_processing.all_urls(request)  # List of urls to delete
-				if new_url in all_urls:  # new_url don't be delete
-					all_urls.remove(new_url)
-				return new_url, code, nofollow, score, all_urls
-			else:
-				tell('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
-					request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed), severity=0)
-				# All redirections urls, the first and the last:
-				all_urls = data_processing.all_urls(request)
-				all_urls.append(request.url)
-				all_urls.append(url)
-				return None, 'ignore', None, None, remove_duplicates(all_urls)
+
+		request = result
+		del result
+		allowed = self.check_robots_perm(url)
+		if request.status_code == requests.codes.ok and request.headers.get('Content-Type', '').startswith('text/html') and	allowed:
+			# Search encoding of webpage:
+			request.encoding, score = self.search_encoding(request.headers, request.text)
+			new_url, code = self.duplicate_content(request, url)  # new_url is clean and maybe without params
+			all_urls = data_processing.all_urls(request)  # List of urls to delete
+			if new_url in all_urls:  # new_url don't be delete
+				all_urls.remove(new_url)
+			return new_url, code, nofollow, score, all_urls
+
+		tell('Webpage infos: status code=' + str(request.status_code) + ', Content-Type=' + \
+			request.headers.get('Content-Type', '') + ', robots perm=' + str(allowed), severity=0)
+		# All redirections urls, the first and the last:
+		all_urls = data_processing.all_urls(request)
+		all_urls.append(request.url)
+		all_urls.append(url)
+		return None, 'ignore', None, None, remove_duplicates(all_urls)
 
 	def send_request(self, url):
 		try:
@@ -68,8 +68,7 @@ class WebConnection(object):
 			tell('Connection failed: {}, {}'.format(str(error), url), 5)
 			if data_processing.check_connection():
 				return None
-			else:
-				return 'no connection'
+			return 'no connection'
 		except UnicodeDecodeError as error:
 			tell('UnicodeDecodeError: ' + str(error))
 		else:
@@ -94,14 +93,12 @@ class WebConnection(object):
 		end_charset = headers.find('\'', charset)
 		if charset != -1 and end_charset != -1:
 			return headers[charset+8:end_charset], 1
-		else:
-			# Search in source code:
-			self.parser_encoding.feed(code)
-			if self.parser_encoding.encoding != '':
-				return self.parser_encoding.encoding, 1
-			else:
-				tell('No encoding', 9, severity=0)
-				return 'utf-8', 0
+		# Search in source code:
+		self.parser_encoding.feed(code)
+		if self.parser_encoding.encoding != '':
+			return self.parser_encoding.encoding, 1
+		tell('No encoding', 9, severity=0)
+		return 'utf-8', 0
 
 	def check_robots_perm(self, url):
 		"""Check robots.txt for permission.
@@ -155,7 +152,4 @@ class WebConnection(object):
 			if data_processing.duplicate_content(request1.text, request2.text):
 				tell("Same content: " + url1 + " and " + url2)   # Tests
 				return url2, request2.text
-			else:
-				return url1, request1.text
-		else:
-			return url1, request1.text
+		return url1, request1.text

@@ -7,7 +7,7 @@ import pymysql
 from crawler.swiftea_bot.data import TIMEOUT
 
 
-class DatabaseManager(object):
+class DatabaseManager:
 	"""Class to manage queries to the database using PyMySQL.
 
 	How to: create a subclass

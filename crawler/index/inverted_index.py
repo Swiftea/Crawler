@@ -153,13 +153,17 @@ class InvertedIndex:
 		if self.inverted_index[language][first_letter][filename][word].get(doc_id) is not None:
 			del self.inverted_index[language][first_letter][filename][word][doc_id]
 
-	def delete_doc_id(self, doc_id, language='*'):
+	def delete_doc_id(self, doc_id, lang='*'):
 		"""Delete a id in inverted-index.
 
 		:param doc_id: id to delete
 		:type doc_id: int
 
 		"""
+		if lang == '*':
+			languages = list(self.inverted_index.keys())
+		else:
+			languages = [lang]
 		new_inverted_index = dict()
 		for language in self.inverted_index:
 			new_inverted_index[language] = dict()

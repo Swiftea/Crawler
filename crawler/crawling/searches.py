@@ -46,15 +46,7 @@ def is_homepage(url):
 	:return: True or False
 
 	"""
-	if url.count('/') == 2:
-		if '//www.' in url and url.count('.') == 2:
-			return True
-		elif url.count('.') == 1:
-			return True
-		else:
-			return False
-	else:
-		return False
+	return url.count('/') == 2 and ('//www.' in url and url.count('.') == 2) or url.count('.') == 1
 
 
 def clean_link(url, base_url=None):
@@ -98,10 +90,8 @@ def clean_link(url, base_url=None):
 
 		if len(new) > 8 and new.count('&') < 5 and len(new) <= 255:
 			return new
-		else:
-			return None
-	else:
 		return None
+	return None
 
 
 def capitalize(text):
@@ -112,10 +102,9 @@ def capitalize(text):
 	:return: text
 
 	"""
-	if len(text) > 0:
+	if text:
 		return text[0].upper() + text[1:]
-	else:
-		return ''
+	return ''
 
 
 def stats_links(stats):

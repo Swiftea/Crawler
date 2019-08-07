@@ -15,7 +15,7 @@ from crawler.swiftea_bot.module import tell, remove_duplicates, convert_keys, sa
 import crawler.swiftea_bot.links as swiftea_bot_links
 
 
-class FileManager(object):
+class FileManager:
 	"""File manager for Swiftea-Crawler.
 
 	Save and read links, read and write configuration variables,
@@ -115,10 +115,9 @@ class FileManager(object):
 			self.crawl_option['level'] += 1
 			swiftea_bot_links.save_domains(self.domains)
 			if (self.crawl_option['level'] < self.crawl_option['target-level']):
-				return self.read_links(), True
-			else:
-				return '#target-reached#', True
-		return url, False
+				return self.read_links()
+			return '#target-reached#'
+		return url
 
 	def read_links(self):
 		"""Get url of next webpage.

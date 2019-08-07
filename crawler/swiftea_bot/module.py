@@ -94,7 +94,7 @@ def def_links():
 	Ask to user what doing if there isn't basic links.
 	Create a basic links file if user what it.
 	"""
-	if len(listdir(data.DIR_LINKS)) == 0:
+	if len(listdir(data.DIR_LINKS)) < 2:
 		tell("""No links file to start crawling:
 1: let the crawler uses it default list
 2: fill a file yourself""")
@@ -120,10 +120,7 @@ def is_index():
 	:return: True if there is one
 
 	"""
-	if path.exists(data.FILE_INDEX):
-		return True
-	else:
-		return False
+	return path.exists(data.FILE_INDEX)
 
 
 def can_add_doc(docs, new_doc):
@@ -175,9 +172,9 @@ def stats_webpages(begining, end):
 		myfile.write(str(nb_webpages) + '\n')
 
 
-def stats_send_index(begining, end):
+def stats_crawl(begining, end):
 	"""Time spent between two sending of index"""
-	with open(data.DIR_STATS + 'stats_send_index', 'a') as myfile:
+	with open(data.DIR_STATS + 'stats_crawl', 'a') as myfile:
 		myfile.write(str(end - begining) + '\n')
 
 

@@ -17,7 +17,6 @@ from crawler.database.database_swiftea import DatabaseSwiftea
 from crawler.swiftea_bot.file_manager import FileManager
 from crawler.index.inverted_index import InvertedIndex
 from crawler.swiftea_bot import data, module, links
-import crawler.swiftea_bot.links
 from crawler.index import index
 
 
@@ -75,7 +74,7 @@ class Crawler:
 			}])
 		run = True
 		while run:
-			stats_send_index = time()
+			stats_crawl = time()
 			self.suggestions()
 			for _ in range(self.l1):
 				module.tell('Crawl', severity=2)
@@ -83,7 +82,7 @@ class Crawler:
 				while len(self.infos) < self.l2:
 					begining = time()
 					# Start of crawling loop
-					url, level_complete = self.file_manager.get_url()
+					url = self.file_manager.get_url()
 					if url == 'error':
 						module.safe_quit()
 
@@ -121,7 +120,7 @@ class Crawler:
 			self.suggestions()
 			self.send_inverted_index()
 			self.file_manager.check_size_files()
-			module.stats_send_index(stats_send_index, time())
+			module.stats_crawl(stats_crawl, time())
 
 	def crawl_webpage(self, url):
 		"""Crawl the given url.
@@ -144,21 +143,18 @@ class Crawler:
 		if html_code == 'ignore':  # There was something wrong and maybe a redirection.
 			self.delete_bad_url(all_urls)
 			return None
-		else:
-			module.tell('New url: ' + new_url, severity=0)
-			webpage_infos, links = self.site_informations.get_infos(new_url, html_code, nofollow, score)
-			self.delete_bad_url(all_urls, webpage_infos['language'])  # Except new url
-			webpage_infos['url'] = new_url
+		module.tell('New url: ' + new_url, severity=0)
+		webpage_infos, list_links = self.site_informations.get_infos(new_url, html_code, nofollow, score)
+		self.delete_bad_url(all_urls, webpage_infos['language'])  # Except new url
+		webpage_infos['url'] = new_url
 
-			if webpage_infos['title'] != '':
-				if module.can_add_doc(self.infos, webpage_infos):  # check for duplicate only with url
-					self.crawled_websites += 1
-					return webpage_infos, links
-				else:
-					return None
-			else:
-				self.delete_bad_url(new_url, webpage_infos['language'])
-				return None
+		if webpage_infos['title'] != '':
+			if module.can_add_doc(self.infos, webpage_infos):  # check for duplicate only with url
+				self.crawled_websites += 1
+				return webpage_infos, list_links
+			return None
+		self.delete_bad_url(new_url, webpage_infos['language'])
+		return None
 
 	def delete_bad_url(self, urls, language='*'):
 		"""Delete bad doc if exists.
@@ -237,14 +233,14 @@ class Crawler:
 			module.tell('Failed to get suggestions')
 		else:
 			suggestions = data_processing.clean_links(suggestions)
-			if len(suggestions) > 0:
+			if suggestions:
 				module.tell('Suggestions', severity=2)
 				for url in suggestions:
 					result = self.crawl_webpage(url)
 					# result[0]: webpage_infos ; result[1]: links
 					if result:
 						self.infos.append(result[0])
-						links = self.file_manager.save_links(result[1])
+						self.file_manager.save_links(result[1])
 				self.send_to_db()
 				self.indexing()
 				self.infos.clear()  # Reset the list of dict of informations of websites.

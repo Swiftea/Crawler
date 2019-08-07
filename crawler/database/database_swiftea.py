@@ -90,8 +90,7 @@ WHERE url = %s""".format(self.t[0])
 		if 'error' in  response[1]:
 			tell('Failed to [update: ' + response[1], -2)
 			return True
-		else:
-			return False
+		return False
 
 	def insert(self, infos):
 		"""Insert a new document in database.
@@ -113,8 +112,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s, %s)""".format(self.t[0]
 		if 'error' in response[1][1]:
 			tell('Failed to add: ' + str(response))
 			return True
-		else:
-			return False
+		return False
 
 	def get_doc_id(self, url):
 		"""Get id of a document in database.
@@ -128,8 +126,7 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s, %s)""".format(self.t[0]
 		if 'error' in  response[1]:
 			tell('Failed to get id: ' + response)
 			return None
-		else:
-			return str(result[0])
+		return str(result[0])
 
 	def del_one_doc(self, url, table=None):
 		"""Delete document corresponding to url.
@@ -157,13 +154,13 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s, %s)""".format(self.t[0]
 		if 'error' in  response[1] or result is None:
 			tell('Failed to get url: ' + response)
 			return None
-		else:
-			suggested_links = list()
-			for element in result:
-				if len(suggested_links) < 5:
-					suggested_links.append(element[0])
-					self.del_one_doc(element[0], self.t[1])
-			return suggested_links
+
+		suggested_links = list()
+		for element in result:
+			if len(suggested_links) < 5:
+				suggested_links.append(element[0])
+				self.del_one_doc(element[0], self.t[1])
+		return suggested_links
 
 	def doc_exists(self, url, table=None): # TODO: refacto: une get_doc_id
 		"""Check if `url` is in database.
@@ -202,14 +199,10 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s, %s)""".format(self.t[0]
 			# old_url start with https
 			if new_exists:  # Start with http
 				return old_url, new_url
-			else:
-				return old_url, None
-		else:
-			# old_url is insecure, start with http
-			if new_exists:  # Secure url exists
-				if self.doc_exists(old_url):  # Insecure exists
-					return new_url, old_url
-				else:
-					return new_url, None
-			else:
-				return old_url, None
+			return old_url, None
+		# old_url is insecure, start with http
+		if new_exists:  # Secure url exists
+			if self.doc_exists(old_url):  # Insecure exists
+				return new_url, old_url
+			return new_url, None
+		return old_url, None

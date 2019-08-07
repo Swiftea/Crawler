@@ -56,7 +56,7 @@ class CrawlerDomain(Crawler):
 		while run:
 			begining = time()
 
-			url, level_complete = self.file_manager.get_url()
+			url = self.file_manager.get_url()
 			if url == 'error':
 				module.safe_quit()
 			elif url == '#target-reached#':

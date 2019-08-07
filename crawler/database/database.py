@@ -23,5 +23,4 @@ def convert_secure(url):
 	"""
 	if url_is_secure(url):
 		return url[:4] + url[5:]
-	else:
-		return url[:4] + 's' + url[4:]
+	return url[:4] + 's' + url[4:]

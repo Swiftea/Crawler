@@ -206,6 +206,7 @@ def can_append(url, rel):
 			if 'nofollow' in rel:
 				url += '!nofollow!'
 			return url
+	return None
 
 
 class ExtractEncoding(HTMLParser):

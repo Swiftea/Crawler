@@ -119,18 +119,17 @@ class FTPManager(FTP):
 		else:
 			if result != []:
 				return result
-			else:
-				return ['Empty list']
+			return ['Empty list']
 
-	def listdir_attr(self, path='.', facts=[]):
-		"""Return the result of mlsd command of ftplib or
-		a list whose first element is the error response."""
-		try:
-			result = self.mlsd(path, facts)
-		except  all_errors as error:
-			return ['Error: ' + str(error)]
-		else:
-			return result
+	# def listdir_attr(self, path='.', facts=[]):
+	# 	"""Return the result of mlsd command of ftplib or
+	# 	a list whose first element is the error response."""
+	# 	try:
+	# 		result = self.mlsd(path, facts)
+	# 	except  all_errors as error:
+	# 		return ['Error: ' + str(error)]
+	# 	else:
+	# 		return result
 
 	def get_total_size(self, directory='.'):
 	    size = 0
