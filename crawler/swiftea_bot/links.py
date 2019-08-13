@@ -148,17 +148,19 @@ def get_filename_read(domains, crawl_option):
 	return domain_ptr, reading_line_number
 
 def store_link(links, level_filename_ptr):
-	filename = DIR_LINKS + str(level_filename_ptr)
-	if path.exists(filename):
-		with open(filename, 'r', errors='replace', encoding='utf8') as myfile:
-			list_links = myfile.read().splitlines()  # List of urls
-		for link in links:
-			if link not in list_links:
-				list_links.append(link)
-	else:
-		list_links = links
-	with open(filename, 'w', errors='replace', encoding='utf8') as myfile:
-		myfile.write('\n'.join(list_links) + '\n')
+	if links:
+		filename = DIR_LINKS + str(level_filename_ptr)
+		if path.exists(filename):
+			with open(filename, 'r', errors='replace', encoding='utf8') as myfile:
+				list_links = myfile.read()
+			list_links = list_links.splitlines()  # List of urls
+			for link in links:
+				if link != '' and link not in list_links:
+					list_links.append(link)
+		else:
+			list_links = links
+		with open(filename, 'w', errors='replace', encoding='utf8') as myfile:
+			myfile.write('\n'.join(list_links) + '\n')
 
 def get_domains():
 	if path.exists(FILE_LINKS):
