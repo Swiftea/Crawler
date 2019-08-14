@@ -1,5 +1,5 @@
 data
-crawler-config.json
+crawler-config.json*
 badwords/*
 stopwords/*
 prospector_output.json
