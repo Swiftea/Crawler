@@ -65,7 +65,7 @@ Create `crawler-config.json` file and fill it:
 
 Then:
 
-    from crawler import main
+    from crawler.main import main
 
     # infinite crawling:
     crawler = main(l1=50, l2=10, dir_data='data1')
@@ -158,6 +158,11 @@ Swiftea's Crawler uses a number of open source projects to work properly:
   - [PyMySQL](https://github.com/PyMySQL/PyMySQL/)
   - [Requests](https://github.com/kennethreitz/requests)
 
+
+## Todo
+
+ - Fix domain already crawler.
+ - Add a timestamp in `links/links.json` and re-crawl if it exceed a certain time.
 
 ## Contributing
 
