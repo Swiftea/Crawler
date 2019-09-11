@@ -89,6 +89,8 @@ class CrawlerDomain(Crawler):
 
 			self.send_to_db()
 			self.indexing()
+			self.file_manager.save_inverted_index(
+				self.index_manager.get_inverted_index())
 
 			self.infos.clear()  # Reset the list of dict of informations of websites.
 			self.file_manager.check_stop_crawling()
