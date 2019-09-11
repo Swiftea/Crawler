@@ -32,7 +32,7 @@ def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, l1
 	else:
 		crawler = Crawler(config, l1, l2)
 		module.def_links()
-		atexit.register(module.quit, crawler)
+		atexit.register(module.safe_quit, crawler)
 	return crawler
 
 # if __name__ == '__main__':
@@ -40,4 +40,4 @@ def main(url='', sub_domain=True, level=0, target_level=1, use_mongodb=False, l1
 # 	try:
 # 		crawler.start()
 # 	except KeyboardInterrupt:
-# 		module.quit(crawler)
+# 		module.safe_quit(crawler)

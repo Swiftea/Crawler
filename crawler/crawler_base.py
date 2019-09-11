@@ -22,6 +22,7 @@ from crawler.index import index
 
 class Crawler:
 	"""Crawler main class."""
+
 	def __init__(self, config, l1, l2):
 		self.config = config
 		self.l1 = l1
@@ -77,6 +78,8 @@ class Crawler:
 			stats_crawl = time()
 			self.suggestions()
 			for _ in range(self.l1):
+				if not run:
+					break
 				module.tell('Crawl', severity=2)
 				begining = time()
 				while len(self.infos) < self.l2:
@@ -84,7 +87,9 @@ class Crawler:
 					# Start of crawling loop
 					url = self.file_manager.get_url()
 					if url == 'error':
-						module.safe_quit()
+						module.safe_quit(self)
+						run = False
+						break
 
 					result = self.crawl_webpage(url)
 					# result[0]: webpage_infos, result[1]: links
@@ -114,7 +119,9 @@ class Crawler:
 				self.file_manager.save_config()
 				if self.file_manager.run == 'false':
 					module.tell('User wants stop program')
-					module.safe_quit()
+					module.safe_quit(self)
+					run = False
+					break
 
 			# End of loop range(n)
 			self.suggestions()
@@ -139,12 +146,13 @@ class Crawler:
 			self.delete_bad_url(all_urls)  # Failed to get code, must delete from database.
 			return None
 		if html_code == 'no connection':
-			module.safe_quit()
+			return None
 		if html_code == 'ignore':  # There was something wrong and maybe a redirection.
 			self.delete_bad_url(all_urls)
 			return None
 		module.tell('New url: ' + new_url, severity=0)
-		webpage_infos, list_links = self.site_informations.get_infos(new_url, html_code, nofollow, score)
+		webpage_infos, list_links = self.site_informations.get_infos(
+			new_url, html_code, nofollow, score)
 		self.delete_bad_url(all_urls, webpage_infos['language'])  # Except new url
 		webpage_infos['url'] = new_url
 
@@ -174,10 +182,6 @@ class Crawler:
 				if doc_id:
 					self.database.del_one_doc(url)
 					self.index_manager.delete_doc_id(doc_id, language)
-				else:
-					module.safe_quit()
-			elif doc_exists is None:
-				module.safe_quit()
 			else:
 				module.tell('Ignore: ' + url, severity=-1)
 
@@ -194,8 +198,6 @@ class Crawler:
 				self.delete_bad_url(url_to_del)
 			module.tell('New url (to add): ' + webpage_infos['url'], severity=-1)
 			error = self.database.send_doc(webpage_infos)
-			if error:
-				module.safe_quit()
 
 	def indexing(self):
 		"""Index crawled webpages.
@@ -206,8 +208,6 @@ class Crawler:
 		module.tell('Indexing', severity=2)
 		for webpage_infos in self.infos:
 			doc_id = self.database.get_doc_id(webpage_infos['url'])
-			if doc_id is None:
-				module.safe_quit()
 			module.tell('Indexing {0} {1}'.format(doc_id, webpage_infos['url']))
 			self.index_manager.add_doc(webpage_infos['keywords'], doc_id, webpage_infos['language'])
 

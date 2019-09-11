@@ -5,11 +5,9 @@
 from time import strftime
 from os import path, mkdir, listdir, chdir
 import sys
-import json
 
 
 import crawler.swiftea_bot.data as data
-from crawler.swiftea_bot import links
 
 
 def tell(message, error_code='', severity=1):
@@ -40,17 +38,18 @@ def tell(message, error_code='', severity=1):
 		print(''.center(len(msg_to_print), '='))
 
 	with open(data.FILE_EVENTS, 'a') as myfile:
-		myfile.write(strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' + message + '\n')
+		myfile.write(strftime('%d/%m/%y %H:%M:%S') + str(error_code) + ' ' +
+					 message + '\n')
 
-def safe_quit():
+
+def safe_quit(crawler):
 	tell('exiting', 0, 2)
-	sys.exit(1)
-
-def quit(crawler):
+	# sys.exit(1)
 	crawler.file_manager.save_inverted_index_json(
 		crawler.index_manager.get_inverted_index()
 	)
-	chdir('..')
+	# chdir('..')
+
 
 def errors(message, error_code):
 	"""Write the error report with the time in errors file.
@@ -64,7 +63,8 @@ def errors(message, error_code):
 
 	"""
 	with open(data.FILE_ERRORS, 'a') as myfile:
-		myfile.write(' ' + str(error_code) + ' ' + strftime("%d/%m/%y %H:%M:%S") + ': ' + message + '\n')
+		myfile.write(' ' + str(error_code) + ' ' +
+					 strftime("%d/%m/%y %H:%M:%S") + ': ' + message + '\n')
 
 
 def create_dirs(DIR_INDEX):
@@ -198,5 +198,6 @@ def convert_keys(inverted_index):
 				for word in inverted_index[language][first_letter][two_letter]:
 					new_inverted_index[language][first_letter][two_letter][word] = dict()
 					for doc_id in inverted_index[language][first_letter][two_letter][word]:
-						new_inverted_index[language][first_letter][two_letter][word][int(doc_id)] = inverted_index[language][first_letter][two_letter][word][doc_id]
+						new_inverted_index[language][first_letter][two_letter][word][int(
+							doc_id)] = inverted_index[language][first_letter][two_letter][word][doc_id]
 	return new_inverted_index

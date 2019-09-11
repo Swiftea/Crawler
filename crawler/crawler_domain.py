@@ -13,8 +13,9 @@ from crawler.database.database_swiftea import DatabaseSwiftea
 
 class CrawlerDomain(Crawler):
 	"""Crawler main class."""
+
 	def __init__(self, config, crawl_option, url):
-		Crawler.__init__(self, config, 0, 0);
+		Crawler.__init__(self, config, 0, 0)
 		self.url = url
 		self.use_mongodb = crawl_option['use-mongodb']
 		if self.use_mongodb:
@@ -45,11 +46,14 @@ class CrawlerDomain(Crawler):
 		"""
 		if not self.use_mongodb:
 			self.get_inverted_index()
-		module.tell('Starting with {} | {}'.format(self.url, str(self.crawl_option)))
+		module.tell('Starting with {} | {}'.format(
+            self.url, str(self.crawl_option)))
 		if (self.crawl_option['target-level'] <= self.crawl_option['level'] or
-			links.get_already_done(self.crawl_option['domain'], self.crawl_option['target-level'])):
+				links.get_already_done(
+                    self.crawl_option['domain'],
+                    self.crawl_option['target-level'])):
 			module.tell('Already done')
-			module.quit(self)
+			module.safe_quit(self)
 			return
 		self.file_manager.save_links([self.url])
 		run = True
@@ -58,7 +62,9 @@ class CrawlerDomain(Crawler):
 
 			url = self.file_manager.get_url()
 			if url == 'error':
-				module.safe_quit()
+				module.safe_quit(self)
+				run = False
+				break
 			elif url == '#target-reached#':
 				module.tell('Target level reached')
 				break
@@ -89,7 +95,9 @@ class CrawlerDomain(Crawler):
 			self.file_manager.save_config()
 			if self.file_manager.run == 'false':
 				module.tell('User wants stop program')
-				module.safe_quit()
+				module.safe_quit(self)
+				run = False
+				break
 
 			if self.crawl_option['level'] == self.crawl_option['target-level'] + 1:
 				run = False
@@ -99,4 +107,4 @@ class CrawlerDomain(Crawler):
 
 		if not self.use_mongodb:
 			self.send_inverted_index()
-		module.quit(self)
+		module.safe_quit(self)
