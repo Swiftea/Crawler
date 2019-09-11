@@ -15,6 +15,7 @@ from crawler.swiftea_bot.module import tell
 
 class FTPSwiftea(FTPManager):
 	"""Class to manage the ftp connection for crawler."""
+
 	def __init__(self, config):
 		host = config['FTP_HOST']
 		user = config['FTP_USER']
@@ -52,11 +53,12 @@ class FTPSwiftea(FTPManager):
 				self.tell_progress(False)
 				self.cd(first_letter)
 				if not path.isdir(self.DIR_INDEX + language + '/' + first_letter):
-					mkdir(self.DIR_INDEX +  language + '/' + first_letter)
+					mkdir(self.DIR_INDEX + language + '/' + first_letter)
 				inverted_index[language][first_letter] = dict()
 				list_filename = self.listdir()
 				for filename in list_filename:
-					inverted_index[language][first_letter][filename[:-4]] = self.download(language, first_letter, filename)
+					inverted_index[language][first_letter][filename[:-4]
+														   ] = self.download(language, first_letter, filename)
 
 				self.cd('..')
 			self.cd('..')
@@ -78,20 +80,19 @@ class FTPSwiftea(FTPManager):
 		"""
 		tell('send inverted-index')
 		self.downuploaded_files = 0
-		self.nb_files = count_files_index(inverted_index)  # Count files from index (prepare to upload)
+		# Count files from index (prepare to upload)
+		self.nb_files = count_files_index(inverted_index)
 		self.connection()
 		files = self.listdir()
 		if self.FTP_INDEX not in files:
 			self.mkdir(self.FTP_INDEX)
 		self.cd(self.FTP_INDEX)
-		tell('go to ' + self.FTP_INDEX)
 
 		for language in inverted_index:
 			list_language = self.listdir()
 			if language not in list_language:
 				self.mkdir(language)
 			self.cd(language)
-			tell('go to ' + language)
 			for first_letter in inverted_index[language]:
 				self.tell_progress()
 				list_first_letter = self.listdir()
@@ -99,15 +100,12 @@ class FTPSwiftea(FTPManager):
 					self.mkdir(first_letter)
 
 				self.cd(first_letter)
-				tell('go to ' + first_letter)
 				for two_letters in inverted_index[language][first_letter]:
 					index = inverted_index[language][first_letter][two_letters]
 					self.upload(language, first_letter, two_letters, index)
 
 				self.cd('..')
-				tell('go back')
 			self.cd('..')
-			tell('go back')
 
 		self.disconnect()
 		tell('Transfer complete', severity=0)
@@ -122,7 +120,7 @@ class FTPSwiftea(FTPManager):
 
 	def upload(self, language, first_letter, two_letters, index):
 		FTP_INDEX = language + '/' + first_letter + '/' + two_letters + '.sif'
-		tell('uploading {} in {}'.format(self.DIR_INDEX + FTP_INDEX, two_letters + '.sif'))
+		# tell('uploading {} in {}'.format(self.DIR_INDEX + FTP_INDEX, two_letters + '.sif'))
 		self.put(self.DIR_INDEX + FTP_INDEX, two_letters + '.sif')
 		self.downuploaded_files += 1
 
