@@ -44,11 +44,10 @@ def tell(message, error_code='', severity=1):
 
 def safe_quit(crawler):
 	tell('exiting', 0, 2)
-	# sys.exit(1)
 	crawler.file_manager.save_inverted_index_json(
 		crawler.index_manager.get_inverted_index()
 	)
-	# chdir('..')
+	chdir('..')
 
 
 def errors(message, error_code):
