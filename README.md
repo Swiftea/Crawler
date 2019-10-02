@@ -110,6 +110,8 @@ Install `prospector`, then:
 
 ### Deploy
 
+`python3 setup.py sdist bdist_wheel`
+
 Create directories in ftp server:
 
  - /www/data/badwords
@@ -161,7 +163,6 @@ Swiftea's Crawler uses a number of open source projects to work properly:
 
 ## Todo
 
- - Fix domain already crawler.
  - Add a timestamp in `links/links.json` and re-crawl if it exceed a certain time.
 
 ## Contributing

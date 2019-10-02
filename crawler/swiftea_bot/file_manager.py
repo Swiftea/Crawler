@@ -111,11 +111,15 @@ class FileManager:
 	def get_url(self):
 		url = self.read_links()
 		if url == '#level_complete#':
-			tell('Level complete, new level: ' + str(self.crawl_option['level']))
 			self.crawl_option['level'] += 1
+			tell('Level complete, new level: ' + str(self.crawl_option['level']))
 			swiftea_bot_links.save_domains(self.domains)
 			if (self.crawl_option['level'] < self.crawl_option['target-level']):
 				return self.read_links()
+			self.domains = swiftea_bot_links.set_complete(self.domains,
+				self.crawl_option['target-level'],
+				self.crawl_option['domain'])
+			swiftea_bot_links.save_domains(self.domains)
 			return '#target-reached#'
 		return url
 

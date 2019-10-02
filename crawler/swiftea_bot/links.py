@@ -174,6 +174,17 @@ def save_domains(domains):
 	with open(FILE_LINKS, 'w') as json_file:
 		json.dump(domains, json_file, indent=2)
 
+def set_complete(domains, target_level, domain):
+	ptr = -1
+	for key, d in enumerate(domains):
+		if (d['domain'] == domain
+			and d['level'] == target_level
+			and not d['completed']):
+			ptr = key
+	if ptr != -1:
+		domains[key]['completed'] = 1
+	return domains
+
 def add_domain(domain):
 	domains = get_domains()
 	exists = False

@@ -48,10 +48,11 @@ class CrawlerDomain(Crawler):
 			self.get_inverted_index()
 		module.tell('Starting with {} | {}'.format(
             self.url, str(self.crawl_option)))
+		already_done = links.get_already_done(
+			self.crawl_option['domain'],
+			self.crawl_option['target-level'])
 		if (self.crawl_option['target-level'] <= self.crawl_option['level'] or
-				links.get_already_done(
-                    self.crawl_option['domain'],
-                    self.crawl_option['target-level'])):
+				already_done):
 			module.tell('Already done')
 			module.safe_quit(self)
 			return

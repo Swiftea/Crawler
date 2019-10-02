@@ -158,6 +158,25 @@ class TestFileManager(SwifteaBotBaseTest):
 	def test_save_inverted_index(self):
 		file_manager.FileManager.save_inverted_index(self, self.inverted_index)
 
+	def test_get_already_done(self):
+		swiftea_bot_links.save_domains([
+		  {
+		    "domain": "github.io",
+		    "level": 0,
+		    "completed": 1,
+		    "line": 3,
+		    "file": 0
+		  },
+		  {
+		    "domain": "github.io",
+		    "level": 1,
+		    "completed": 0,
+		    "file": 1,
+		    "line": 1
+		  }
+		])
+		assert swiftea_bot_links.get_already_done('github.io', 0) == True
+
 	def test_link_get_filename(self):
 		r00, s00, d00, r00_ = swiftea_bot_links.get_filename(
 			[], {'domain': '', 'level': -1}
