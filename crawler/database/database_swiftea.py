@@ -79,6 +79,7 @@ class DatabaseSwiftea(DatabaseManager):
 		"""
 		tell('Updating ' + infos['url'])
 
+		self.put_emails(infos['emails'])
 		cmd = """
 UPDATE {} SET title=%s, description=%s, last_crawl=NOW(), language=%s,
 popularity=%s, score=%s, homepage=%s, sanesearch=%s, favicon=%s
@@ -101,6 +102,7 @@ WHERE url = %s""".format(self.t[0])
 
 		"""
 		tell('Adding ' + infos['url'])
+		self.put_emails(infos['emails'])
 		response = self.send_command(
 """INSERT INTO {} (title, description, url, first_crawl, last_crawl, language,
 popularity, score, homepage, sanesearch, favicon, domain)
@@ -113,6 +115,13 @@ VALUES (%s, %s, %s, NOW(), NOW(), %s, 1, %s, %s, %s, %s, %s)""".format(self.t[0]
 			tell('Failed to add: ' + str(response))
 			return True
 		return False
+
+	def put_emails(self, emails):
+		for email in emails:
+			response = self.send_command(
+				"INSERT INTO emails (address) VALUES (%s)",
+				email
+			)
 
 	def get_doc_id(self, url):
 		"""Get id of a document in database.

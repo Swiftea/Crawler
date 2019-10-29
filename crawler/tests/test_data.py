@@ -71,6 +71,7 @@ CODE4 = """<!DOCTYPE html>
     </head>
     <body>
         <p>recherche</p>
+        <a href="mailto:swiftea@ovh.com"></a>
     </body>
 </html>
 """

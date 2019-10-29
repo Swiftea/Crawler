@@ -71,6 +71,7 @@ class SiteInformations:
 			results['sanesearch'] = self.sane_search(keywords, language)
 			results['language'] = language
 			results['keywords'] = keywords
+			results['emails'] = self.parser.emails
 
 			# Css:
 			if self.parser.css:

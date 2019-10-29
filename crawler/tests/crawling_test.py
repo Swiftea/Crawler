@@ -131,9 +131,9 @@ class TestSiteInformations(CrawlingBaseTest):
 		site_informations.get_infos('http://aetfiws.ovh', test_data.CODE1, True, 0)
 		r = site_informations.get_infos('http://aetfiws.ovh', test_data.CODE4, True, 0)
 		assert r[0]['description'] == 'Moteur de recherche recherche'
-		print(r[0]['keywords'])
 		assert r[0]['keywords'] == [('recherche', 4), ('test', 1), ('title', 1), ('rpoot', 1),
 			('moteur', 1), ('de', 1)]
+		assert r[0]['emails'] == ['swiftea@ovh.com']
 
 	def test_clean_links(self):
 		links = ['page.php', 'http://aetfiws.ovh/', 'mailto:test@test.fr',
@@ -211,6 +211,7 @@ class TestParsers(CrawlingBaseTest):
 
 		self.parser.feed(self.code4)
 		assert self.parser.title == 'test title rpoot recherche'
+		assert self.parser.emails == ['swiftea@ovh.com']
 
 	def test_parser_encoding(self):
 		self.parser_encoding.feed(self.code1)

@@ -40,6 +40,7 @@ class ExtractData(HTMLParser):
 		self.h1 = False  # True if parsing the title of webpage
 		self.first_title = ''  # The first title (h1) of the web site
 		self.description = self.language = self.title = self.favicon = ''
+		self.emails = list()
 
 	def re_init(self):
 		"""Call when we meet html tag, put back all variables to default."""
@@ -50,6 +51,7 @@ class ExtractData(HTMLParser):
 		self.is_title = False
 		self.word1 = False
 		self.word2 = False
+		self.emails = list()
 
 	def handle_starttag(self, tag, attrs):
 		"""Call when parser meet a starting tag.
@@ -69,6 +71,8 @@ class ExtractData(HTMLParser):
 			url = can_append(dict(attrs).get('href'), dict(attrs).get('rel', ''))
 			if url:
 				self.links.append(url)
+			if dict(attrs).get('href').startswith('mailto:'):
+				self.emails.append(dict(attrs).get('href')[7:256])
 
 		elif tag == 'link':
 			rel = dict(attrs).get('rel', '')
