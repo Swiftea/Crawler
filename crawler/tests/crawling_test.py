@@ -22,6 +22,7 @@ class CrawlingBaseTest(object):
 		self.code1 = test_data.CODE1
 		self.code2 = test_data.CODE2
 		self.code3 = test_data.CODE3
+		self.code4 = test_data.CODE4
 		self.parser = parsers.ExtractData()
 		self.parser_encoding = parsers.ExtractEncoding()
 		self.STOPWORDS = {'fr':('mot', 'pour', 'de')}
@@ -128,6 +129,11 @@ class TestSiteInformations(CrawlingBaseTest):
 		site_informations = SiteInformations()
 		site_informations.set_listswords(stopwords={'en': []}, badwords={'en':[]})
 		site_informations.get_infos('http://aetfiws.ovh', test_data.CODE1, True, 0)
+		r = site_informations.get_infos('http://aetfiws.ovh', test_data.CODE4, True, 0)
+		assert r[0]['description'] == 'Moteur de recherche recherche'
+		print(r[0]['keywords'])
+		assert r[0]['keywords'] == [('recherche', 4), ('test', 1), ('title', 1), ('rpoot', 1),
+			('moteur', 1), ('de', 1)]
 
 	def test_clean_links(self):
 		links = ['page.php', 'http://aetfiws.ovh/', 'mailto:test@test.fr',
@@ -202,6 +208,9 @@ class TestParsers(CrawlingBaseTest):
 
 		self.parser.feed(self.code3)
 		assert self.parser.language == 'fr'
+
+		self.parser.feed(self.code4)
+		assert self.parser.title == 'test title rpoot recherche'
 
 	def test_parser_encoding(self):
 		self.parser_encoding.feed(self.code1)

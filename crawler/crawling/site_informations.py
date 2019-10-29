@@ -53,22 +53,24 @@ class SiteInformations:
 			language = self.detect_language(keywords)
 
 		if language in self.STOPWORDS and self.parser.title != '':
-			keywords = self.clean_keywords(keywords, language)
-			keywords.extend(self.clean_keywords(results['title'].lower().split(), language))
+			keywords.extend(results['title'].lower().split())
 			infos_url = urlparse(url)
 			path_position = infos_url.path.rfind('.')
 			path = infos_url.path[:path_position]
 			keywords.extend(self.clean_keywords(path, language))
-
-			results['sanesearch'] = self.sane_search(keywords, language)
-			results['language'] = language
-			results['keywords'] = keywords
 
 			# Description:
 			if self.parser.description == '':
 				results['description'] = searches.clean_text(searches.capitalize(self.parser.first_title))
 			else:
 				results['description'] = searches.clean_text(searches.capitalize(self.parser.description))
+
+			keywords.extend(results['description'].lower().split())
+			keywords = self.clean_keywords(keywords, language)
+
+			results['sanesearch'] = self.sane_search(keywords, language)
+			results['language'] = language
+			results['keywords'] = keywords
 
 			# Css:
 			if self.parser.css:

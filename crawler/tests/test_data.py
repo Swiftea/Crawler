@@ -62,6 +62,19 @@ CODE3 = """<!DOCTYPE html>
 </html>
 """
 
+CODE4 = """<!DOCTYPE html>
+<html>
+    <head>
+        <title>test title rpoot recherche</title>
+        <meta name="language" content="en">
+        <meta name="Description" content="Moteur de recherche recherche">
+    </head>
+    <body>
+        <p>recherche</p>
+    </body>
+</html>
+"""
+
 INVERTED_INDEX = {'EN': {
 'A': {'ab': {'above': {1: .3, 2: .1}, 'abort': {1: .3, 2: .1}}},
 'W': {'wo': {'word': {1: .3, 30: .4}}}}, 'FR': {
