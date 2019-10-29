@@ -21,7 +21,7 @@ def read(filename):
 
 setup(
     name = "swiftea-crawler",
-    version = "1.1.6",
+    version = "1.1.7",
     author = "Thykof",
     author_email="thykof@protonmail.ch",
     tests_require=['pytest'],

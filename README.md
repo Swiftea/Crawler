@@ -149,7 +149,7 @@ When stoping the crawler (ctrl+V), it will not restart with the interupted url.
 
 ## Version
 
-Current version is 1.1.6
+Current version is 1.1.7
 
 ## Tech
 
