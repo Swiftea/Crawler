@@ -114,11 +114,11 @@ Install `prospector`, then:
 
 Create directories in ftp server:
 
- - /www/data/badwords
- - /www/data/stopwords
- - /www/data/inverted_index
+ - www/data/badwords
+ - www/data/stopwords
+ - www/data/inverted_index
 
-Upload the list of words: `/www/[type]/[lang].[type].txt`.
+Upload the list of words: `www/[type]/[lang].[type].txt`.
 
 Create database with `sql/swiftea_mysql_db.sql`.
 
