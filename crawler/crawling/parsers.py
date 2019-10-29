@@ -71,8 +71,9 @@ class ExtractData(HTMLParser):
 			url = can_append(dict(attrs).get('href'), dict(attrs).get('rel', ''))
 			if url:
 				self.links.append(url)
-			if dict(attrs).get('href').startswith('mailto:'):
-				self.emails.append(dict(attrs).get('href')[7:256])
+			if dict(attrs).get('href'):
+				if dict(attrs).get('href').startswith('mailto:'):
+					self.emails.append(dict(attrs).get('href')[7:256])
 
 		elif tag == 'link':
 			rel = dict(attrs).get('rel', '')
